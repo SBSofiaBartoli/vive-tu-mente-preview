@@ -1,0 +1,459 @@
+<!doctype html>
+
+<html class="light" lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#40b2b2",
+              "background-light": "#f6f8f6",
+              "background-dark": "#112116",
+            },
+            fontFamily: {
+              display: ["Playfair Display", "serif"],
+              sans: ["DM Sans", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style type="text/tailwindcss">
+      @layer base {
+        h1,
+        h2,
+        h3 {
+          font-family: "Playfair Display", serif;
+        }
+        b,
+        strong {
+          font-family: "Playfair Display", serif;
+        }
+        p,
+        button,
+        a {
+          font-family: "DM Sans", sans-serif;
+        }
+      }
+    </style>
+    <title>Donación | Fundación Vive Tu Mente</title>
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark font-sans text-slate-900 dark:text-slate-100"
+  >
+    <div class="relative flex min-h-screen flex-col">
+      <!-- Top Navigation Bar -->
+      <header
+        class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-primary/10"
+      >
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between h-20">
+            <div class="flex items-center gap-3">
+              <img
+                src="/public/images/vive-tu-mente.png"
+                data-alt="Fundación Vive Tu Mente"
+                class="h-12 w-auto"
+              />
+              <span
+                class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100"
+                >Fundación Vive Tu Mente</span
+              >
+            </div>
+            <nav class="hidden md:flex items-center gap-8">
+              <a
+                class="text-sm font-semibold hover:text-primary transition-colors"
+                href="/"
+                >Inicio</a
+              >
+              <a
+                class="text-sm font-semibold hover:text-primary transition-colors"
+                href="/programs"
+                >Programas</a
+              >
+              <a
+                class="text-sm font-semibold hover:text-primary transition-colors"
+                href="/training"
+                >Educación</a
+              >
+              <a
+                class="text-sm font-semibold hover:text-primary transition-colors"
+                href="/about_us"
+                >Sobre Nosotros</a
+              >
+              <a
+                class="text-sm font-semibold hover:text-primary transition-colors"
+                href="/participate"
+                >Participar</a
+              >
+            </nav>
+            <div class="flex items-center gap-4">
+              <a
+                class="bg-primary text-background-dark px-6 py-2 rounded-lg font-bold text-sm hover:shadow-lg hover:shadow-primary/20 transition-all"
+                href="/donations"
+              >
+                Donación
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
+      <main class="flex-1">
+        <!-- Hero Section -->
+        <section class="mx-auto max-w-7xl px-6 py-12 lg:py-20">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <span
+                class="inline-block rounded-full bg-primary/20 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-primary dark:text-primary mb-6"
+                >Apoya nuestra misión</span
+              >
+              <h2
+                class="text-4xl font-black leading-tight tracking-tight text-slate-900 dark:text-slate-100 sm:text-6xl mb-6"
+              >
+                Transformando vidas a través del
+                <span class="text-primary">bienestar mental.</span>
+              </h2>
+              <p
+                class="text-lg text-slate-600 dark:text-slate-400 mb-8 max-w-lg"
+              >
+                Tu contribución financia directamente asesoramiento, recursos
+                educativos y intervención en crisis para quienes más lo
+                necesitan.
+              </p>
+              <div class="flex flex-wrap gap-4">
+                <button
+                  class="flex items-center justify-center gap-2 rounded-lg border border-primary/30 px-8 py-3 text-sm font-bold hover:bg-primary/5 transition-colors"
+                >
+                  Ver reporte impacto
+                </button>
+              </div>
+            </div>
+            <div class="relative">
+              <div
+                class="aspect-square w-full rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 overflow-hidden border border-primary/10"
+              >
+                <img
+                  class="h-full w-full object-cover mix-blend-overlay opacity-80"
+                  data-alt="Peaceful group of people in a circle"
+                  src=""
+                />
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div
+                    class="bg-background-light/90 dark:bg-background-dark/90 backdrop-blur p-6 rounded-xl border border-primary/20 shadow-2xl max-w-xs text-center"
+                  >
+                    <span class="text-4xl font-bold text-primary mb-1 block"
+                      >$1.2M+</span
+                    >
+                    <p class="text-sm font-medium text-slate-500">
+                      Fondos recaudados el año pasado para apoyo comunitario
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- Donation Tabs -->
+        <section class="mx-auto max-w-7xl px-6 pb-20">
+          <div
+            class="mb-10 flex border-b border-primary/10 overflow-x-auto no-scrollbar"
+          >
+            <button
+              class="flex items-center gap-2 border-b-4 border-primary px-6 py-4 text-sm font-bold text-slate-900 dark:text-slate-100"
+            >
+              <span class="material-symbols-outlined text-[20px]"
+                >account_balance</span
+              >
+              Transferencia Bancaria
+            </button>
+            <button
+              class="flex items-center gap-2 border-b-4 border-transparent px-6 py-4 text-sm font-medium text-slate-400 cursor-not-allowed whitespace-nowrap"
+            >
+              <span class="material-symbols-outlined text-[20px]"
+                >credit_card</span
+              >
+              Pago en Línea (Próximamente)
+            </button>
+            <button
+              class="flex items-center gap-2 border-b-4 border-transparent px-6 py-4 text-sm font-medium text-slate-400 cursor-not-allowed whitespace-nowrap"
+            >
+              <span class="material-symbols-outlined text-[20px]"
+                >smartphone</span
+              >
+              Pagos PAC/PAT (Próximamente)
+            </button>
+          </div>
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            <!-- Bank Details -->
+            <div class="lg:col-span-6 space-y-8">
+              <div
+                class="rounded-2xl bg-white dark:bg-slate-900/50 p-8 border border-primary/10 shadow-sm"
+              >
+                <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary"
+                    >info</span
+                  >
+                  Instrucciones de Transferencia
+                </h3>
+                <div class="space-y-4">
+                  <div
+                    class="flex items-center justify-between border-b border-primary/5 pb-3"
+                  >
+                    <span class="text-sm text-slate-500">Banco</span>
+                    <span class="text-sm font-bold">Banco Estado</span>
+                  </div>
+                  <div
+                    class="flex items-center justify-between border-b border-primary/5 pb-3"
+                  >
+                    <span class="text-sm text-slate-500"
+                      >Titular de la Cuenta</span
+                    >
+                    <span class="text-sm font-bold text-end"
+                      >FUNDACION VIVE TU MENTE <br />PARA LA SALUD MENTAL
+                      INCLUSION Y BIENESTAR DE PERSONAS</span
+                    >
+                  </div>
+                  <div
+                    class="flex items-center justify-between border-b border-primary/5 pb-3"
+                  >
+                    <span class="text-sm text-slate-500">Rut Cuenta</span>
+                    <div class="flex items-center gap-2">
+                      <span class="text-sm font-bold">65.260.111-1</span>
+                      <!-- <button class="text-primary hover:text-primary/80">
+                        <span class="material-symbols-outlined text-[18px]"
+                          >content_copy</span
+                        >
+                      </button> -->
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between border-b border-primary/5 pb-3"
+                  >
+                    <span class="text-sm text-slate-500">Número de Cuenta</span>
+                    <div class="flex items-center gap-2">
+                      <span class="text-sm font-bold">30471587059</span>
+                      <!-- <button class="text-primary hover:text-primary/80">
+                        <span class="material-symbols-outlined text-[18px]"
+                          >content_copy</span
+                        >
+                      </button> -->
+                    </div>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm text-slate-500">Tipo Cuenta</span>
+                    <span class="text-sm font-bold">Chequera Electrónica</span>
+                  </div>
+                </div>
+                <div
+                  class="mt-8 rounded-lg bg-primary/10 p-4 border border-primary/20"
+                >
+                  <p
+                    class="text-xs text-slate-600 dark:text-slate-300 flex gap-3"
+                  >
+                    <span
+                      class="material-symbols-outlined text-primary text-[20px] shrink-0"
+                      >verified_user</span
+                    >
+                    Utilice "FVTM-DONATION" seguido de su apellido como
+                    referencia de transferencia al momento de indicar un
+                    mensaje, para una conciliación más rápida.
+                  </p>
+                </div>
+              </div>
+              <div
+                class="rounded-2xl bg-primary/5 p-8 border border-primary/10 text-center"
+              >
+                <h4 class="font-bold mb-2">Promesa de Transparencia</h4>
+                <p class="text-sm text-slate-500">
+                  El 100% de su donación se destina directamente a los costos
+                  del proyecto. Nuestros gastos administrativos están cubiertos
+                  por patrocinadores corporativos.
+                </p>
+              </div>
+            </div>
+            <!-- Reporting Form -->
+            <div class="lg:col-span-6">
+              <div
+                class="rounded-2xl bg-white dark:bg-slate-900/50 p-8 border border-primary/10 shadow-sm"
+              >
+                <h3 class="text-xl font-bold mb-2">Informar tu donación</h3>
+                <p class="text-sm text-slate-500 mb-8">
+                  Una vez que haya completado la transferencia bancaria, complete este formulario para que podamos reconocer su donación y enviarle su recibo.
+                </p>
+                <form class="space-y-6">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                      <label class="text-sm font-semibold">Nombre Completo</label>
+                      <input
+                        class="w-full rounded-lg border-primary/10 bg-background-light dark:bg-background-dark focus:border-primary focus:ring-primary/20 px-4 py-3 outline-none transition-all"
+                        placeholder="John Doe"
+                        type="text"
+                      />
+                    </div>
+                    <div class="space-y-2">
+                      <label class="text-sm font-semibold">Correo Electrónico</label>
+                      <input
+                        class="w-full rounded-lg border-primary/10 bg-background-light dark:bg-background-dark focus:border-primary focus:ring-primary/20 px-4 py-3 outline-none transition-all"
+                        placeholder="john@example.com"
+                        type="email"
+                      />
+                    </div>
+                  </div>
+                  <div class="space-y-2">
+                    <label class="text-sm font-semibold"
+                      >Monto de la donación ($)</label
+                    >
+                    <input
+                      class="w-full rounded-lg border-primary/10 bg-background-light dark:bg-background-dark focus:border-primary focus:ring-primary/20 px-4 py-3 outline-none transition-all"
+                      placeholder="0.000"
+                      type="number"
+                    />
+                  </div>
+                  <div class="space-y-2">
+                    <label class="text-sm font-semibold"
+                      >Subir Comprobante de Transferencia</label
+                    >
+                    <div class="relative group cursor-pointer">
+                      <input
+                        class="absolute inset-0 z-10 h-full w-full opacity-0 cursor-pointer"
+                        type="file"
+                      />
+                      <div
+                        class="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-primary/20 bg-primary/5 py-10 group-hover:border-primary/40 transition-colors"
+                      >
+                        <span
+                          class="material-symbols-outlined text-primary text-4xl mb-2"
+                          >cloud_upload</span
+                        >
+                        <p class="text-sm font-medium">
+                          Clic para subir o arrastrar y soltar
+                        </p>
+                        <p class="text-xs text-slate-400 mt-1">
+                          PDF, JPG, o PNG (Máx 5MB)
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    class="w-full rounded-lg bg-primary py-4 text-sm font-black uppercase tracking-widest text-background-dark shadow-xl shadow-primary/20 hover:scale-[1.01] active:scale-[0.98] transition-all"
+                    type="submit"
+                  >
+                    Enviar Informe de Donación
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+      <!-- Footer -->
+      <footer class="bg-slate-900 text-slate-300 py-12">
+        <div class="mx-auto max-w-7xl px-6">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+            <div class="col-span-1 md:col-span-2">
+              <div class="flex items-center gap-2 text-white mb-6">
+                <span class="material-symbols-outlined text-primary"
+                  >psychology</span
+                >
+                <span class="text-lg font-bold">Fundación Vive Tu Mente</span>
+              </div>
+              <p class="max-w-sm text-sm leading-relaxed">
+                Dedicada a romper el estigma en torno a la salud mental y
+                proporcionar sistemas de apoyo accesibles para comunidades
+                globales. Organización sin fines de lucro registrada #88273645.
+              </p>
+            </div>
+            <div>
+              <h4 class="text-white font-bold mb-4">Enlaces Rápidos</h4>
+              <ul class="space-y-2 text-sm">
+                <li>
+                  <a
+                    class="hover:text-primary transition-colors"
+                    href="/programs"
+                    >Programas</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="hover:text-primary transition-colors"
+                    href="/training"
+                    >Educación</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="hover:text-primary transition-colors"
+                    href="/about_us"
+                    >Sobre Nosotros</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="hover:text-primary transition-colors"
+                    href="/participate"
+                    >Participación</a
+                  >
+                </li>
+                <li>
+                  <a class="hover:text-primary transition-colors" href="/policy"
+                    >Política de Privacidad</a
+                  >
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="text-white font-bold mb-4">Contacto</h4>
+              <ul class="space-y-2 text-sm">
+                <li class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[16px]"
+                    >mail</span
+                  >
+                  soporte@tuautocuidado.cl
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[16px]"
+                    >call</span
+                  >
+                  +56 9 1234 5678
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div
+            class="mt-12 border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500"
+          >
+            <p>
+              © 2026 Fundación Vive Tu Mente. Todos los derechos reservados.
+            </p>
+            <div class="flex gap-6">
+              <a class="hover:text-primary" href="#">LinkedIn</a>
+              <a class="hover:text-primary" href="#">Instagram</a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
