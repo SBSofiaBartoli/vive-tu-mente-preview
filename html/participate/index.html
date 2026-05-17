@@ -59,6 +59,36 @@
         }
       }
     </style>
+    <style>
+      @keyframes vtm-pulse {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.45;
+          transform: scale(1.5);
+        }
+      }
+      @keyframes vtm-slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      #vtm-modal-ayuda.vtm-visible {
+        display: flex;
+        animation: vtm-slideUp 0.22s ease;
+      }
+      .vtm-pulse-dot {
+        animation: vtm-pulse 1.8s ease-in-out infinite;
+      }
+    </style>
     <title>Participación | Fundación Vive Tu Mente</title>
     <!-- Google tag (gtag.js) -->
     <script
@@ -475,5 +505,123 @@
         </footer>
       </div>
     </div>
+    <!-- BOTÓN FLOTANTE DE AYUDA -->
+    <div class="fixed bottom-7 right-7 z-[9999] flex flex-col items-end gap-3">
+      <!-- Modal con líneas de crisis -->
+      <div
+        id="vtm-modal-ayuda"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Líneas de ayuda en crisis"
+        class="hidden flex-col gap-4 w-96 bg-white rounded-2xl shadow-2xl p-5 border-t-4 border-primary"
+      >
+        <!-- Encabezado -->
+        <div class="flex justify-between items-start gap-2">
+          <p
+            class="font-display font-bold text-base text-slate-900 leading-snug"
+          >
+            ¿Necesitás ayuda ahora?
+          </p>
+          <button
+            onclick="vtmCerrarModal()"
+            aria-label="Cerrar"
+            class="text-slate-400 hover:text-primary transition-colors text-lg leading-none mt-0.5 flex-shrink-0"
+          >
+            ✕
+          </button>
+        </div>
+
+        <!-- Descripción -->
+        <p class="text-slate-500 text-sm leading-relaxed">
+          Si estás pasando por un momento difícil, hay personas capacitadas
+          esperando escucharte. Es gratis y confidencial.
+        </p>
+
+        <!-- Línea *4141 -->
+        <a
+          href="tel:*4141"
+          class="flex items-center gap-3 bg-background-light rounded-xl px-3 py-3 border border-slate-200 hover:border-primary hover:bg-primary/5 transition-all no-underline"
+        >
+          <span class="text-2xl flex-shrink-0">📞</span>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-sm font-bold text-slate-800"
+              >Línea Prevención del Suicidio</span
+            >
+            <span class="text-lg font-extrabold text-primary tracking-wide"
+              >*4141</span
+            >
+            <span class="text-xs text-slate-500"
+              >Ministerio de Salud · Gratis · 24/7</span
+            >
+          </div>
+        </a>
+
+        <!-- Línea 600 -->
+        <a
+          href="tel:6003607777"
+          class="flex items-center gap-3 bg-background-light rounded-xl px-3 py-3 border border-slate-200 hover:border-primary hover:bg-primary/5 transition-all no-underline"
+        >
+          <span class="text-2xl flex-shrink-0">🧠</span>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-sm font-bold text-slate-800"
+              >Salud Responde · Opción 2</span
+            >
+            <span class="text-lg font-extrabold text-primary tracking-wide"
+              >600 360 7777</span
+            >
+            <span class="text-xs text-slate-500"
+              >Psicólogos · Gratis · 24/7</span
+            >
+          </div>
+        </a>
+
+        <!-- Nota de emergencia -->
+        <p
+          class="text-xs text-slate-500 text-center border-t border-slate-100 pt-3 leading-relaxed"
+        >
+          Si estás en peligro inmediato,<br />
+          llamá al <strong class="text-slate-700">131</strong> (Ambulancia) o
+          acudí a urgencias.
+        </p>
+      </div>
+
+      <!-- Botón principal -->
+      <button
+        onclick="vtmToggleModal()"
+        aria-haspopup="dialog"
+        class="flex items-center gap-2.5 bg-primary text-background-dark font-bold text-sm px-5 py-3.5 rounded-full shadow-lg shadow-primary/40 hover:shadow-xl hover:shadow-primary/50 hover:-translate-y-0.5 transition-all"
+      >
+        <span
+          class="vtm-pulse-dot w-2 h-2 rounded-full bg-background-dark flex-shrink-0"
+        ></span>
+        ¿Necesitás ayuda ahora?
+      </button>
+    </div>
+
+    <script>
+      function vtmToggleModal() {
+        var modal = document.getElementById("vtm-modal-ayuda");
+        if (modal.classList.contains("vtm-visible")) {
+          vtmCerrarModal();
+        } else {
+          modal.classList.remove("hidden");
+          modal.classList.add("vtm-visible");
+        }
+      }
+
+      function vtmCerrarModal() {
+        var modal = document.getElementById("vtm-modal-ayuda");
+        modal.classList.remove("vtm-visible");
+        modal.classList.add("hidden");
+      }
+
+      // Cerrar si el usuario hace click fuera del componente
+      document.addEventListener("click", function (e) {
+        var contenedor = document.querySelector(".fixed.bottom-7.right-7");
+        if (contenedor && !contenedor.contains(e.target)) {
+          vtmCerrarModal();
+        }
+      });
+    </script>
   </body>
 </html>
