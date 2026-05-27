@@ -230,6 +230,7 @@
             class="mb-10 flex border-b border-primary/10 overflow-x-auto no-scrollbar"
           >
             <button
+              type="button"
               class="flex items-center gap-2 border-b-4 border-primary px-6 py-4 text-sm font-bold text-slate-900 dark:text-slate-100"
             >
               <span class="material-symbols-outlined text-[20px]"
@@ -238,6 +239,7 @@
               Transferencia Bancaria
             </button>
             <button
+              type="button"
               class="flex items-center gap-2 border-b-4 border-transparent px-6 py-4 text-sm font-medium text-slate-400 cursor-not-allowed whitespace-nowrap"
             >
               <span class="material-symbols-outlined text-[20px]"
@@ -246,6 +248,7 @@
               Pago en Línea (Próximamente)
             </button>
             <button
+              type="button"
               class="flex items-center gap-2 border-b-4 border-transparent px-6 py-4 text-sm font-medium text-slate-400 cursor-not-allowed whitespace-nowrap"
             >
               <span class="material-symbols-outlined text-[20px]"
@@ -402,6 +405,7 @@
                     <div class="relative group cursor-pointer">
                       <input
                         class="absolute inset-0 z-10 h-full w-full opacity-0 cursor-pointer"
+                        aria-describedby="donation-receipt-help"
                         id="donation-receipt"
                         name="donation_receipt"
                         type="file"
@@ -416,7 +420,10 @@
                         <p class="text-sm font-medium">
                           Clic para subir o arrastrar y soltar
                         </p>
-                        <p class="text-xs text-slate-400 mt-1">
+                        <p
+                          class="text-xs text-slate-400 mt-1"
+                          id="donation-receipt-help"
+                        >
                           PDF, JPG, o PNG (Máx 5MB)
                         </p>
                       </div>
