@@ -4,6 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta name="google" content="notranslate" />
     <meta
       name="description"
       content="Fundación Vive Tu Mente impulsa bienestar emocional, educación, emprendimiento y oportunidades a través de programas, talleres y alianzas con impacto social."
@@ -69,6 +70,19 @@
         select:focus-visible {
           outline: 3px solid #40b2b2;
           outline-offset: 3px;
+        }
+        .material-symbols-outlined {
+          font-family: "Material Symbols Outlined" !important;
+          font-weight: normal;
+          font-style: normal;
+          line-height: 1;
+          letter-spacing: normal;
+          text-transform: none;
+          white-space: nowrap;
+          direction: ltr;
+          font-feature-settings: "liga";
+          -webkit-font-feature-settings: "liga";
+          -webkit-font-smoothing: antialiased;
         }
       }
     </style>
@@ -617,9 +631,16 @@
           <div>
             <h4 class="text-white font-bold mb-4">Contacto</h4>
             <ul class="space-y-2 text-sm">
-              <li class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-[16px]">mail</span>
-                contacto@tuautocuidado.cl
+              <li class="flex min-w-0 items-start gap-2">
+                <span class="material-symbols-outlined text-[16px] shrink-0"
+                  >mail</span
+                >
+                <a
+                  class="min-w-0 break-all hover:text-primary transition-colors"
+                  href="mailto:contacto@tuautocuidado.cl"
+                >
+                  contacto@tuautocuidado.cl
+                </a>
               </li>
               <!-- <li class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-[16px]"
@@ -627,34 +648,39 @@
                 >
                 +56 9 1234 5678
               </li> -->
+              <li class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[16px] shrink-0"
+                  >link</span
+                >
+                <a
+                  class="hover:text-primary transition-colors"
+                  target="_blank"
+                  href="https://www.linkedin.com/company/vivetumente/"
+                >
+                  LinkedIn
+                </a>
+              </li>
             </ul>
           </div>
         </div>
         <div
-          class="mt-12 border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500"
+          class="mt-12 border-t border-slate-800 pt-8 text-center text-xs text-slate-500"
         >
           <p>© 2026 Fundación Vive Tu Mente. Todos los derechos reservados.</p>
-          <div class="flex gap-6">
-            <a
-              class="hover:text-primary"
-              target="_blank"
-              href="https://www.linkedin.com/company/vivetumente/"
-              >LinkedIn</a
-            >
-            <!-- <a class="hover:text-primary" href="#">Instagram</a> -->
-          </div>
         </div>
       </div>
     </footer>
     <!-- BOTÓN FLOTANTE DE AYUDA -->
-    <div class="fixed bottom-7 right-7 z-[9999] flex flex-col items-end gap-3">
+    <div
+      class="fixed bottom-4 right-4 z-[9999] flex flex-col items-end gap-3 sm:bottom-7 sm:right-7"
+    >
       <!-- Modal con líneas de crisis -->
       <div
         id="vtm-modal-ayuda"
         role="dialog"
         aria-modal="true"
         aria-label="Líneas de ayuda en crisis"
-        class="hidden flex-col gap-4 w-96 bg-white rounded-2xl shadow-2xl p-5 border-t-4 border-primary"
+        class="hidden flex-col gap-4 w-[calc(100vw-2rem)] sm:w-96 bg-white rounded-2xl shadow-2xl p-5 border-t-4 border-primary"
       >
         <!-- Encabezado -->
         <div class="flex justify-between items-start gap-2">
@@ -730,7 +756,8 @@
       <button
         onclick="vtmToggleModal()"
         aria-haspopup="dialog"
-        class="flex items-center gap-2.5 bg-primary text-background-dark font-bold text-sm px-5 py-3.5 rounded-full shadow-lg shadow-primary/40 hover:shadow-xl hover:shadow-primary/50 hover:-translate-y-0.5 transition-all"
+        aria-label="Necesitás ayuda ahora"
+        class="flex items-center gap-2.5 bg-primary text-background-dark font-bold text-sm px-4 py-4 rounded-full shadow-lg shadow-primary/40 hover:shadow-xl hover:shadow-primary/50 hover:-translate-y-0.5 transition-all sm:px-5 sm:py-3.5"
       >
         <span
           class="vtm-pulse-dot w-2 h-2 rounded-full bg-background-dark flex-shrink-0"
