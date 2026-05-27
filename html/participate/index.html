@@ -272,7 +272,7 @@
               <div
                 class="bg-white dark:bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-200 dark:border-slate-800"
               >
-                <form action="#" class="space-y-6">
+                <form action="#" method="post" class="space-y-6">
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="flex flex-col gap-2">
                       <label
@@ -283,7 +283,9 @@
                       <input
                         class="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
                         id="name"
+                        name="name"
                         placeholder="María González"
+                        required
                         type="text"
                       />
                     </div>
@@ -296,7 +298,9 @@
                       <input
                         class="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
                         id="email"
+                        name="email"
                         placeholder="nombre@correo.com"
+                        required
                         type="email"
                       />
                     </div>
@@ -311,6 +315,7 @@
                       <input
                         class="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
                         id="phone"
+                        name="phone"
                         placeholder="+56 9 0000 0000"
                         type="tel"
                       />
@@ -324,8 +329,12 @@
                       <select
                         class="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all appearance-none"
                         id="interest"
+                        name="interest"
+                        required
                       >
-                        <option value="">Seleccioná una opción</option>
+                        <option value="" disabled selected>
+                          Seleccioná una opción
+                        </option>
                         <option value="programs">
                           Registrarse para programas
                         </option>
@@ -348,6 +357,7 @@
                     <textarea
                       class="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all resize-none"
                       id="message"
+                      name="message"
                       placeholder="Contanos cómo te gustaría participar..."
                       rows="5"
                     ></textarea>
