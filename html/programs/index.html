@@ -4,6 +4,11 @@
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta name="google" content="notranslate" />
+    <meta
+      name="description"
+      content="Conocé los programas de Vive Tu Mente: Escuela de Oficios, Desafíate a Ti Mismo y Línea Invisible para fortalecer habilidades, bienestar y oportunidades."
+    />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700&display=swap"
@@ -45,18 +50,70 @@
       @layer base {
         h1,
         h2,
-        h3 {
-          font-family: "Playfair Display", serif;
-        }
+        h3,
         b,
-        strong {
-          font-family: "Playfair Display", serif;
-        }
+        strong,
         p,
         button,
-        a {
+        a,
+        label,
+        input,
+        textarea,
+        select {
           font-family: "DM Sans", sans-serif;
         }
+        a:focus-visible,
+        button:focus-visible,
+        summary:focus-visible,
+        input:focus-visible,
+        textarea:focus-visible,
+        select:focus-visible {
+          outline: 3px solid #40b2b2;
+          outline-offset: 3px;
+        }
+        .material-symbols-outlined {
+          font-family: "Material Symbols Outlined" !important;
+          font-weight: normal;
+          font-style: normal;
+          line-height: 1;
+          letter-spacing: normal;
+          text-transform: none;
+          white-space: nowrap;
+          direction: ltr;
+          font-feature-settings: "liga";
+          -webkit-font-feature-settings: "liga";
+          -webkit-font-smoothing: antialiased;
+        }
+      }
+    </style>
+    <style>
+      @keyframes vtm-pulse {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.45;
+          transform: scale(1.5);
+        }
+      }
+      @keyframes vtm-slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      #vtm-modal-ayuda.vtm-visible {
+        display: flex;
+        animation: vtm-slideUp 0.22s ease;
+      }
+      .vtm-pulse-dot {
+        animation: vtm-pulse 1.8s ease-in-out infinite;
       }
     </style>
     <title>Programas | Fundación Vive Tu Mente</title>
@@ -88,6 +145,7 @@
             <div class="flex items-center gap-3">
               <img
                 src="/public/images/vive-tu-mente.png"
+                alt="Fundación Vive Tu Mente"
                 data-alt="Fundación Vive Tu Mente"
                 class="h-12 w-auto"
               />
@@ -96,13 +154,16 @@
                 >Fundación Vive Tu Mente</span
               >
             </div>
-            <nav class="hidden md:flex items-center gap-8">
+            <nav class="hidden lg:flex items-center gap-8">
               <a
                 class="text-sm font-semibold hover:text-primary transition-colors"
                 href="/"
                 >Inicio</a
               >
-              <a class="text-primary text-sm font-bold" href="/programs"
+              <a
+                class="text-primary text-sm font-bold"
+                href="/programs"
+                aria-current="page"
                 >Programas</a
               >
               <a
@@ -122,6 +183,58 @@
               >
             </nav>
             <div class="flex items-center gap-4">
+              <details class="relative lg:hidden group/mobile-menu">
+                <summary
+                  class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-lg border border-primary/20 text-slate-900 transition-colors hover:bg-primary/10 [&::-webkit-details-marker]:hidden"
+                  aria-label="Abrir menú"
+                >
+                  <span
+                    class="material-symbols-outlined group-open/mobile-menu:hidden"
+                  >
+                    menu
+                  </span>
+                  <span
+                    class="material-symbols-outlined hidden group-open/mobile-menu:inline"
+                  >
+                    close
+                  </span>
+                </summary>
+
+                <div
+                  class="absolute right-0 top-12 z-[60] w-56 rounded-xl border border-slate-200 bg-white p-3 shadow-xl"
+                >
+                  <a
+                    class="block rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary/10"
+                    href="/"
+                  >
+                    Inicio
+                  </a>
+                  <a
+                    class="block rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary/10"
+                    href="/programs"
+                  >
+                    Programas
+                  </a>
+                  <a
+                    class="block rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary/10"
+                    href="/training"
+                  >
+                    Educación
+                  </a>
+                  <a
+                    class="block rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary/10"
+                    href="/about_us"
+                  >
+                    Sobre Nosotros
+                  </a>
+                  <a
+                    class="block rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary/10"
+                    href="/participate#formulario"
+                  >
+                    Participar
+                  </a>
+                </div>
+              </details>
               <a
                 class="bg-primary text-background-dark px-6 py-2 rounded-lg font-bold text-sm hover:shadow-lg hover:shadow-primary/20 transition-all"
                 href="/donations"
@@ -171,6 +284,7 @@
         </section>
         <!-- Invisible Line Section -->
         <section
+          id="linea-invisible"
           class="px-6 md:px-20 py-20 bg-background-dark text-white overflow-hidden relative"
         >
           <div
@@ -200,7 +314,7 @@
                 >
                   Nuevo Programa
                 </div>
-                <h2 class="text-4xl font-bold">Linea Invisible</h2>
+                <h2 class="font-display text-4xl font-bold">Linea Invisible</h2>
                 <p class="text-slate-400 text-lg leading-relaxed">
                   Más allá de las habilidades evidentes, existen talentos
                   ocultos esperando ser descubiertos. Nuestra metodología 'Linea
@@ -232,13 +346,18 @@
           </div>
         </section>
         <!-- School of Trades Section -->
-        <section class="bg-slate-100 dark:bg-slate-900/50 px-6 md:px-20 py-20">
+        <section
+          id="escuela-oficios"
+          class="bg-slate-100 dark:bg-slate-900/50 px-6 md:px-20 py-20"
+        >
           <div class="max-w-7xl mx-auto">
             <div class="flex items-center gap-3 mb-4">
               <span class="material-symbols-outlined text-primary text-3xl"
                 >construction</span
               >
-              <h2 class="text-3xl font-bold">Escuela de Oficios</h2>
+              <h2 class="font-display text-3xl font-bold">
+                Escuela de Oficios
+              </h2>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div class="space-y-6">
@@ -275,11 +394,12 @@
                     <span>Asistencia directa para la colocación laboral</span>
                   </li>
                 </ul>
-                <button
-                  class="bg-primary text-background-dark px-8 py-3 rounded-lg font-bold"
+                <a
+                  class="inline-flex bg-primary text-background-dark px-8 py-3 rounded-lg font-bold hover:bg-primary/90 transition-colors"
+                  href="/participate#formulario"
                 >
-                  Learn More About Trades
-                </button>
+                  Quiero más información
+                </a>
               </div>
               <div
                 class="relative h-[400px] rounded-xl overflow-hidden shadow-2xl"
@@ -296,10 +416,12 @@
           </div>
         </section>
         <!-- Challenge Yourself Section -->
-        <section class="px-6 md:px-20 py-20">
+        <section id="desafiate" class="px-6 md:px-20 py-20">
           <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16">
-              <h2 class="text-4xl font-black mb-4">Desafíate a ti mismo</h2>
+              <h2 class="font-display text-4xl font-black mb-4">
+                Desafíate a ti mismo
+              </h2>
               <p class="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
                 Elige un camino que se adapte a tu etapa de vida y tus
                 ambiciones. Nuestros programas especializados están diseñados
@@ -372,6 +494,336 @@
             </div>
           </div>
         </section>
+
+        <!-- Testimonios -->
+        <section class="py-24" id="testimonios">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+              <h2 class="text-3xl lg:text-4xl font-extrabold mb-4">
+                Lo que dicen quienes vivieron la experiencia
+              </h2>
+              <p class="text-slate-600 dark:text-slate-400 text-lg">
+                Historias reales de personas que transformaron su vida con Vive
+                Tu Mente.
+              </p>
+            </div>
+
+            <div class="relative" data-testimonials-carousel>
+              <div class="overflow-hidden">
+                <div
+                  class="flex transition-transform duration-700 ease-out"
+                  data-testimonials-track
+                >
+                  <!-- Testimonio 1 -->
+                  <article class="w-full md:w-1/2 lg:w-1/3 shrink-0 px-3">
+                    <div
+                      class="h-full bg-white dark:bg-slate-800/50 rounded-2xl p-8 border border-slate-100 dark:border-slate-800 flex flex-col gap-6 shadow-sm"
+                    >
+                      <p
+                        class="text-slate-600 dark:text-slate-400 leading-relaxed italic"
+                      >
+                        "Antes no sabía por dónde empezar. La Escuela de Oficios
+                        me dio herramientas concretas y la confianza para
+                        animarme a emprender. Hoy tengo mi propio taller de
+                        carpintería."
+                      </p>
+                      <div class="flex items-center gap-4 mt-auto">
+                        <div
+                          class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0"
+                        >
+                          <span class="material-symbols-outlined text-primary"
+                            >person</span
+                          >
+                        </div>
+                        <div>
+                          <p
+                            class="font-bold text-slate-900 dark:text-slate-100"
+                          >
+                            Martín Soto
+                          </p>
+                          <p class="text-sm text-slate-500">
+                            Participante · Escuela de Oficios
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+
+                  <!-- Testimonio 2 -->
+                  <article class="w-full md:w-1/2 lg:w-1/3 shrink-0 px-3">
+                    <div
+                      class="h-full bg-white dark:bg-slate-800/50 rounded-2xl p-8 border border-slate-100 dark:border-slate-800 flex flex-col gap-6 shadow-sm"
+                    >
+                      <p
+                        class="text-slate-600 dark:text-slate-400 leading-relaxed italic"
+                      >
+                        "El programa me ayudó a entender lo que sentía y a pedir
+                        ayuda sin vergüenza. Aprendí que cuidar mi salud mental
+                        es tan importante como cualquier otra cosa."
+                      </p>
+                      <div class="flex items-center gap-4 mt-auto">
+                        <div
+                          class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0"
+                        >
+                          <span class="material-symbols-outlined text-primary"
+                            >person</span
+                          >
+                        </div>
+                        <div>
+                          <p
+                            class="font-bold text-slate-900 dark:text-slate-100"
+                          >
+                            Valentina Reyes
+                          </p>
+                          <p class="text-sm text-slate-500">
+                            Participante · Desafíate a Ti Mismo
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+
+                  <!-- Testimonio 3 -->
+                  <article class="w-full md:w-1/2 lg:w-1/3 shrink-0 px-3">
+                    <div
+                      class="h-full bg-white dark:bg-slate-800/50 rounded-2xl p-8 border border-slate-100 dark:border-slate-800 flex flex-col gap-6 shadow-sm"
+                    >
+                      <p
+                        class="text-slate-600 dark:text-slate-400 leading-relaxed italic"
+                      >
+                        "Línea Invisible me mostró cómo conectar mi mundo
+                        emocional con mi desarrollo profesional. Salí del
+                        programa con claridad y con herramientas que uso todos
+                        los días."
+                      </p>
+                      <div class="flex items-center gap-4 mt-auto">
+                        <div
+                          class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0"
+                        >
+                          <span class="material-symbols-outlined text-primary"
+                            >person</span
+                          >
+                        </div>
+                        <div>
+                          <p
+                            class="font-bold text-slate-900 dark:text-slate-100"
+                          >
+                            Camila Fuentes
+                          </p>
+                          <p class="text-sm text-slate-500">
+                            Participante · Línea Invisible
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-center gap-4 mt-8">
+                <button
+                  aria-label="Ver testimonio anterior"
+                  class="w-11 h-11 rounded-full border border-primary/30 text-primary flex items-center justify-center hover:bg-primary hover:text-background-dark transition-colors"
+                  type="button"
+                  data-testimonials-prev
+                >
+                  <span class="material-symbols-outlined">arrow_back</span>
+                </button>
+
+                <div class="flex items-center gap-2" data-testimonials-dots>
+                  <button
+                    aria-label="Ver testimonio 1"
+                    class="w-2.5 h-2.5 rounded-full bg-primary transition-all"
+                    type="button"
+                  ></button>
+                  <button
+                    aria-label="Ver testimonio 2"
+                    class="w-2.5 h-2.5 rounded-full bg-primary/30 transition-all"
+                    type="button"
+                  ></button>
+                  <button
+                    aria-label="Ver testimonio 3"
+                    class="w-2.5 h-2.5 rounded-full bg-primary/30 transition-all"
+                    type="button"
+                  ></button>
+                </div>
+
+                <button
+                  aria-label="Ver testimonio siguiente"
+                  class="w-11 h-11 rounded-full border border-primary/30 text-primary flex items-center justify-center hover:bg-primary hover:text-background-dark transition-colors"
+                  type="button"
+                  data-testimonials-next
+                >
+                  <span class="material-symbols-outlined">arrow_forward</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <script>
+          (() => {
+            const carousel = document.querySelector(
+              "[data-testimonials-carousel]",
+            );
+
+            if (!carousel) return;
+
+            const track = carousel.querySelector("[data-testimonials-track]");
+            const slides = Array.from(track.children);
+            const previousButton = carousel.querySelector(
+              "[data-testimonials-prev]",
+            );
+            const nextButton = carousel.querySelector(
+              "[data-testimonials-next]",
+            );
+            const dots = Array.from(
+              carousel.querySelector("[data-testimonials-dots]").children,
+            );
+
+            let currentIndex = 0;
+            let autoplayId;
+
+            const updateCarousel = () => {
+              track.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+              dots.forEach((dot, index) => {
+                dot.classList.toggle("bg-primary", index === currentIndex);
+                dot.classList.toggle("bg-primary/30", index !== currentIndex);
+              });
+            };
+
+            const goToSlide = (index) => {
+              currentIndex = (index + slides.length) % slides.length;
+              updateCarousel();
+            };
+
+            const getVisibleSlides = () => {
+              if (window.innerWidth >= 1024) return 3;
+              if (window.innerWidth >= 768) return 2;
+              return 1;
+            };
+
+            const hasOverflow = () => slides.length > getVisibleSlides();
+
+            const startAutoplay = () => {
+              if (!hasOverflow()) return;
+
+              autoplayId = window.setInterval(() => {
+                goToSlide(currentIndex + 1);
+              }, 6000);
+            };
+
+            const restartAutoplay = () => {
+              window.clearInterval(autoplayId);
+              startAutoplay();
+            };
+
+            previousButton.addEventListener("click", () => {
+              goToSlide(currentIndex - 1);
+              restartAutoplay();
+            });
+
+            nextButton.addEventListener("click", () => {
+              goToSlide(currentIndex + 1);
+              restartAutoplay();
+            });
+
+            dots.forEach((dot, index) => {
+              dot.addEventListener("click", () => {
+                goToSlide(index);
+                restartAutoplay();
+              });
+            });
+
+            const controlsDisabled = !hasOverflow();
+
+            previousButton.disabled = controlsDisabled;
+            nextButton.disabled = controlsDisabled;
+
+            previousButton.classList.toggle("hidden", controlsDisabled);
+            nextButton.classList.toggle("hidden", controlsDisabled);
+
+            carousel.addEventListener("mouseenter", () => {
+              window.clearInterval(autoplayId);
+            });
+
+            carousel.addEventListener("mouseleave", startAutoplay);
+
+            updateCarousel();
+            startAutoplay();
+          })();
+        </script>
+
+        <!-- FAQ Section -->
+        <section class="px-6 md:px-20 py-20 bg-slate-100 dark:bg-slate-900/50">
+          <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-12">
+              <h2 class="text-3xl lg:text-4xl font-extrabold mb-4">
+                Preguntas frecuentes
+              </h2>
+              <p class="text-slate-600 dark:text-slate-400 text-lg">
+                Resolvemos algunas dudas comunes para ayudarte a dar el primer
+                paso.
+              </p>
+            </div>
+
+            <div class="space-y-4">
+              <div
+                class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-100 dark:border-slate-700"
+              >
+                <h3 class="font-bold text-lg mb-2">
+                  ¿Necesito experiencia previa para participar?
+                </h3>
+                <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+                  No. Los programas están pensados para acompañar distintos
+                  puntos de partida. Lo importante es tener interés en aprender,
+                  crecer o desarrollar nuevas herramientas.
+                </p>
+              </div>
+
+              <div
+                class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-100 dark:border-slate-700"
+              >
+                <h3 class="font-bold text-lg mb-2">
+                  ¿Cómo sé qué programa es para mí?
+                </h3>
+                <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+                  Podés revisar la descripción de cada programa y escribirnos
+                  desde el formulario de participación. El equipo podrá
+                  orientarte según tus intereses y necesidades.
+                </p>
+              </div>
+
+              <div
+                class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-100 dark:border-slate-700"
+              >
+                <h3 class="font-bold text-lg mb-2">
+                  ¿Los programas son presenciales o virtuales?
+                </h3>
+                <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+                  La modalidad puede variar según el programa, el taller y la
+                  disponibilidad de la fundación. Se recomienda consultar por
+                  las próximas fechas y formatos disponibles.
+                </p>
+              </div>
+
+              <div
+                class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-100 dark:border-slate-700"
+              >
+                <h3 class="font-bold text-lg mb-2">
+                  ¿Puedo participar como organización o empresa?
+                </h3>
+                <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+                  Sí. Las organizaciones pueden colaborar, generar alianzas o
+                  contratar talleres para apoyar el trabajo de la fundación y
+                  ampliar su impacto social.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <!-- Contact/CTA Section -->
         <section class="px-6 md:px-20 py-24">
           <div
@@ -393,7 +845,7 @@
                 class="w-full sm:w-auto bg-background-dark text-white px-10 py-4 rounded-xl font-bold hover:opacity-90"
                 href="/participate"
               >
-                Participar Ahora
+                Participá Ahora
               </a>
               <a
                 class="bg-white text-background-dark px-8 py-4 rounded-xl font-bold flex items-center gap-2 hover:shadow-xl transition-all"
@@ -413,6 +865,7 @@
               <div class="flex items-center gap-2 text-white mb-6">
                 <img
                   src="/public/images/vive-tu-mente.png"
+                  alt="Fundación Vive Tu Mente"
                   data-alt="Fundación Vive Tu Mente"
                   class="h-8 w-auto"
                 />
@@ -442,6 +895,11 @@
                   >
                 </li>
                 <li>
+                  <a class="hover:text-primary transition-colors" href="/blog"
+                    >Blog</a
+                  >
+                </li>
+                <li>
                   <a
                     class="hover:text-primary transition-colors"
                     href="/about_us"
@@ -451,7 +909,7 @@
                 <li>
                   <a
                     class="hover:text-primary transition-colors"
-                    href="/participate"
+                    href="/participate#formulario"
                     >Participación</a
                   >
                 </li>
@@ -465,11 +923,16 @@
             <div>
               <h4 class="text-white font-bold mb-4">Contacto</h4>
               <ul class="space-y-2 text-sm">
-                <li class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-[16px]"
+                <li class="flex min-w-0 items-start gap-2">
+                  <span class="material-symbols-outlined text-[16px] shrink-0"
                     >mail</span
                   >
-                  contacto@tuautocuidado.cl
+                  <a
+                    class="min-w-0 break-all hover:text-primary transition-colors"
+                    href="mailto:contacto@tuautocuidado.cl"
+                  >
+                    contacto@tuautocuidado.cl
+                  </a>
                 </li>
                 <!-- <li class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-[16px]"
@@ -477,27 +940,151 @@
                 >
                 +56 9 1234 5678
               </li> -->
+                <li class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[16px] shrink-0"
+                    >link</span
+                  >
+                  <a
+                    class="hover:text-primary transition-colors"
+                    target="_blank"
+                    href="https://www.linkedin.com/company/vivetumente/"
+                  >
+                    LinkedIn
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
           <div
-            class="mt-12 border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500"
+            class="mt-12 border-t border-slate-800 pt-8 text-center text-xs text-slate-500"
           >
             <p>
               © 2026 Fundación Vive Tu Mente. Todos los derechos reservados.
             </p>
-            <div class="flex gap-6">
-              <a
-                class="hover:text-primary"
-                target="_blank"
-                href="https://www.linkedin.com/company/vivetumente/"
-                >LinkedIn</a
-              >
-              <!-- <a class="hover:text-primary" href="#">Instagram</a> -->
-            </div>
           </div>
         </div>
       </footer>
     </div>
+    <!-- BOTÓN FLOTANTE DE AYUDA -->
+    <div
+      class="fixed bottom-4 right-4 z-[9999] flex flex-col items-end gap-3 sm:bottom-7 sm:right-7"
+    >
+      <!-- Modal con líneas de crisis -->
+      <div
+        id="vtm-modal-ayuda"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Líneas de ayuda en crisis"
+        class="hidden flex-col gap-4 w-[calc(100vw-2rem)] sm:w-96 bg-white rounded-2xl shadow-2xl p-5 border-t-4 border-primary"
+      >
+        <!-- Encabezado -->
+        <div class="flex justify-between items-start gap-2">
+          <p
+            class="font-display font-bold text-base text-slate-900 leading-snug"
+          >
+            ¿Necesitás ayuda ahora?
+          </p>
+          <button
+            onclick="vtmCerrarModal()"
+            aria-label="Cerrar"
+            class="text-slate-400 hover:text-primary transition-colors text-lg leading-none mt-0.5 flex-shrink-0"
+          >
+            ✕
+          </button>
+        </div>
+
+        <!-- Descripción -->
+        <p class="text-slate-500 text-sm leading-relaxed">
+          Si estás pasando por un momento difícil, hay personas capacitadas
+          esperando escucharte. Es gratis y confidencial.
+        </p>
+
+        <!-- Línea *4141 -->
+        <a
+          href="tel:*4141"
+          class="flex items-center gap-3 bg-background-light rounded-xl px-3 py-3 border border-slate-200 hover:border-primary hover:bg-primary/5 transition-all no-underline"
+        >
+          <span class="text-2xl flex-shrink-0">📞</span>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-sm font-bold text-slate-800"
+              >Línea Prevención del Suicidio</span
+            >
+            <span class="text-lg font-extrabold text-primary tracking-wide"
+              >*4141</span
+            >
+            <span class="text-xs text-slate-500"
+              >Ministerio de Salud · Gratis · 24/7</span
+            >
+          </div>
+        </a>
+
+        <!-- Línea 600 -->
+        <a
+          href="tel:6003607777"
+          class="flex items-center gap-3 bg-background-light rounded-xl px-3 py-3 border border-slate-200 hover:border-primary hover:bg-primary/5 transition-all no-underline"
+        >
+          <span class="text-2xl flex-shrink-0">🧠</span>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-sm font-bold text-slate-800"
+              >Salud Responde · Opción 2</span
+            >
+            <span class="text-lg font-extrabold text-primary tracking-wide"
+              >600 360 7777</span
+            >
+            <span class="text-xs text-slate-500"
+              >Psicólogos · Gratis · 24/7</span
+            >
+          </div>
+        </a>
+
+        <!-- Nota de emergencia -->
+        <p
+          class="text-xs text-slate-500 text-center border-t border-slate-100 pt-3 leading-relaxed"
+        >
+          Si estás en peligro inmediato,<br />
+          llamá al <strong class="text-slate-700">131</strong> (Ambulancia) o
+          acudí a urgencias.
+        </p>
+      </div>
+
+      <!-- Botón principal -->
+      <button
+        onclick="vtmToggleModal()"
+        aria-haspopup="dialog"
+        aria-label="Necesitás ayuda ahora"
+        class="flex items-center gap-2.5 bg-primary text-background-dark font-bold text-sm px-4 py-4 rounded-full shadow-lg shadow-primary/40 hover:shadow-xl hover:shadow-primary/50 hover:-translate-y-0.5 transition-all sm:px-5 sm:py-3.5"
+      >
+        <span
+          class="vtm-pulse-dot w-2 h-2 rounded-full bg-background-dark flex-shrink-0"
+        ></span>
+        ¿Necesitás ayuda ahora?
+      </button>
+    </div>
+
+    <script>
+      function vtmToggleModal() {
+        var modal = document.getElementById("vtm-modal-ayuda");
+        if (modal.classList.contains("vtm-visible")) {
+          vtmCerrarModal();
+        } else {
+          modal.classList.remove("hidden");
+          modal.classList.add("vtm-visible");
+        }
+      }
+
+      function vtmCerrarModal() {
+        var modal = document.getElementById("vtm-modal-ayuda");
+        modal.classList.remove("vtm-visible");
+        modal.classList.add("hidden");
+      }
+
+      // Cerrar si el usuario hace click fuera del componente
+      document.addEventListener("click", function (e) {
+        var contenedor = document.querySelector(".fixed.bottom-7.right-7");
+        if (contenedor && !contenedor.contains(e.target)) {
+          vtmCerrarModal();
+        }
+      });
+    </script>
   </body>
 </html>

@@ -4,6 +4,11 @@
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta name="google" content="notranslate" />
+    <meta
+      name="description"
+      content="Fundación Vive Tu Mente impulsa bienestar emocional, educación, emprendimiento y oportunidades a través de programas, talleres y alianzas con impacto social."
+    />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700&display=swap"
@@ -45,18 +50,70 @@
       @layer base {
         h1,
         h2,
-        h3 {
-          font-family: "Playfair Display", serif;
-        }
+        h3,
         b,
-        strong {
-          font-family: "Playfair Display", serif;
-        }
+        strong,
         p,
         button,
-        a {
+        a,
+        label,
+        input,
+        textarea,
+        select {
           font-family: "DM Sans", sans-serif;
         }
+        a:focus-visible,
+        button:focus-visible,
+        summary:focus-visible,
+        input:focus-visible,
+        textarea:focus-visible,
+        select:focus-visible {
+          outline: 3px solid #40b2b2;
+          outline-offset: 3px;
+        }
+        .material-symbols-outlined {
+          font-family: "Material Symbols Outlined" !important;
+          font-weight: normal;
+          font-style: normal;
+          line-height: 1;
+          letter-spacing: normal;
+          text-transform: none;
+          white-space: nowrap;
+          direction: ltr;
+          font-feature-settings: "liga";
+          -webkit-font-feature-settings: "liga";
+          -webkit-font-smoothing: antialiased;
+        }
+      }
+    </style>
+    <style>
+      @keyframes vtm-pulse {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.45;
+          transform: scale(1.5);
+        }
+      }
+      @keyframes vtm-slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      #vtm-modal-ayuda.vtm-visible {
+        display: flex;
+        animation: vtm-slideUp 0.22s ease;
+      }
+      .vtm-pulse-dot {
+        animation: vtm-pulse 1.8s ease-in-out infinite;
       }
     </style>
     <title>Fundación Vive Tu Mente</title>
@@ -87,6 +144,7 @@
           <div class="flex items-center gap-3">
             <img
               src="/public/images/vive-tu-mente.png"
+              alt="Fundación Vive Tu Mente"
               data-alt="Fundación Vive Tu Mente"
               class="h-12 w-auto"
             />
@@ -95,8 +153,13 @@
               >Fundación Vive Tu Mente</span
             >
           </div>
-          <nav class="hidden md:flex items-center gap-8">
-            <a class="text-primary text-sm font-bold" href="/">Inicio</a>
+          <nav class="hidden lg:flex items-center gap-8">
+            <a
+              class="text-primary text-sm font-bold"
+              href="/"
+              aria-current="page"
+              >Inicio</a
+            >
             <a
               class="text-sm font-semibold hover:text-primary transition-colors"
               href="/programs"
@@ -119,6 +182,58 @@
             >
           </nav>
           <div class="flex items-center gap-4">
+            <details class="relative lg:hidden group/mobile-menu">
+              <summary
+                class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-lg border border-primary/20 text-slate-900 transition-colors hover:bg-primary/10 [&::-webkit-details-marker]:hidden"
+                aria-label="Abrir menú"
+              >
+                <span
+                  class="material-symbols-outlined group-open/mobile-menu:hidden"
+                >
+                  menu
+                </span>
+                <span
+                  class="material-symbols-outlined hidden group-open/mobile-menu:inline"
+                >
+                  close
+                </span>
+              </summary>
+
+              <div
+                class="absolute right-0 top-12 z-[60] w-56 rounded-xl border border-slate-200 bg-white p-3 shadow-xl"
+              >
+                <a
+                  class="block rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary/10"
+                  href="/"
+                >
+                  Inicio
+                </a>
+                <a
+                  class="block rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary/10"
+                  href="/programs"
+                >
+                  Programas
+                </a>
+                <a
+                  class="block rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary/10"
+                  href="/training"
+                >
+                  Educación
+                </a>
+                <a
+                  class="block rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary/10"
+                  href="/about_us"
+                >
+                  Sobre Nosotros
+                </a>
+                <a
+                  class="block rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary/10"
+                  href="/participate#formulario"
+                >
+                  Participar
+                </a>
+              </div>
+            </details>
             <a
               class="bg-primary text-background-dark px-6 py-2 rounded-lg font-bold text-sm hover:shadow-lg hover:shadow-primary/20 transition-all"
               href="/donations"
@@ -141,7 +256,7 @@
                   >Empoderando el Potencial</span
                 >
                 <h1
-                  class="text-5xl lg:text-7xl font-black leading-tight tracking-tight text-slate-900 dark:text-slate-100"
+                  class="font-display text-5xl lg:text-7xl font-black leading-tight tracking-tight text-slate-900 dark:text-slate-100"
                 >
                   Vive Tu <span class="text-primary">Mente</span>
                 </h1>
@@ -158,16 +273,16 @@
                   class="bg-primary text-background-dark px-8 py-4 rounded-xl font-bold text-base hover:scale-105 transition-transform flex items-center gap-2"
                   href="/programs"
                 >
-                  Conoce nuestros programas
+                  Conocé nuestros programas
                   <span class="material-symbols-outlined text-xl"
                     >arrow_forward</span
                   >
                 </a>
                 <a
                   class="bg-slate-200 dark:bg-slate-800 px-8 py-4 rounded-xl font-bold text-base hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors"
-                  href="/participate"
+                  href="/participate#formulario"
                 >
-                  Participa
+                  Participá
                 </a>
               </div>
             </div>
@@ -176,7 +291,7 @@
                 class="aspect-square rounded-3xl overflow-hidden shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500"
               >
                 <img
-                  alt="Community"
+                  alt="Grupo de personas colaborando en una actividad de bienestar y desarrollo personal"
                   class="w-full h-full object-cover"
                   data-alt="A smiling diverse group of young professionals collaborating"
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYMyju0GMQgjOAY4juEJFmfxvlQboeAFrUm5Bg_CSHEAF6DeC0rW85mx1PpQy10A2-H9_arifSopguc1xrX9BWEhgg8urIwYoslO5rwF_QrIRS_OYs0pVOkR4ohC0OtHJn_jtUlRI1nJCb-G90IOZzHZYVsyFSNkU2-Th9XxftYF5Ab0bBUCEQh2060aWU94YXUL0ynh419G3MQcBRCINskFP0ykmQdeoagvDOr4pva2rI0rajQ47rh3l6YanCTvxtqqonEuHb2s8"
@@ -199,13 +314,88 @@
           </div>
         </div>
       </section>
+      <!-- Audience Paths Section -->
+      <section class="pb-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="grid md:grid-cols-3 gap-6">
+            <a
+              class="group bg-white dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-xl p-6 hover:border-primary/60 hover:shadow-xl hover:shadow-primary/10 transition-all"
+              href="/training"
+            >
+              <div class="flex items-center justify-between gap-4 mb-5">
+                <span class="material-symbols-outlined text-primary text-4xl"
+                  >school</span
+                >
+                <span
+                  class="material-symbols-outlined text-slate-400 group-hover:text-primary group-hover:translate-x-1 transition-all"
+                  >arrow_forward</span
+                >
+              </div>
+              <h2 class="text-2xl font-bold mb-3">
+                ¿Buscas herramientas para ti?
+              </h2>
+              <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+                Encuentra recursos para fortalecer tu bienestar, tu propósito y
+                tu desarrollo personal.
+              </p>
+            </a>
+
+            <a
+              class="group bg-white dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-xl p-6 hover:border-primary/60 hover:shadow-xl hover:shadow-primary/10 transition-all"
+              href="/programs"
+            >
+              <div class="flex items-center justify-between gap-4 mb-5">
+                <span class="material-symbols-outlined text-primary text-4xl"
+                  >diversity_3</span
+                >
+                <span
+                  class="material-symbols-outlined text-slate-400 group-hover:text-primary group-hover:translate-x-1 transition-all"
+                  >arrow_forward</span
+                >
+              </div>
+              <h2 class="text-2xl font-bold mb-3">
+                ¿Quieres apoyar a alguien más?
+              </h2>
+              <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+                Conocé programas y herramientas para acompañar a jóvenes,
+                familias y comunidades.
+              </p>
+            </a>
+
+            <a
+              class="group bg-white dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-xl p-6 hover:border-primary/60 hover:shadow-xl hover:shadow-primary/10 transition-all"
+              href="/participate#formulario"
+            >
+              <div class="flex items-center justify-between gap-4 mb-5">
+                <span class="material-symbols-outlined text-primary text-4xl"
+                  >volunteer_activism</span
+                >
+                <span
+                  class="material-symbols-outlined text-slate-400 group-hover:text-primary group-hover:translate-x-1 transition-all"
+                  >arrow_forward</span
+                >
+              </div>
+              <h2 class="text-2xl font-bold mb-3">
+                ¿Quieres colaborar con la fundación?
+              </h2>
+              <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+                Súmate como voluntario, aliado o donante para impulsar nuevas
+                oportunidades.
+              </p>
+            </a>
+          </div>
+        </div>
+      </section>
+
       <!-- Purpose Section -->
       <section class="py-20 bg-primary/5" id="about">
         <div class="max-w-4xl mx-auto px-4 text-center">
           <span class="material-symbols-outlined text-primary text-5xl mb-6"
             >diversity_3</span
           >
-          <h2 class="text-3xl lg:text-4xl font-bold mb-8">Nuestro Propósito</h2>
+          <h2 class="font-display text-3xl lg:text-4xl font-bold mb-8">
+            Nuestro Propósito
+          </h2>
           <p
             class="text-xl lg:text-2xl text-slate-700 dark:text-slate-300 leading-relaxed font-light italic"
           >
@@ -222,12 +412,12 @@
       <section class="py-24" id="programs">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="text-center mb-16">
-            <h2 class="text-4xl font-extrabold mb-4">
+            <h2 class="font-display text-4xl font-extrabold mb-4">
               Programas Transformadores
             </h2>
             <p class="text-slate-600 dark:text-slate-400">
-              Descubre cómo estamos construyendo un futuro mejor a través de
-              iniciativas específicas.
+              Conocé iniciativas pensadas para acompañar procesos de
+              crecimiento, aprendizaje y bienestar.
             </p>
           </div>
           <div class="grid md:grid-cols-3 gap-8">
@@ -237,7 +427,7 @@
             >
               <div class="h-56 overflow-hidden">
                 <img
-                  alt="Trade School"
+                  alt="Personas aprendiendo un oficio en un taller práctico"
                   class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   data-alt="People learning woodworking in a workshop"
                   src="/public/images/school-trades-BpEJNx1B.jpg"
@@ -251,15 +441,16 @@
                   Dotar a las personas de habilidades técnicas prácticas para
                   fomentar la independencia financiera y el éxito emprendedor.
                 </p>
-                <button
+                <a
                   class="text-primary font-bold flex items-center gap-2 group/btn"
+                  href="/programs#escuela-oficios"
                 >
-                  Conoce Más
+                  Conocé Más
                   <span
                     class="material-symbols-outlined text-sm group-hover/btn:translate-x-1 transition-transform"
                     >arrow_forward</span
                   >
-                </button>
+                </a>
               </div>
             </div>
             <!-- Card 2 -->
@@ -268,7 +459,7 @@
             >
               <div class="h-56 overflow-hidden">
                 <img
-                  alt="Challenge"
+                  alt="Jóvenes participando en una actividad grupal de crecimiento personal"
                   class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   data-alt="Students cheering and celebrating together"
                   src="/public/images/challenge-yourself-BZR2AxeA.jpg"
@@ -283,15 +474,16 @@
                   límites y desarrollar resiliencia a través de mentoría y
                   talleres de salud mental.
                 </p>
-                <button
+                <a
                   class="text-primary font-bold flex items-center gap-2 group/btn"
+                  href="/programs#desafiate"
                 >
-                  Conoce Más
+                  Conocé Más
                   <span
                     class="material-symbols-outlined text-sm group-hover/btn:translate-x-1 transition-transform"
                     >arrow_forward</span
                   >
-                </button>
+                </a>
               </div>
             </div>
             <!-- Card 3 -->
@@ -300,7 +492,7 @@
             >
               <div class="h-56 overflow-hidden">
                 <img
-                  alt="Invisible Line"
+                  alt="Persona realizando una presentación profesional frente a un equipo"
                   class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   data-alt="Corporate professional giving a presentation"
                   src="/public/images/invisible-line-D5hqepxy.jpg"
@@ -314,16 +506,49 @@
                   Cerrando la brecha entre la conciencia emocional y el
                   liderazgo profesional para el desarrollo de carreras modernas.
                 </p>
-                <button
+                <a
                   class="text-primary font-bold flex items-center gap-2 group/btn"
+                  href="/programs#linea-invisible"
                 >
-                  Conoce Más
+                  Conocé Más
                   <span
                     class="material-symbols-outlined text-sm group-hover/btn:translate-x-1 transition-transform"
                     >arrow_forward</span
                   >
-                </button>
+                </a>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Video Emotivo -->
+      <section class="py-24 bg-primary/5">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-10">
+            <h2 class="font-display text-3xl lg:text-4xl font-extrabold mb-4">
+              Mirá lo que construimos juntos
+            </h2>
+            <p class="text-slate-600 dark:text-slate-400 text-lg mx-auto">
+              Cada taller, cada encuentro, cada historia cuenta. Esto es Vive Tu
+              Mente en acción.
+            </p>
+          </div>
+          <!-- PLACEHOLDER: reemplazar por iframe cuando llegue el video -->
+          <!-- <iframe class="w-full aspect-video rounded-2xl shadow-2xl" src="https://www.youtube.com/embed/ID_DEL_VIDEO" title="Vive Tu Mente en acción" frameborder="0" allowfullscreen></iframe> -->
+          <div
+            class="relative w-full rounded-2xl overflow-hidden shadow-2xl bg-background-dark aspect-video flex items-center justify-center"
+          >
+            <div class="text-center text-white space-y-3 p-8">
+              <span class="material-symbols-outlined text-primary text-6xl"
+                >play_circle</span
+              >
+              <p class="font-display text-2xl font-bold">
+                Video del taller próximamente
+              </p>
+              <p class="text-slate-400 text-sm">
+                Este espacio está reservado para mostrar el impacto real de la
+                fundación.
+              </p>
             </div>
           </div>
         </div>
@@ -364,6 +589,100 @@
           </div>
         </div>
       </section> -->
+      <!-- Blog Preview Section -->
+      <section class="py-24 bg-background-light dark:bg-background-dark">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div
+            class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between mb-12"
+          >
+            <div>
+              <span
+                class="text-primary text-sm font-bold uppercase tracking-wider"
+              >
+                Recursos prácticos
+              </span>
+              <h2 class="mt-3 text-3xl lg:text-4xl font-extrabold">
+                Aprendé más en el Blog
+              </h2>
+              <p class="mt-3 text-slate-600 dark:text-slate-400 max-w-2xl">
+                Ideas breves para cuidar tu bienestar, organizarte mejor y
+                descubrir nuevas herramientas.
+              </p>
+            </div>
+            <a
+              class="inline-flex items-center gap-2 text-primary font-bold hover:text-primary/80 transition-colors"
+              href="/blog"
+            >
+              Ver todos los artículos
+              <span class="material-symbols-outlined text-lg"
+                >arrow_forward</span
+              >
+            </a>
+          </div>
+
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <article
+              class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 shadow-sm"
+            >
+              <img
+                class="h-44 w-full object-cover"
+                src="/public/images/students-studying.jpg"
+                alt="Estudiantes revisando apuntes durante una jornada de estudio"
+              />
+              <div class="p-6">
+                <span
+                  class="text-xs font-bold uppercase tracking-wider text-primary"
+                >
+                  Bienestar
+                </span>
+                <h3 class="mt-3 text-xl font-bold">
+                  Cómo reconocer señales de estrés académico
+                </h3>
+              </div>
+            </article>
+
+            <article
+              class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 shadow-sm"
+            >
+              <img
+                class="h-44 w-full object-cover"
+                src="/public/images/weekly-planning.jpg"
+                alt="Cuaderno de planificación semanal sobre un escritorio"
+              />
+              <div class="p-6">
+                <span
+                  class="text-xs font-bold uppercase tracking-wider text-primary"
+                >
+                  Productividad
+                </span>
+                <h3 class="mt-3 text-xl font-bold">
+                  Herramientas simples para organizar tu semana
+                </h3>
+              </div>
+            </article>
+
+            <article
+              class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 shadow-sm"
+            >
+              <img
+                class="h-44 w-full object-cover"
+                src="/public/images/people-support-group.jpg"
+                alt="Grupo de personas conversando en un espacio de apoyo comunitario"
+              />
+              <div class="p-6">
+                <span
+                  class="text-xs font-bold uppercase tracking-wider text-primary"
+                >
+                  Impacto social
+                </span>
+                <h3 class="mt-3 text-xl font-bold">
+                  Hablar de salud mental también es construir oportunidades
+                </h3>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
       <!-- Final CTA Section -->
       <section class="py-24 bg-background-light dark:bg-background-dark">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -380,16 +699,16 @@
                 ¿Listo para marcar la diferencia?
               </h2>
               <p class="text-lg lg:text-xl mb-12 font-medium opacity-90">
-                Únete a nuestra misión de empoderar mentes y construir
-                comunidades resilientes. Hay muchas formas en las que puedes
-                involucrarte hoy.
+                Sumate a nuestra misión de impulsar bienestar, educación y
+                oportunidades. Podés participar, colaborar o construir una
+                alianza para ampliar el impacto de la fundación.
               </p>
               <div class="flex flex-wrap gap-4">
                 <a
                   class="bg-background-dark text-white px-8 py-4 rounded-xl font-bold hover:scale-105 transition-transform"
-                  href="/participate"
+                  href="/participate#formulario"
                 >
-                  Participa Ahora
+                  Participá Ahora
                 </a>
                 <a
                   class="bg-white text-background-dark px-8 py-4 rounded-xl font-bold flex items-center gap-2 hover:shadow-xl transition-all"
@@ -411,6 +730,7 @@
             <div class="flex items-center gap-2 text-white mb-6">
               <img
                 src="/public/images/vive-tu-mente.png"
+                alt="Fundación Vive Tu Mente"
                 data-alt="Fundación Vive Tu Mente"
                 class="h-8 w-auto"
               />
@@ -436,6 +756,11 @@
                 >
               </li>
               <li>
+                <a class="hover:text-primary transition-colors" href="/blog"
+                  >Blog</a
+                >
+              </li>
+              <li>
                 <a class="hover:text-primary transition-colors" href="/about_us"
                   >Sobre Nosotros</a
                 >
@@ -443,7 +768,7 @@
               <li>
                 <a
                   class="hover:text-primary transition-colors"
-                  href="/participate"
+                  href="/participate#formulario"
                   >Participación</a
                 >
               </li>
@@ -457,9 +782,16 @@
           <div>
             <h4 class="text-white font-bold mb-4">Contacto</h4>
             <ul class="space-y-2 text-sm">
-              <li class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-[16px]">mail</span>
-                contacto@tuautocuidado.cl
+              <li class="flex min-w-0 items-start gap-2">
+                <span class="material-symbols-outlined text-[16px] shrink-0"
+                  >mail</span
+                >
+                <a
+                  class="min-w-0 break-all hover:text-primary transition-colors"
+                  href="mailto:contacto@tuautocuidado.cl"
+                >
+                  contacto@tuautocuidado.cl
+                </a>
               </li>
               <!-- <li class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-[16px]"
@@ -467,24 +799,148 @@
                 >
                 +56 9 1234 5678
               </li> -->
+              <li class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[16px] shrink-0"
+                  >link</span
+                >
+                <a
+                  class="hover:text-primary transition-colors"
+                  target="_blank"
+                  href="https://www.linkedin.com/company/vivetumente/"
+                >
+                  LinkedIn
+                </a>
+              </li>
             </ul>
           </div>
         </div>
         <div
-          class="mt-12 border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500"
+          class="mt-12 border-t border-slate-800 pt-8 text-center text-xs text-slate-500"
         >
           <p>© 2026 Fundación Vive Tu Mente. Todos los derechos reservados.</p>
-          <div class="flex gap-6">
-            <a
-              class="hover:text-primary"
-              target="_blank"
-              href="https://www.linkedin.com/company/vivetumente/"
-              >LinkedIn</a
-            >
-            <!-- <a class="hover:text-primary" href="#">Instagram</a> -->
-          </div>
         </div>
       </div>
     </footer>
+    <!-- BOTÓN FLOTANTE DE AYUDA -->
+    <div
+      class="fixed bottom-4 right-4 z-[9999] flex flex-col items-end gap-3 sm:bottom-7 sm:right-7"
+    >
+      <!-- Modal con líneas de crisis -->
+      <div
+        id="vtm-modal-ayuda"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Líneas de ayuda en crisis"
+        class="hidden flex-col gap-4 w-[calc(100vw-2rem)] sm:w-96 bg-white rounded-2xl shadow-2xl p-5 border-t-4 border-primary"
+      >
+        <!-- Encabezado -->
+        <div class="flex justify-between items-start gap-2">
+          <p
+            class="font-display font-bold text-base text-slate-900 leading-snug"
+          >
+            ¿Necesitás ayuda ahora?
+          </p>
+          <button
+            onclick="vtmCerrarModal()"
+            aria-label="Cerrar"
+            class="text-slate-400 hover:text-primary transition-colors text-lg leading-none mt-0.5 flex-shrink-0"
+          >
+            ✕
+          </button>
+        </div>
+
+        <!-- Descripción -->
+        <p class="text-slate-500 text-sm leading-relaxed">
+          Si estás pasando por un momento difícil, hay personas capacitadas
+          esperando escucharte. Es gratis y confidencial.
+        </p>
+
+        <!-- Línea *4141 -->
+        <a
+          href="tel:*4141"
+          class="flex items-center gap-3 bg-background-light rounded-xl px-3 py-3 border border-slate-200 hover:border-primary hover:bg-primary/5 transition-all no-underline"
+        >
+          <span class="text-2xl flex-shrink-0">📞</span>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-sm font-bold text-slate-800"
+              >Línea Prevención del Suicidio</span
+            >
+            <span class="text-lg font-extrabold text-primary tracking-wide"
+              >*4141</span
+            >
+            <span class="text-xs text-slate-500"
+              >Ministerio de Salud · Gratis · 24/7</span
+            >
+          </div>
+        </a>
+
+        <!-- Línea 600 -->
+        <a
+          href="tel:6003607777"
+          class="flex items-center gap-3 bg-background-light rounded-xl px-3 py-3 border border-slate-200 hover:border-primary hover:bg-primary/5 transition-all no-underline"
+        >
+          <span class="text-2xl flex-shrink-0">🧠</span>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-sm font-bold text-slate-800"
+              >Salud Responde · Opción 2</span
+            >
+            <span class="text-lg font-extrabold text-primary tracking-wide"
+              >600 360 7777</span
+            >
+            <span class="text-xs text-slate-500"
+              >Psicólogos · Gratis · 24/7</span
+            >
+          </div>
+        </a>
+
+        <!-- Nota de emergencia -->
+        <p
+          class="text-xs text-slate-500 text-center border-t border-slate-100 pt-3 leading-relaxed"
+        >
+          Si estás en peligro inmediato,<br />
+          llamá al <strong class="text-slate-700">131</strong> (Ambulancia) o
+          acudí a urgencias.
+        </p>
+      </div>
+
+      <!-- Botón principal -->
+      <button
+        onclick="vtmToggleModal()"
+        aria-haspopup="dialog"
+        aria-label="Necesitás ayuda ahora"
+        class="flex items-center gap-2.5 bg-primary text-background-dark font-bold text-sm px-4 py-4 rounded-full shadow-lg shadow-primary/40 hover:shadow-xl hover:shadow-primary/50 hover:-translate-y-0.5 transition-all sm:px-5 sm:py-3.5"
+      >
+        <span
+          class="vtm-pulse-dot w-2 h-2 rounded-full bg-background-dark flex-shrink-0"
+        ></span>
+        ¿Necesitás ayuda ahora?
+      </button>
+    </div>
+
+    <script>
+      function vtmToggleModal() {
+        var modal = document.getElementById("vtm-modal-ayuda");
+        if (modal.classList.contains("vtm-visible")) {
+          vtmCerrarModal();
+        } else {
+          modal.classList.remove("hidden");
+          modal.classList.add("vtm-visible");
+        }
+      }
+
+      function vtmCerrarModal() {
+        var modal = document.getElementById("vtm-modal-ayuda");
+        modal.classList.remove("vtm-visible");
+        modal.classList.add("hidden");
+      }
+
+      // Cerrar si el usuario hace click fuera del componente
+      document.addEventListener("click", function (e) {
+        var contenedor = document.querySelector(".fixed.bottom-7.right-7");
+        if (contenedor && !contenedor.contains(e.target)) {
+          vtmCerrarModal();
+        }
+      });
+    </script>
   </body>
 </html>

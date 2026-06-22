@@ -4,6 +4,11 @@
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta name="google" content="notranslate" />
+    <meta
+      name="description"
+      content="Explorá recursos educativos de Vive Tu Mente en inteligencia artificial, emprendimiento, pitching, finanzas, desarrollo personal y tecnología productiva."
+    />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700&display=swap"
@@ -45,18 +50,70 @@
       @layer base {
         h1,
         h2,
-        h3 {
-          font-family: "Playfair Display", serif;
-        }
+        h3,
         b,
-        strong {
-          font-family: "Playfair Display", serif;
-        }
+        strong,
         p,
         button,
-        a {
+        a,
+        label,
+        input,
+        textarea,
+        select {
           font-family: "DM Sans", sans-serif;
         }
+        a:focus-visible,
+        button:focus-visible,
+        summary:focus-visible,
+        input:focus-visible,
+        textarea:focus-visible,
+        select:focus-visible {
+          outline: 3px solid #40b2b2;
+          outline-offset: 3px;
+        }
+        .material-symbols-outlined {
+          font-family: "Material Symbols Outlined" !important;
+          font-weight: normal;
+          font-style: normal;
+          line-height: 1;
+          letter-spacing: normal;
+          text-transform: none;
+          white-space: nowrap;
+          direction: ltr;
+          font-feature-settings: "liga";
+          -webkit-font-feature-settings: "liga";
+          -webkit-font-smoothing: antialiased;
+        }
+      }
+    </style>
+    <style>
+      @keyframes vtm-pulse {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.45;
+          transform: scale(1.5);
+        }
+      }
+      @keyframes vtm-slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      #vtm-modal-ayuda.vtm-visible {
+        display: flex;
+        animation: vtm-slideUp 0.22s ease;
+      }
+      .vtm-pulse-dot {
+        animation: vtm-pulse 1.8s ease-in-out infinite;
       }
     </style>
     <title>Educación | Fundación Vive Tu Mente</title>
@@ -88,6 +145,7 @@
             <div class="flex items-center gap-3">
               <img
                 src="/public/images/vive-tu-mente.png"
+                alt="Fundación Vive Tu Mente"
                 data-alt="Fundación Vive Tu Mente"
                 class="h-12 w-auto"
               />
@@ -96,7 +154,7 @@
                 >Fundación Vive Tu Mente</span
               >
             </div>
-            <nav class="hidden md:flex items-center gap-8">
+            <nav class="hidden lg:flex items-center gap-8">
               <a
                 class="text-sm font-semibold hover:text-primary transition-colors"
                 href="/"
@@ -107,7 +165,10 @@
                 href="/programs"
                 >Programas</a
               >
-              <a class="text-primary text-sm font-bold" href="/training"
+              <a
+                class="text-primary text-sm font-bold"
+                href="/training"
+                aria-current="page"
                 >Educación</a
               >
               <a
@@ -122,6 +183,58 @@
               >
             </nav>
             <div class="flex items-center gap-4">
+              <details class="relative lg:hidden group/mobile-menu">
+                <summary
+                  class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-lg border border-primary/20 text-slate-900 transition-colors hover:bg-primary/10 [&::-webkit-details-marker]:hidden"
+                  aria-label="Abrir menú"
+                >
+                  <span
+                    class="material-symbols-outlined group-open/mobile-menu:hidden"
+                  >
+                    menu
+                  </span>
+                  <span
+                    class="material-symbols-outlined hidden group-open/mobile-menu:inline"
+                  >
+                    close
+                  </span>
+                </summary>
+
+                <div
+                  class="absolute right-0 top-12 z-[60] w-56 rounded-xl border border-slate-200 bg-white p-3 shadow-xl"
+                >
+                  <a
+                    class="block rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary/10"
+                    href="/"
+                  >
+                    Inicio
+                  </a>
+                  <a
+                    class="block rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary/10"
+                    href="/programs"
+                  >
+                    Programas
+                  </a>
+                  <a
+                    class="block rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary/10"
+                    href="/training"
+                  >
+                    Educación
+                  </a>
+                  <a
+                    class="block rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary/10"
+                    href="/about_us"
+                  >
+                    Sobre Nosotros
+                  </a>
+                  <a
+                    class="block rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary/10"
+                    href="/participate#formulario"
+                  >
+                    Participar
+                  </a>
+                </div>
+              </details>
               <a
                 class="bg-primary text-background-dark px-6 py-2 rounded-lg font-bold text-sm hover:shadow-lg hover:shadow-primary/20 transition-all"
                 href="/donations"
@@ -176,6 +289,34 @@
                     >smart_toy</span
                   >
                 </div>
+                <details class="absolute right-6 top-6 z-20 group/tip">
+                  <summary
+                    class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-full border border-primary bg-primary text-background-dark shadow-sm transition-all hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20 [&::-webkit-details-marker]:hidden"
+                    aria-label="Ver tip rápido"
+                  >
+                    <span
+                      class="material-symbols-outlined transition-transform group-open/tip:rotate-45"
+                    >
+                      add
+                    </span>
+                  </summary>
+
+                  <div
+                    class="absolute right-0 top-12 w-64 rounded-xl border border-primary/20 bg-white p-4 shadow-xl dark:bg-slate-900"
+                  >
+                    <p
+                      class="mb-2 text-xs font-bold uppercase tracking-wider text-primary"
+                    >
+                      Tip rápido
+                    </p>
+                    <p
+                      class="text-sm leading-relaxed text-slate-600 dark:text-slate-400"
+                    >
+                      Probá pedirle a una IA: “Organizá mi semana en bloques de
+                      estudio, descanso y tareas importantes”.
+                    </p>
+                  </div>
+                </details>
                 <h3
                   class="text-xl font-bold text-slate-900 dark:text-slate-100"
                 >
@@ -200,6 +341,34 @@
                     >lightbulb</span
                   >
                 </div>
+                <details class="absolute right-6 top-6 z-20 group/tip">
+                  <summary
+                    class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-full border border-primary bg-primary text-background-dark shadow-sm transition-all hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20 [&::-webkit-details-marker]:hidden"
+                    aria-label="Ver tip rápido"
+                  >
+                    <span
+                      class="material-symbols-outlined transition-transform group-open/tip:rotate-45"
+                    >
+                      add
+                    </span>
+                  </summary>
+
+                  <div
+                    class="absolute right-0 top-12 w-64 rounded-xl border border-primary/20 bg-white p-4 shadow-xl dark:bg-slate-900"
+                  >
+                    <p
+                      class="mb-2 text-xs font-bold uppercase tracking-wider text-primary"
+                    >
+                      Tip rápido
+                    </p>
+                    <p
+                      class="text-sm leading-relaxed text-slate-600 dark:text-slate-400"
+                    >
+                      Escribí tu idea en una frase: qué problema resuelve, para
+                      quién y por qué es diferente.
+                    </p>
+                  </div>
+                </details>
                 <h3
                   class="text-xl font-bold text-slate-900 dark:text-slate-100"
                 >
@@ -224,6 +393,34 @@
                     >show_chart</span
                   >
                 </div>
+                <details class="absolute right-6 top-6 z-20 group/tip">
+                  <summary
+                    class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-full border border-primary bg-primary text-background-dark shadow-sm transition-all hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20 [&::-webkit-details-marker]:hidden"
+                    aria-label="Ver tip rápido"
+                  >
+                    <span
+                      class="material-symbols-outlined transition-transform group-open/tip:rotate-45"
+                    >
+                      add
+                    </span>
+                  </summary>
+
+                  <div
+                    class="absolute right-0 top-12 w-64 rounded-xl border border-primary/20 bg-white p-4 shadow-xl dark:bg-slate-900"
+                  >
+                    <p
+                      class="mb-2 text-xs font-bold uppercase tracking-wider text-primary"
+                    >
+                      Tip rápido
+                    </p>
+                    <p
+                      class="text-sm leading-relaxed text-slate-600 dark:text-slate-400"
+                    >
+                      Practicá explicar tu idea en 30 segundos: problema,
+                      solución, impacto y próximo paso.
+                    </p>
+                  </div>
+                </details>
                 <h3
                   class="text-xl font-bold text-slate-900 dark:text-slate-100"
                 >
@@ -247,6 +444,34 @@
                     >payments</span
                   >
                 </div>
+                <details class="absolute right-6 top-6 z-20 group/tip">
+                  <summary
+                    class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-full border border-primary bg-primary text-background-dark shadow-sm transition-all hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20 [&::-webkit-details-marker]:hidden"
+                    aria-label="Ver tip rápido"
+                  >
+                    <span
+                      class="material-symbols-outlined transition-transform group-open/tip:rotate-45"
+                    >
+                      add
+                    </span>
+                  </summary>
+
+                  <div
+                    class="absolute right-0 top-12 w-64 rounded-xl border border-primary/20 bg-white p-4 shadow-xl dark:bg-slate-900"
+                  >
+                    <p
+                      class="mb-2 text-xs font-bold uppercase tracking-wider text-primary"
+                    >
+                      Tip rápido
+                    </p>
+                    <p
+                      class="text-sm leading-relaxed text-slate-600 dark:text-slate-400"
+                    >
+                      Usá la regla 50/30/20 como punto de partida: necesidades,
+                      gustos y ahorro.
+                    </p>
+                  </div>
+                </details>
                 <h3
                   class="text-xl font-bold text-slate-900 dark:text-slate-100"
                 >
@@ -270,6 +495,34 @@
                     >self_improvement</span
                   >
                 </div>
+                <details class="absolute right-6 top-6 z-20 group/tip">
+                  <summary
+                    class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-full border border-primary bg-primary text-background-dark shadow-sm transition-all hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20 [&::-webkit-details-marker]:hidden"
+                    aria-label="Ver tip rápido"
+                  >
+                    <span
+                      class="material-symbols-outlined transition-transform group-open/tip:rotate-45"
+                    >
+                      add
+                    </span>
+                  </summary>
+
+                  <div
+                    class="absolute right-0 top-12 w-64 rounded-xl border border-primary/20 bg-white p-4 shadow-xl dark:bg-slate-900"
+                  >
+                    <p
+                      class="mb-2 text-xs font-bold uppercase tracking-wider text-primary"
+                    >
+                      Tip rápido
+                    </p>
+                    <p
+                      class="text-sm leading-relaxed text-slate-600 dark:text-slate-400"
+                    >
+                      Hacé una pausa de 2 minutos: inhalá profundo, nombrá lo
+                      que sentís y elegí una acción pequeña para continuar.
+                    </p>
+                  </div>
+                </details>
                 <h3
                   class="text-xl font-bold text-slate-900 dark:text-slate-100"
                 >
@@ -294,6 +547,34 @@
                     >terminal</span
                   >
                 </div>
+                <details class="absolute right-6 top-6 z-20 group/tip">
+                  <summary
+                    class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-full border border-primary bg-primary text-background-dark shadow-sm transition-all hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20 [&::-webkit-details-marker]:hidden"
+                    aria-label="Ver tip rápido"
+                  >
+                    <span
+                      class="material-symbols-outlined transition-transform group-open/tip:rotate-45"
+                    >
+                      add
+                    </span>
+                  </summary>
+
+                  <div
+                    class="absolute right-0 top-12 w-64 rounded-xl border border-primary/20 bg-white p-4 shadow-xl dark:bg-slate-900"
+                  >
+                    <p
+                      class="mb-2 text-xs font-bold uppercase tracking-wider text-primary"
+                    >
+                      Tip rápido
+                    </p>
+                    <p
+                      class="text-sm leading-relaxed text-slate-600 dark:text-slate-400"
+                    >
+                      Revisá tus herramientas digitales y eliminá una
+                      notificación que interrumpa tu concentración.
+                    </p>
+                  </div>
+                </details>
                 <h3
                   class="text-xl font-bold text-slate-900 dark:text-slate-100"
                 >
@@ -309,6 +590,41 @@
             </div>
           </div>
         </section>
+        <section class="px-6 lg:px-20 pb-24">
+          <div
+            class="mx-auto max-w-7xl rounded-2xl bg-primary/10 border border-primary/20 p-8 md:p-10"
+          >
+            <div
+              class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between"
+            >
+              <div class="max-w-2xl">
+                <span
+                  class="text-primary text-sm font-bold uppercase tracking-wider"
+                >
+                  Recursos para seguir aprendiendo
+                </span>
+                <h2
+                  class="mt-3 text-3xl font-bold text-slate-900 dark:text-slate-100"
+                >
+                  Explorá artículos prácticos en nuestro Blog
+                </h2>
+                <p class="mt-3 text-slate-600 dark:text-slate-400">
+                  Encontrá ideas breves sobre bienestar, productividad,
+                  propósito y herramientas para aplicar en tu vida diaria.
+                </p>
+              </div>
+              <a
+                class="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 font-bold text-background-dark hover:bg-primary/90 transition-colors"
+                href="/blog"
+              >
+                Ir al Blog
+                <span class="material-symbols-outlined text-lg"
+                  >arrow_forward</span
+                >
+              </a>
+            </div>
+          </div>
+        </section>
         <!-- Newsletter/CTA section -->
         <!-- <section class="mx-6 lg:mx-20 mb-20">
           <div
@@ -318,7 +634,7 @@
               class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-10"
             >
               <div class="max-w-xl">
-                <h2 class="text-3xl font-bold text-white">
+                <h2 class="font-display text-3xl font-bold text-white">
                   Únete a la Próxima Cohorte
                 </h2>
                 <p class="mt-4 text-slate-300">
@@ -355,6 +671,7 @@
               <div class="flex items-center gap-2 text-white mb-6">
                 <img
                   src="/public/images/vive-tu-mente.png"
+                  alt="Fundación Vive Tu Mente"
                   data-alt="Fundación Vive Tu Mente"
                   class="h-8 w-auto"
                 />
@@ -384,6 +701,11 @@
                   >
                 </li>
                 <li>
+                  <a class="hover:text-primary transition-colors" href="/blog"
+                    >Blog</a
+                  >
+                </li>
+                <li>
                   <a
                     class="hover:text-primary transition-colors"
                     href="/about_us"
@@ -407,11 +729,16 @@
             <div>
               <h4 class="text-white font-bold mb-4">Contacto</h4>
               <ul class="space-y-2 text-sm">
-                <li class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-[16px]"
+                <li class="flex min-w-0 items-start gap-2">
+                  <span class="material-symbols-outlined text-[16px] shrink-0"
                     >mail</span
                   >
-                  contacto@tuautocuidado.cl
+                  <a
+                    class="min-w-0 break-all hover:text-primary transition-colors"
+                    href="mailto:contacto@tuautocuidado.cl"
+                  >
+                    contacto@tuautocuidado.cl
+                  </a>
                 </li>
                 <!-- <li class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-[16px]"
@@ -419,27 +746,151 @@
                 >
                 +56 9 1234 5678
               </li> -->
+                <li class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[16px] shrink-0"
+                    >link</span
+                  >
+                  <a
+                    class="hover:text-primary transition-colors"
+                    target="_blank"
+                    href="https://www.linkedin.com/company/vivetumente/"
+                  >
+                    LinkedIn
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
           <div
-            class="mt-12 border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500"
+            class="mt-12 border-t border-slate-800 pt-8 text-center text-xs text-slate-500"
           >
             <p>
               © 2026 Fundación Vive Tu Mente. Todos los derechos reservados.
             </p>
-            <div class="flex gap-6">
-              <a
-                class="hover:text-primary"
-                target="_blank"
-                href="https://www.linkedin.com/company/vivetumente/"
-                >LinkedIn</a
-              >
-              <!-- <a class="hover:text-primary" href="#">Instagram</a> -->
-            </div>
           </div>
         </div>
       </footer>
     </div>
+    <!-- BOTÓN FLOTANTE DE AYUDA -->
+    <div
+      class="fixed bottom-4 right-4 z-[9999] flex flex-col items-end gap-3 sm:bottom-7 sm:right-7"
+    >
+      <!-- Modal con líneas de crisis -->
+      <div
+        id="vtm-modal-ayuda"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Líneas de ayuda en crisis"
+        class="hidden flex-col gap-4 w-[calc(100vw-2rem)] sm:w-96 bg-white rounded-2xl shadow-2xl p-5 border-t-4 border-primary"
+      >
+        <!-- Encabezado -->
+        <div class="flex justify-between items-start gap-2">
+          <p
+            class="font-display font-bold text-base text-slate-900 leading-snug"
+          >
+            ¿Necesitás ayuda ahora?
+          </p>
+          <button
+            onclick="vtmCerrarModal()"
+            aria-label="Cerrar"
+            class="text-slate-400 hover:text-primary transition-colors text-lg leading-none mt-0.5 flex-shrink-0"
+          >
+            ✕
+          </button>
+        </div>
+
+        <!-- Descripción -->
+        <p class="text-slate-500 text-sm leading-relaxed">
+          Si estás pasando por un momento difícil, hay personas capacitadas
+          esperando escucharte. Es gratis y confidencial.
+        </p>
+
+        <!-- Línea *4141 -->
+        <a
+          href="tel:*4141"
+          class="flex items-center gap-3 bg-background-light rounded-xl px-3 py-3 border border-slate-200 hover:border-primary hover:bg-primary/5 transition-all no-underline"
+        >
+          <span class="text-2xl flex-shrink-0">📞</span>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-sm font-bold text-slate-800"
+              >Línea Prevención del Suicidio</span
+            >
+            <span class="text-lg font-extrabold text-primary tracking-wide"
+              >*4141</span
+            >
+            <span class="text-xs text-slate-500"
+              >Ministerio de Salud · Gratis · 24/7</span
+            >
+          </div>
+        </a>
+
+        <!-- Línea 600 -->
+        <a
+          href="tel:6003607777"
+          class="flex items-center gap-3 bg-background-light rounded-xl px-3 py-3 border border-slate-200 hover:border-primary hover:bg-primary/5 transition-all no-underline"
+        >
+          <span class="text-2xl flex-shrink-0">🧠</span>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-sm font-bold text-slate-800"
+              >Salud Responde · Opción 2</span
+            >
+            <span class="text-lg font-extrabold text-primary tracking-wide"
+              >600 360 7777</span
+            >
+            <span class="text-xs text-slate-500"
+              >Psicólogos · Gratis · 24/7</span
+            >
+          </div>
+        </a>
+
+        <!-- Nota de emergencia -->
+        <p
+          class="text-xs text-slate-500 text-center border-t border-slate-100 pt-3 leading-relaxed"
+        >
+          Si estás en peligro inmediato,<br />
+          llamá al <strong class="text-slate-700">131</strong> (Ambulancia) o
+          acudí a urgencias.
+        </p>
+      </div>
+
+      <!-- Botón principal -->
+      <button
+        onclick="vtmToggleModal()"
+        aria-haspopup="dialog"
+        aria-label="Necesitás ayuda ahora"
+        class="flex items-center gap-2.5 bg-primary text-background-dark font-bold text-sm px-4 py-4 rounded-full shadow-lg shadow-primary/40 hover:shadow-xl hover:shadow-primary/50 hover:-translate-y-0.5 transition-all sm:px-5 sm:py-3.5"
+      >
+        <span
+          class="vtm-pulse-dot w-2 h-2 rounded-full bg-background-dark flex-shrink-0"
+        ></span>
+        ¿Necesitás ayuda ahora?
+      </button>
+    </div>
+
+    <script>
+      function vtmToggleModal() {
+        var modal = document.getElementById("vtm-modal-ayuda");
+        if (modal.classList.contains("vtm-visible")) {
+          vtmCerrarModal();
+        } else {
+          modal.classList.remove("hidden");
+          modal.classList.add("vtm-visible");
+        }
+      }
+
+      function vtmCerrarModal() {
+        var modal = document.getElementById("vtm-modal-ayuda");
+        modal.classList.remove("vtm-visible");
+        modal.classList.add("hidden");
+      }
+
+      // Cerrar si el usuario hace click fuera del componente
+      document.addEventListener("click", function (e) {
+        var contenedor = document.querySelector(".fixed.bottom-7.right-7");
+        if (contenedor && !contenedor.contains(e.target)) {
+          vtmCerrarModal();
+        }
+      });
+    </script>
   </body>
 </html>

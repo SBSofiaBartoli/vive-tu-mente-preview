@@ -4,6 +4,11 @@
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta name="google" content="notranslate" />
+    <meta
+      name="description"
+      content="Conocé la historia, visión y propósito de Fundación Vive Tu Mente, una organización enfocada en bienestar emocional, educación y alianzas con impacto social."
+    />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700&display=swap"
@@ -45,18 +50,70 @@
       @layer base {
         h1,
         h2,
-        h3 {
-          font-family: "Playfair Display", serif;
-        }
+        h3,
         b,
-        strong {
-          font-family: "Playfair Display", serif;
-        }
+        strong,
         p,
         button,
-        a {
+        a,
+        label,
+        input,
+        textarea,
+        select {
           font-family: "DM Sans", sans-serif;
         }
+        a:focus-visible,
+        button:focus-visible,
+        summary:focus-visible,
+        input:focus-visible,
+        textarea:focus-visible,
+        select:focus-visible {
+          outline: 3px solid #40b2b2;
+          outline-offset: 3px;
+        }
+        .material-symbols-outlined {
+          font-family: "Material Symbols Outlined" !important;
+          font-weight: normal;
+          font-style: normal;
+          line-height: 1;
+          letter-spacing: normal;
+          text-transform: none;
+          white-space: nowrap;
+          direction: ltr;
+          font-feature-settings: "liga";
+          -webkit-font-feature-settings: "liga";
+          -webkit-font-smoothing: antialiased;
+        }
+      }
+    </style>
+    <style>
+      @keyframes vtm-pulse {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.45;
+          transform: scale(1.5);
+        }
+      }
+      @keyframes vtm-slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      #vtm-modal-ayuda.vtm-visible {
+        display: flex;
+        animation: vtm-slideUp 0.22s ease;
+      }
+      .vtm-pulse-dot {
+        animation: vtm-pulse 1.8s ease-in-out infinite;
       }
     </style>
     <title>Sobre Nosotros | Fundación Vive Tu Mente</title>
@@ -91,6 +148,7 @@
               <div class="flex items-center gap-3">
                 <img
                   src="/public/images/vive-tu-mente.png"
+                  alt="Fundación Vive Tu Mente"
                   data-alt="Fundación Vive Tu Mente"
                   class="h-12 w-auto"
                 />
@@ -99,7 +157,7 @@
                   >Fundación Vive Tu Mente</span
                 >
               </div>
-              <nav class="hidden md:flex items-center gap-8">
+              <nav class="hidden lg:flex items-center gap-8">
                 <a
                   class="text-sm font-semibold hover:text-primary transition-colors"
                   href="/"
@@ -115,7 +173,10 @@
                   href="/training"
                   >Educación</a
                 >
-                <a class="text-primary text-sm font-bold" href="/about_us"
+                <a
+                  class="text-primary text-sm font-bold"
+                  href="/about_us"
+                  aria-current="page"
                   >Sobre Nosotros</a
                 >
                 <a
@@ -125,6 +186,58 @@
                 >
               </nav>
               <div class="flex items-center gap-4">
+                <details class="relative lg:hidden group/mobile-menu">
+                  <summary
+                    class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-lg border border-primary/20 text-slate-900 transition-colors hover:bg-primary/10 [&::-webkit-details-marker]:hidden"
+                    aria-label="Abrir menú"
+                  >
+                    <span
+                      class="material-symbols-outlined group-open/mobile-menu:hidden"
+                    >
+                      menu
+                    </span>
+                    <span
+                      class="material-symbols-outlined hidden group-open/mobile-menu:inline"
+                    >
+                      close
+                    </span>
+                  </summary>
+
+                  <div
+                    class="absolute right-0 top-12 z-[60] w-56 rounded-xl border border-slate-200 bg-white p-3 shadow-xl"
+                  >
+                    <a
+                      class="block rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary/10"
+                      href="/"
+                    >
+                      Inicio
+                    </a>
+                    <a
+                      class="block rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary/10"
+                      href="/programs"
+                    >
+                      Programas
+                    </a>
+                    <a
+                      class="block rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary/10"
+                      href="/training"
+                    >
+                      Educación
+                    </a>
+                    <a
+                      class="block rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary/10"
+                      href="/about_us"
+                    >
+                      Sobre Nosotros
+                    </a>
+                    <a
+                      class="block rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary/10"
+                      href="/participate#formulario"
+                    >
+                      Participar
+                    </a>
+                  </div>
+                </details>
                 <a
                   class="bg-primary text-background-dark px-6 py-2 rounded-lg font-bold text-sm hover:shadow-lg hover:shadow-primary/20 transition-all"
                   href="/donations"
@@ -164,8 +277,9 @@
                       </p>
                       <p class="text-slate-200 text-lg max-w-2xl mt-2">
                         Un viaje desde una pequeña iniciativa comunitaria hasta
-                        un movimiento global por el impacto social y el
-                        bienestar mental.
+                        una fundación que impulsa bienestar emocional, educación
+                        y oportunidades a través de talleres, programas y
+                        alianzas con sentido social.
                       </p>
                     </div>
                   </div>
@@ -185,16 +299,17 @@
                     >
                   </div>
                   <h2
-                    class="text-slate-900 dark:text-slate-100 text-3xl md:text-4xl font-bold leading-tight"
+                    class="font-display text-slate-900 dark:text-slate-100 text-3xl md:text-4xl font-bold leading-tight"
                   >
                     Cómo comenzó todo
                   </h2>
                   <p
                     class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed"
                   >
-                    Fundación Vive Tu Mente comenzó con una creencia simple pero
-                    radical: que el bienestar mental no es un lujo, sino un
-                    derecho humano fundamental.
+                    Fundación Vive Tu Mente nace con una convicción clara: que
+                    el bienestar emocional no es un lujo, sino un derecho humano
+                    fundamental. Las oportunidades deben estar al alcance de más
+                    personas.
                   </p>
                   <p
                     class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed"
@@ -202,8 +317,10 @@
                     Lo que comenzó como un grupo de apoyo local en el sótano de
                     un centro comunitario ha evolucionado hasta convertirse en
                     un equipo global dedicado a cerrar la brecha en los sistemas
-                    de apoyo social a través de la defensa, la tecnología y la
-                    intervención comunitaria.
+                    de apoyo social. Trabajamos para acercar herramientas
+                    prácticas a jóvenes, familias, comunidades y organizaciones,
+                    combinando salud mental, desarrollo personal, tecnología y
+                    emprendimiento.
                   </p>
                   <!-- <div class="flex gap-4 pt-4">
                     <div class="border-l-4 border-primary pl-4">
@@ -226,7 +343,7 @@
                 </div>
                 <div class="rounded-xl overflow-hidden shadow-2xl">
                   <img
-                    alt="People working in a bright office environment"
+                    alt="Personas colaborando en un espacio de trabajo comunitario"
                     class="w-full h-full object-cover aspect-square md:aspect-video lg:aspect-square"
                     data-alt="Modern collaborative workspace with people discussing projects"
                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5EWsT3cthC-7GgDjLwrWtqrgFdvoG1EWrHOH7rUbH1xw9f3f6EVRbgK4fkntAbr6GHlQcdfi1JJLOSEzA7ado-fa1vSYKnt8CsocxGz0RELMG7J-_TUSpL3AO5aLfgf1ioEHX6r3qh9_j1bo2ceOsoLx9MSLkSa00QwF8AMTtM18ni4vf2-i7mYe6kLfRbW6i9zT_j2y-mkB4Bz_IfEDLqKASoJt37CmB_bGGm3a9GzQj4L03Y4aUAMHhhYFFd2kJTyulOHr9KoQ"
@@ -243,11 +360,15 @@
                       class="material-symbols-outlined text-primary text-4xl"
                       >visibility</span
                     >
-                    <h3 class="text-2xl font-bold">Nuestra Visión</h3>
+                    <h3 class="font-display text-2xl font-bold">
+                      Nuestra Visión
+                    </h3>
                     <p class="text-slate-600 dark:text-slate-400">
-                      Un mundo donde nadie enfrente desafíos de salud mental
-                      solo, y cada individuo tenga los recursos para prosperar
-                      emocional y socialmente sin importar su origen.
+                      Un mundo donde más personas puedan acceder a herramientas
+                      de bienestar, formación y acompañamiento para construir
+                      proyectos de vida con mayor confianza y autonomía. Donde
+                      nadie enfrente desafíos de salud mental solo sin importar
+                      su origen.
                     </p>
                   </div>
                   <div class="space-y-4">
@@ -255,12 +376,49 @@
                       class="material-symbols-outlined text-primary text-4xl"
                       >rocket_launch</span
                     >
-                    <h3 class="text-2xl font-bold">Nuestro Propósito</h3>
+                    <h3 class="font-display text-2xl font-bold">
+                      Nuestro Propósito
+                    </h3>
                     <p class="text-slate-600 dark:text-slate-400">
                       Desmantelar el estigma que rodea la salud mental y
-                      proporcionar herramientas de apoyo emocional accesibles y
-                      basadas en la ciencia a comunidades marginadas a nivel
-                      global.
+                      acompañar procesos de crecimiento personal y comunitario,
+                      proporcionando herramientas de apoyo emocional accesibles
+                      y basadas en la ciencia a comunidades marginadas a nivel
+                      global. Brindando oportunidades a través de programas,
+                      talleres y alianzas.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <!-- Video Institucional -->
+              <div class="py-12">
+                <div class="text-center max-w-2xl mx-auto mb-8">
+                  <h2
+                    class="font-display text-slate-900 dark:text-slate-100 text-3xl font-bold mb-3"
+                  >
+                    Conocenos en acción
+                  </h2>
+                  <p class="text-slate-600 dark:text-slate-400">
+                    Mirá cómo trabajamos y el impacto que generamos en cada
+                    comunidad.
+                  </p>
+                </div>
+                <!-- PLACEHOLDER: reemplazar src con el link de YouTube cuando esté disponible -->
+                <!-- Para obtener el link: en YouTube → Compartir → Insertar → copiar solo el ID del video -->
+                <!-- Ejemplo: https://www.youtube.com/embed/ID_DEL_VIDEO -->
+                <div
+                  class="relative w-full rounded-2xl overflow-hidden shadow-2xl bg-background-dark aspect-video flex items-center justify-center"
+                >
+                  <div class="text-center text-white space-y-3 p-8">
+                    <span
+                      class="material-symbols-outlined text-primary text-6xl"
+                      >play_circle</span
+                    >
+                    <p class="font-display text-2xl font-bold">
+                      Video institucional próximamente
+                    </p>
+                    <p class="text-slate-400 text-sm">
+                      Este espacio está reservado para el video de la fundación.
                     </p>
                   </div>
                 </div>
@@ -381,22 +539,23 @@
                     Únete al movimiento
                   </h2>
                   <p class="text-slate-300 text-lg mb-8">
-                    Ya sea que desees donar o asociarte con nosotros, tu
-                    contribución marca una diferencia tangible en la vida de
-                    alguien.
+                    Podés participar, colaborar o construir una alianza para
+                    acercar más herramientas de bienestar, educación y
+                    oportunidades a quienes las necesitan y, marcar la
+                    diferencia en la vida de muchas personas.
                   </p>
                   <div class="flex flex-col sm:flex-row justify-center gap-4">
                     <a
                       class="px-8 py-3 bg-primary text-slate-900 font-bold rounded-lg hover:shadow-lg hover:shadow-primary/20 transition-all"
-                      href="/participate"
+                      href="/participate#formulario"
                     >
-                      Participa con nosotros
+                      Participá con nosotros
                     </a>
                     <a
                       class="px-8 py-3 bg-transparent text-white border-2 border-white/20 hover:bg-white/10 font-bold rounded-lg transition-all"
                       href="/donations"
                     >
-                      Apoya nuestro trabajo
+                      Apoyá nuestro trabajo
                     </a>
                   </div>
                 </div>
@@ -412,6 +571,7 @@
                 <div class="flex items-center gap-2 text-white mb-6">
                   <img
                     src="/public/images/vive-tu-mente.png"
+                    alt="Fundación Vive Tu Mente"
                     data-alt="Fundación Vive Tu Mente"
                     class="h-8 w-auto"
                   />
@@ -442,6 +602,11 @@
                     >
                   </li>
                   <li>
+                    <a class="hover:text-primary transition-colors" href="/blog"
+                      >Blog</a
+                    >
+                  </li>
+                  <li>
                     <a
                       class="hover:text-primary transition-colors"
                       href="/about_us"
@@ -467,11 +632,16 @@
               <div>
                 <h4 class="text-white font-bold mb-4">Contacto</h4>
                 <ul class="space-y-2 text-sm">
-                  <li class="flex items-center gap-2">
-                    <span class="material-symbols-outlined text-[16px]"
+                  <li class="flex min-w-0 items-start gap-2">
+                    <span class="material-symbols-outlined text-[16px] shrink-0"
                       >mail</span
                     >
-                    contacto@tuautocuidado.cl
+                    <a
+                      class="min-w-0 break-all hover:text-primary transition-colors"
+                      href="mailto:contacto@tuautocuidado.cl"
+                    >
+                      contacto@tuautocuidado.cl
+                    </a>
                   </li>
                   <!-- <li class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-[16px]"
@@ -479,28 +649,152 @@
                 >
                 +56 9 1234 5678
               </li> -->
+                  <li class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[16px] shrink-0"
+                      >link</span
+                    >
+                    <a
+                      class="hover:text-primary transition-colors"
+                      target="_blank"
+                      href="https://www.linkedin.com/company/vivetumente/"
+                    >
+                      LinkedIn
+                    </a>
+                  </li>
                 </ul>
               </div>
             </div>
             <div
-              class="mt-12 border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500"
+              class="mt-12 border-t border-slate-800 pt-8 text-center text-xs text-slate-500"
             >
               <p>
                 © 2026 Fundación Vive Tu Mente. Todos los derechos reservados.
               </p>
-              <div class="flex gap-6">
-                <a
-                  class="hover:text-primary"
-                  target="_blank"
-                  href="https://www.linkedin.com/company/vivetumente/"
-                  >LinkedIn</a
-                >
-                <!-- <a class="hover:text-primary" href="#">Instagram</a> -->
-              </div>
             </div>
           </div>
         </footer>
       </div>
     </div>
+    <!-- BOTÓN FLOTANTE DE AYUDA -->
+    <div
+      class="fixed bottom-4 right-4 z-[9999] flex flex-col items-end gap-3 sm:bottom-7 sm:right-7"
+    >
+      <!-- Modal con líneas de crisis -->
+      <div
+        id="vtm-modal-ayuda"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Líneas de ayuda en crisis"
+        class="hidden flex-col gap-4 w-[calc(100vw-2rem)] sm:w-96 bg-white rounded-2xl shadow-2xl p-5 border-t-4 border-primary"
+      >
+        <!-- Encabezado -->
+        <div class="flex justify-between items-start gap-2">
+          <p
+            class="font-display font-bold text-base text-slate-900 leading-snug"
+          >
+            ¿Necesitás ayuda ahora?
+          </p>
+          <button
+            onclick="vtmCerrarModal()"
+            aria-label="Cerrar"
+            class="text-slate-400 hover:text-primary transition-colors text-lg leading-none mt-0.5 flex-shrink-0"
+          >
+            ✕
+          </button>
+        </div>
+
+        <!-- Descripción -->
+        <p class="text-slate-500 text-sm leading-relaxed">
+          Si estás pasando por un momento difícil, hay personas capacitadas
+          esperando escucharte. Es gratis y confidencial.
+        </p>
+
+        <!-- Línea *4141 -->
+        <a
+          href="tel:*4141"
+          class="flex items-center gap-3 bg-background-light rounded-xl px-3 py-3 border border-slate-200 hover:border-primary hover:bg-primary/5 transition-all no-underline"
+        >
+          <span class="text-2xl flex-shrink-0">📞</span>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-sm font-bold text-slate-800"
+              >Línea Prevención del Suicidio</span
+            >
+            <span class="text-lg font-extrabold text-primary tracking-wide"
+              >*4141</span
+            >
+            <span class="text-xs text-slate-500"
+              >Ministerio de Salud · Gratis · 24/7</span
+            >
+          </div>
+        </a>
+
+        <!-- Línea 600 -->
+        <a
+          href="tel:6003607777"
+          class="flex items-center gap-3 bg-background-light rounded-xl px-3 py-3 border border-slate-200 hover:border-primary hover:bg-primary/5 transition-all no-underline"
+        >
+          <span class="text-2xl flex-shrink-0">🧠</span>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-sm font-bold text-slate-800"
+              >Salud Responde · Opción 2</span
+            >
+            <span class="text-lg font-extrabold text-primary tracking-wide"
+              >600 360 7777</span
+            >
+            <span class="text-xs text-slate-500"
+              >Psicólogos · Gratis · 24/7</span
+            >
+          </div>
+        </a>
+
+        <!-- Nota de emergencia -->
+        <p
+          class="text-xs text-slate-500 text-center border-t border-slate-100 pt-3 leading-relaxed"
+        >
+          Si estás en peligro inmediato,<br />
+          llamá al <strong class="text-slate-700">131</strong> (Ambulancia) o
+          acudí a urgencias.
+        </p>
+      </div>
+
+      <!-- Botón principal -->
+      <button
+        onclick="vtmToggleModal()"
+        aria-haspopup="dialog"
+        aria-label="Necesitás ayuda ahora"
+        class="flex items-center gap-2.5 bg-primary text-background-dark font-bold text-sm px-4 py-4 rounded-full shadow-lg shadow-primary/40 hover:shadow-xl hover:shadow-primary/50 hover:-translate-y-0.5 transition-all sm:px-5 sm:py-3.5"
+      >
+        <span
+          class="vtm-pulse-dot w-2 h-2 rounded-full bg-background-dark flex-shrink-0"
+        ></span>
+        ¿Necesitás ayuda ahora?
+      </button>
+    </div>
+
+    <script>
+      function vtmToggleModal() {
+        var modal = document.getElementById("vtm-modal-ayuda");
+        if (modal.classList.contains("vtm-visible")) {
+          vtmCerrarModal();
+        } else {
+          modal.classList.remove("hidden");
+          modal.classList.add("vtm-visible");
+        }
+      }
+
+      function vtmCerrarModal() {
+        var modal = document.getElementById("vtm-modal-ayuda");
+        modal.classList.remove("vtm-visible");
+        modal.classList.add("hidden");
+      }
+
+      // Cerrar si el usuario hace click fuera del componente
+      document.addEventListener("click", function (e) {
+        var contenedor = document.querySelector(".fixed.bottom-7.right-7");
+        if (contenedor && !contenedor.contains(e.target)) {
+          vtmCerrarModal();
+        }
+      });
+    </script>
   </body>
 </html>
