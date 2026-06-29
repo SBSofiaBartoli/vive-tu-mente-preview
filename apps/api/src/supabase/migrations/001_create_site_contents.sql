@@ -21,6 +21,8 @@ create table if not exists public.site_contents (
 create index if not exists site_contents_section_key_idx
   on public.site_contents (section_key);
 
+drop trigger if exists set_site_contents_updated_at on public.site_contents;
+
 create trigger set_site_contents_updated_at
 before update on public.site_contents
 for each row
