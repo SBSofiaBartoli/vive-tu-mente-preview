@@ -59,3 +59,29 @@ Tabla destinada a gestionar los artículos del blog, tanto los creados desde el 
 | published      | Artículo aprobado y visible públicamente en el blog.        |
 | rejected       | Artículo rechazado tras revisión.                           |
 | archived       | Artículo oculto sin eliminar definitivamente.               |
+
+---
+
+## admin_profiles
+
+Tabla destinada a definir qué usuarios autenticados mediante Supabase Auth tienen acceso al dashboard administrativo.
+
+### Campos
+
+| Campo        | Descripción                                            |
+| ------------ | ------------------------------------------------------ |
+| id           | Identificador único del perfil administrativo.         |
+| user_id      | Identificador del usuario en Supabase Auth.            |
+| role         | Rol administrativo del usuario.                        |
+| is_active    | Indica si el usuario tiene acceso activo al dashboard. |
+| display_name | Nombre visible del administrador.                      |
+| created_at   | Fecha de creación del registro.                        |
+| updated_at   | Fecha de última modificación.                          |
+
+### Roles
+
+| Rol      | Descripción                                                    |
+| -------- | -------------------------------------------------------------- |
+| admin    | Puede administrar todo el dashboard.                           |
+| editor   | Puede crear y editar contenido.                                |
+| reviewer | Puede revisar propuestas, testimonios o contenidos pendientes. |
