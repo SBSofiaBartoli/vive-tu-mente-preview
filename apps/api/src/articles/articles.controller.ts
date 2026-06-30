@@ -1,5 +1,6 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ArticlesService } from './articles.service';
+import type { CreateArticleProposalDto } from './dto/create-article-proposal.dto';
 
 @Controller('articles')
 export class ArticlesController {
@@ -13,6 +14,11 @@ export class ArticlesController {
   @Get('featured')
   findFeatured() {
     return this.articlesService.findFeatured();
+  }
+
+  @Post('proposals')
+  createProposal(@Body() createArticleProposalDto: CreateArticleProposalDto) {
+    return this.articlesService.createProposal(createArticleProposalDto);
   }
 
   @Get(':slug')
