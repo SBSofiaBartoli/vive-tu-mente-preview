@@ -6,6 +6,7 @@ import {
 import { SupabaseService } from '../supabase/supabase.service';
 import { Article } from './article.types';
 import type { CreateArticleProposalDto } from './dto/create-article-proposal.dto';
+import type { RejectArticleDto } from './dto/reject-article.dto';
 
 @Injectable()
 export class ArticlesService {
@@ -75,6 +76,69 @@ export class ArticlesService {
       throw new InternalServerErrorException(
         'Could not create article proposal',
       );
+    }
+
+    return data;
+  }
+
+  async findPendingReview(): Promise<Article[]> {
+    const supabase = this.supabaseService.getAdminClient();
+
+    const { data, error } = await supabase
+      .from('articles')
+      .select('*')
+      .eq('status', 'pending_review')
+      .order('created_at', { ascending: false })
+      .returns<Article[]>();
+
+    if (error) {
+      throw new InternalServerErrorException('Could not get pending articles');
+    }
+
+    return data;
+  }
+
+  async publishArticle(id: string): Promise<Article> {
+    const supabase = this.supabaseService.getAdminClient();
+
+    const { data, error } = await supabase
+      .from('articles')
+      .update({
+        status: 'published',
+        rejection_reason: null,
+        published_at: new Date().toISOString(),
+      })
+      .eq('id', id)
+      .select('*')
+      .returns<Article>()
+      .single();
+
+    if (error) {
+      throw new InternalServerErrorException('Could not publish article');
+    }
+
+    return data;
+  }
+
+  async rejectArticle(
+    id: string,
+    rejectArticleDto: RejectArticleDto,
+  ): Promise<Article> {
+    const supabase = this.supabaseService.getAdminClient();
+
+    const { data, error } = await supabase
+      .from('articles')
+      .update({
+        status: 'rejected',
+        rejection_reason: rejectArticleDto.rejection_reason,
+      })
+      .eq('id', id)
+      .select('*')
+      .returns<Article>()
+      .single();
+
+    if (error) {
+      throw new InternalServerErrorException('Could not reject article');
     }
 
     return data;
