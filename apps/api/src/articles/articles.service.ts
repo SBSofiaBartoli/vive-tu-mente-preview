@@ -52,7 +52,7 @@ export class ArticlesService {
   ): Promise<Article> {
     const supabase = this.supabaseService.getAdminClient();
 
-    const slug = this.createSlug(createArticleProposalDto.title);
+    const slug = this.createProposalSlug(createArticleProposalDto.title);
 
     const { data, error } = await supabase
       .from('articles')
@@ -111,10 +111,14 @@ export class ArticlesService {
       .eq('id', id)
       .select('*')
       .returns<Article>()
-      .single();
+      .maybeSingle();
 
     if (error) {
       throw new InternalServerErrorException('Could not publish article');
+    }
+
+    if (!data) {
+      throw new NotFoundException('Article not found');
     }
 
     return data;
@@ -135,10 +139,14 @@ export class ArticlesService {
       .eq('id', id)
       .select('*')
       .returns<Article>()
-      .single();
+      .maybeSingle();
 
     if (error) {
       throw new InternalServerErrorException('Could not reject article');
+    }
+
+    if (!data) {
+      throw new NotFoundException('Article not found');
     }
 
     return data;
@@ -173,5 +181,11 @@ export class ArticlesService {
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '');
+  }
+
+  private createProposalSlug(title: string): string {
+    const uniqueSuffix = Date.now().toString(36);
+
+    return `${this.createSlug(title)}-${uniqueSuffix}`;
   }
 }
