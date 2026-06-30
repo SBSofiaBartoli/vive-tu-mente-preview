@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { SupabaseModule } from './supabase/supabase.module';
 import { ContentModule } from './content/content.module';
 import { ArticlesModule } from './articles/articles.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { ArticlesModule } from './articles/articles.module';
     SupabaseModule,
     ContentModule,
     ArticlesModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
