@@ -49,7 +49,7 @@ export class CreateParticipationMessageDto {
   @Transform(({ value }: { value: unknown }) => trimString(value))
   @IsString()
   @IsNotEmpty()
-  interest_area?: string;
+  interest_area!: string;
 
   @ApiProperty({
     example: 'Me gustaría participar como voluntaria en futuras actividades.',
