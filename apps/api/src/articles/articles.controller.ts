@@ -11,6 +11,7 @@ import {
   ApiBearerAuth,
   ApiOperation,
   ApiParam,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { ArticlesService } from './articles.service';
@@ -19,6 +20,7 @@ import { AdminAuthGuard } from '../auth/admin-auth.guard';
 import { AdminRolesGuard } from '../auth/admin-roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { RejectArticleDto } from './dto/reject-article.dto';
+import { ArticleResponseDto } from './dto/article-response.dto';
 
 @ApiTags('Articles')
 @Controller('articles')
@@ -30,6 +32,12 @@ export class ArticlesController {
     description:
       'Devuelve los artículos publicados visibles en el blog público.',
   })
+  @ApiResponse({
+    status: 200,
+    description: 'Listado de artículos publicados obtenido correctamente.',
+    type: ArticleResponseDto,
+    isArray: true,
+  })
   @Get()
   findPublished() {
     return this.articlesService.findPublished();
@@ -38,6 +46,12 @@ export class ArticlesController {
   @ApiOperation({
     summary: 'Listar artículos destacados',
     description: 'Devuelve artículos publicados marcados como destacados.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Listado de artículos destacados obtenido correctamente.',
+    type: ArticleResponseDto,
+    isArray: true,
   })
   @Get('featured')
   findFeatured() {
@@ -49,6 +63,15 @@ export class ArticlesController {
     description:
       'Permite que una persona profesional envíe una propuesta de artículo para revisión administrativa.',
   })
+  @ApiResponse({
+    status: 201,
+    description: 'Propuesta de artículo recibida correctamente.',
+    type: ArticleResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Datos inválidos en la propuesta.',
+  })
   @Post('proposals')
   createProposal(@Body() createArticleProposalDto: CreateArticleProposalDto) {
     return this.articlesService.createProposal(createArticleProposalDto);
@@ -59,6 +82,20 @@ export class ArticlesController {
     summary: 'Listar artículos pendientes de revisión',
     description:
       'Permite a usuarios administrativos listar propuestas de artículos pendientes de revisión.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Listado de propuestas pendientes obtenido correctamente.',
+    type: ArticleResponseDto,
+    isArray: true,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Token ausente, inválido o expirado.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'El usuario no tiene permisos suficientes.',
   })
   @UseGuards(AdminAuthGuard, AdminRolesGuard)
   @Roles('admin', 'reviewer')
@@ -73,6 +110,15 @@ export class ArticlesController {
     description: 'Permite aprobar una propuesta y publicarla en el blog.',
   })
   @ApiParam({ name: 'id', description: 'ID del artículo.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Artículo publicado correctamente.',
+    type: ArticleResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Artículo no encontrado.',
+  })
   @UseGuards(AdminAuthGuard, AdminRolesGuard)
   @Roles('admin', 'reviewer')
   @Patch('admin/:id/publish')
@@ -86,6 +132,19 @@ export class ArticlesController {
     description: 'Permite rechazar una propuesta indicando el motivo.',
   })
   @ApiParam({ name: 'id', description: 'ID del artículo.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Artículo rechazado correctamente.',
+    type: ArticleResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Datos inválidos para rechazar el artículo.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Artículo no encontrado.',
+  })
   @UseGuards(AdminAuthGuard, AdminRolesGuard)
   @Roles('admin', 'reviewer')
   @Patch('admin/:id/reject')
@@ -101,6 +160,15 @@ export class ArticlesController {
     description: 'Devuelve el detalle público de un artículo publicado.',
   })
   @ApiParam({ name: 'slug', example: 'ansiedad-academica' })
+  @ApiResponse({
+    status: 200,
+    description: 'Artículo encontrado.',
+    type: ArticleResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Artículo no encontrado o no publicado.',
+  })
   @Get(':slug')
   findBySlug(@Param('slug') slug: string) {
     return this.articlesService.findBySlug(slug);

@@ -1,5 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ContentService } from './content.service';
 
 @ApiTags('Site Content')
@@ -16,6 +16,14 @@ export class ContentController {
     name: 'sectionKey',
     example: 'home-hero',
     description: 'Clave única de la sección editable.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Contenido editable encontrado.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'No existe contenido para la clave indicada.',
   })
   @Get(':sectionKey')
   getBySectionKey(@Param('sectionKey') sectionKey: string) {

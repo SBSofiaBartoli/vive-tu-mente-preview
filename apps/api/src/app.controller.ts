@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AppService } from './app.service';
 
 @ApiTags('Health')
@@ -11,6 +11,10 @@ export class AppController {
     summary: 'Verificar estado de la API',
     description:
       'Endpoint simple para comprobar que el backend se encuentra activo.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'La API se encuentra activa.',
   })
   @Get('health')
   getHealth() {
