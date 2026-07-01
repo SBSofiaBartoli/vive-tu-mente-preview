@@ -11,8 +11,8 @@ import {
 import { AdminAuthGuard } from '../auth/admin-auth.guard';
 import { AdminRolesGuard } from '../auth/admin-roles.guard';
 import { Roles } from '../auth/roles.decorator';
-import type { CreateParticipationMessageDto } from './dto/create-participation-message.dto';
-import type { UpdateParticipationMessageStatusDto } from './dto/update-participation-message-status.dto';
+import { CreateParticipationMessageDto } from './dto/create-participation-message.dto';
+import { UpdateParticipationMessageStatusDto } from './dto/update-participation-message-status.dto';
 import { ParticipationMessagesService } from './participation-messages.service';
 
 @Controller('participation/messages')
