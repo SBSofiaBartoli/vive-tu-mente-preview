@@ -6,6 +6,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { AuthMeResponseDto } from './dto/auth-me-response.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -19,6 +20,7 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'Usuario administrador autenticado correctamente.',
+    type: AuthMeResponseDto,
   })
   @ApiResponse({
     status: 401,

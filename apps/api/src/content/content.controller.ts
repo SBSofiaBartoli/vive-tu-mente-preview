@@ -1,6 +1,7 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ContentService } from './content.service';
+import { SiteContentResponseDto } from './dto/site-content-response.dto';
 
 @ApiTags('Site Content')
 @Controller('content')
@@ -20,6 +21,7 @@ export class ContentController {
   @ApiResponse({
     status: 200,
     description: 'Contenido editable encontrado.',
+    type: SiteContentResponseDto,
   })
   @ApiResponse({
     status: 404,
