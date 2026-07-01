@@ -6,6 +6,7 @@ import { SupabaseModule } from './supabase/supabase.module';
 import { ContentModule } from './content/content.module';
 import { ArticlesModule } from './articles/articles.module';
 import { AuthModule } from './auth/auth.module';
+import { ParticipationMessagesModule } from './participation-messages/participation-messages.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AuthModule } from './auth/auth.module';
     ContentModule,
     ArticlesModule,
     AuthModule,
+    ParticipationMessagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

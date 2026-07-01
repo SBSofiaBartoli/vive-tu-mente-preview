@@ -85,3 +85,25 @@ Tabla destinada a definir qué usuarios autenticados mediante Supabase Auth tien
 | admin    | Puede administrar todo el dashboard.                           |
 | editor   | Puede crear y editar contenido.                                |
 | reviewer | Puede revisar propuestas, testimonios o contenidos pendientes. |
+
+---
+
+## participation_messages
+
+Tabla destinada a almacenar los mensajes enviados desde el formulario de participación del sitio.
+
+### Campos
+
+| Campo         | Descripción                                            |
+| ------------- | ------------------------------------------------------ |
+| id            | Identificador único del mensaje.                       |
+| full_name     | Nombre completo de la persona que envía el formulario. |
+| email         | Correo electrónico de contacto.                        |
+| phone         | Número de teléfono opcional.                           |
+| interest_area | Área de interés seleccionada en el formulario.         |
+| message       | Mensaje enviado por la persona.                        |
+| is_read       | Indica si el mensaje ya fue leído desde el dashboard.  |
+| is_starred    | Indica si el mensaje fue marcado como destacado.       |
+| is_contacted  | Indica si la persona ya fue contactada por el equipo.  |
+| created_at    | Fecha de creación del registro.                        |
+| updated_at    | Fecha de última modificación.                          |
