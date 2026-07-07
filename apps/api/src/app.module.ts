@@ -7,6 +7,7 @@ import { ContentModule } from './content/content.module';
 import { ArticlesModule } from './articles/articles.module';
 import { AuthModule } from './auth/auth.module';
 import { ParticipationMessagesModule } from './participation-messages/participation-messages.module';
+import { TestimonialsModule } from './testimonials/testimonials.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ParticipationMessagesModule } from './participation-messages/participat
     ArticlesModule,
     AuthModule,
     ParticipationMessagesModule,
+    TestimonialsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
