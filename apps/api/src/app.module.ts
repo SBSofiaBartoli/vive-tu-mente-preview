@@ -12,6 +12,7 @@ import { FaqsModule } from './faqs/faqs.module';
 import { EducationTipsModule } from './education-tips/education-tips.module';
 import { VisitCounterModule } from './visit-counter/visit-counter.module';
 import { MediaFilesModule } from './media-files/media-files.module';
+import { StorageModule } from './storage/storage.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { MediaFilesModule } from './media-files/media-files.module';
     EducationTipsModule,
     VisitCounterModule,
     MediaFilesModule,
+    StorageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
