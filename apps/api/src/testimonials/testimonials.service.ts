@@ -22,7 +22,7 @@ export class TestimonialsService {
   constructor(private readonly supabaseService: SupabaseService) {}
 
   async findApproved(): Promise<Testimonial[]> {
-    const { data, error } = await this.supabaseService
+    const response = await this.supabaseService
       .getAdminClient()
       .from('testimonials')
       .select('*')
@@ -30,15 +30,15 @@ export class TestimonialsService {
       .order('is_featured', { ascending: false })
       .order('created_at', { ascending: false });
 
-    if (error) {
-      throw new BadRequestException(error.message);
+    if (response.error) {
+      throw new BadRequestException(response.error.message);
     }
 
-    return ensureData<Testimonial[]>(data);
+    return ensureData<Testimonial[]>(response.data);
   }
 
   async findFeatured(): Promise<Testimonial[]> {
-    const { data, error } = await this.supabaseService
+    const response = await this.supabaseService
       .getAdminClient()
       .from('testimonials')
       .select('*')
@@ -46,11 +46,11 @@ export class TestimonialsService {
       .eq('is_featured', true)
       .order('created_at', { ascending: false });
 
-    if (error) {
-      throw new BadRequestException(error.message);
+    if (response.error) {
+      throw new BadRequestException(response.error.message);
     }
 
-    return ensureData<Testimonial[]>(data);
+    return ensureData<Testimonial[]>(response.data);
   }
 
   async create(
@@ -153,13 +153,13 @@ export class TestimonialsService {
   }
 
   async remove(id: string): Promise<{ id: string }> {
-    const { error } = await this.supabaseService
+    const response = await this.supabaseService
       .getAdminClient()
       .from('testimonials')
       .delete()
       .eq('id', id);
 
-    if (error) {
+    if (response.error) {
       throw new NotFoundException('No se encontró el testimonio indicado.');
     }
 

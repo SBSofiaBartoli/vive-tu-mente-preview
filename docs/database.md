@@ -107,3 +107,44 @@ Tabla destinada a almacenar los mensajes enviados desde el formulario de partici
 | is_contacted  | Indica si la persona ya fue contactada por el equipo.  |
 | created_at    | Fecha de creación del registro.                        |
 | updated_at    | Fecha de última modificación.                          |
+
+---
+
+## testimonials
+
+Tabla destinada a almacenar testimonios enviados por personas que participaron, colaboraron o estuvieron vinculadas con actividades de la fundación.
+
+### Campos
+
+| Campo            | Descripción                                                        |
+| ---------------- | ------------------------------------------------------------------ |
+| id               | Identificador único del testimonio.                                |
+| full_name        | Nombre completo de la persona que deja el testimonio.              |
+| role             | Tipo de vínculo de la persona con la fundación o actividad.        |
+| workshop_name    | Nombre del taller o actividad relacionada, si aplica.              |
+| comment          | Comentario enviado por la persona.                                 |
+| status           | Estado de revisión del testimonio.                                 |
+| is_featured      | Indica si el testimonio debe mostrarse como destacado en el sitio. |
+| rejection_reason | Motivo interno por el cual el testimonio fue rechazado.            |
+| reviewed_at      | Fecha en la que el testimonio fue revisado por administración.     |
+| created_at       | Fecha de creación del registro.                                    |
+| updated_at       | Fecha de última modificación.                                      |
+
+### Estados
+
+| Estado   | Descripción                                                 |
+| -------- | ----------------------------------------------------------- |
+| pending  | Testimonio recibido y pendiente de revisión administrativa. |
+| approved | Testimonio aprobado y visible públicamente en el sitio.     |
+| rejected | Testimonio rechazado y no visible públicamente en el sitio. |
+
+### Roles
+
+| Rol          | Descripción                                       |
+| ------------ | ------------------------------------------------- |
+| participant  | Persona participante de un taller o actividad.    |
+| professional | Profesional que colaboró o participó.             |
+| alliance     | Persona o entidad vinculada mediante una alianza. |
+| company      | Empresa vinculada con la fundación.               |
+| institution  | Institución vinculada con la fundación.           |
+| organization | Organización vinculada con la fundación.          |
