@@ -167,3 +167,46 @@ Tabla destinada a gestionar preguntas frecuentes editables desde el dashboard ad
 | is_active  | Indica si la pregunta frecuente está visible públicamente.         |
 | created_at | Fecha de creación del registro.                                    |
 | updated_at | Fecha de última modificación.                                      |
+
+---
+
+## education_tips
+
+Tabla destinada a gestionar tips educativos editables para las cards de la sección Educación.
+
+### Campos
+
+| Campo        | Descripción                                                         |
+| ------------ | ------------------------------------------------------------------- |
+| id           | Identificador único del tip educativo.                              |
+| segment_key  | Clave del segmento o card educativa a la que pertenece el tip.      |
+| title        | Título corto del tip educativo.                                     |
+| content      | Contenido principal del tip educativo.                              |
+| resource_url | Enlace opcional a un recurso descargable o material complementario. |
+| is_active    | Indica si el tip educativo puede mostrarse públicamente.            |
+| starts_at    | Fecha desde la cual el tip puede mostrarse.                         |
+| ends_at      | Fecha hasta la cual el tip puede mostrarse.                         |
+| created_at   | Fecha de creación del registro.                                     |
+| updated_at   | Fecha de última modificación.                                       |
+
+### Uso
+
+Los tips se agrupan mediante `segment_key`, por ejemplo:
+
+| Segmento       | Descripción                            |
+| -------------- | -------------------------------------- |
+| ia-aplicada    | Tips asociados a IA aplicada.          |
+| emprendimiento | Tips asociados a emprendimiento.       |
+| finanzas       | Tips asociados a educación financiera. |
+| desarrollo     | Tips asociados a desarrollo personal.  |
+| tecnologia     | Tips asociados a tecnología.           |
+
+### Visibilidad
+
+Un tip se considera visible públicamente cuando:
+
+| Condición | Descripción                                             |
+| --------- | ------------------------------------------------------- |
+| is_active | Debe estar marcado como activo.                         |
+| starts_at | Si tiene fecha de inicio, debe ser menor o igual a hoy. |
+| ends_at   | Si tiene fecha de fin, debe ser mayor o igual a hoy.    |
