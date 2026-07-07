@@ -11,6 +11,7 @@ import { TestimonialsModule } from './testimonials/testimonials.module';
 import { FaqsModule } from './faqs/faqs.module';
 import { EducationTipsModule } from './education-tips/education-tips.module';
 import { VisitCounterModule } from './visit-counter/visit-counter.module';
+import { MediaFilesModule } from './media-files/media-files.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { VisitCounterModule } from './visit-counter/visit-counter.module';
     FaqsModule,
     EducationTipsModule,
     VisitCounterModule,
+    MediaFilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
