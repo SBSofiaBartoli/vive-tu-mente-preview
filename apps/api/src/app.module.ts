@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { ParticipationMessagesModule } from './participation-messages/participation-messages.module';
 import { TestimonialsModule } from './testimonials/testimonials.module';
 import { FaqsModule } from './faqs/faqs.module';
+import { EducationTipsModule } from './education-tips/education-tips.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { FaqsModule } from './faqs/faqs.module';
     ParticipationMessagesModule,
     TestimonialsModule,
     FaqsModule,
+    EducationTipsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
