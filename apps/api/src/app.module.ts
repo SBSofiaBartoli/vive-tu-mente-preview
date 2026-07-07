@@ -8,6 +8,7 @@ import { ArticlesModule } from './articles/articles.module';
 import { AuthModule } from './auth/auth.module';
 import { ParticipationMessagesModule } from './participation-messages/participation-messages.module';
 import { TestimonialsModule } from './testimonials/testimonials.module';
+import { FaqsModule } from './faqs/faqs.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { TestimonialsModule } from './testimonials/testimonials.module';
     AuthModule,
     ParticipationMessagesModule,
     TestimonialsModule,
+    FaqsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
