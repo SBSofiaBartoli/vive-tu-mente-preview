@@ -46,19 +46,21 @@ Tabla destinada a gestionar los artículos del blog, tanto los creados desde el 
 | submitted_by_name  | Nombre de la persona que envió una propuesta de artículo.                  |
 | submitted_by_email | Email de la persona que envió una propuesta de artículo.                   |
 | rejection_reason   | Motivo del rechazo, si el artículo fue rechazado.                          |
+| review_notes       | Observaciones internas o cambios solicitados por administración.           |
 | published_at       | Fecha de publicación visible del artículo.                                 |
 | created_at         | Fecha de creación del registro.                                            |
 | updated_at         | Fecha de última modificación.                                              |
 
 ### Estados
 
-| Estado         | Descripción                                                 |
-| -------------- | ----------------------------------------------------------- |
-| draft          | Artículo creado por el administrador, todavía no publicado. |
-| pending_review | Artículo enviado por un profesional, pendiente de revisión. |
-| published      | Artículo aprobado y visible públicamente en el blog.        |
-| rejected       | Artículo rechazado tras revisión.                           |
-| archived       | Artículo oculto sin eliminar definitivamente.               |
+| Estado            | Descripción                                                     |
+| ----------------- | --------------------------------------------------------------- |
+| draft             | Artículo creado por el administrador, todavía no publicado.     |
+| pending_review    | Artículo enviado por un profesional, pendiente de revisión.     |
+| changes_requested | Artículo revisado con solicitud de cambios antes de publicarse. |
+| published         | Artículo aprobado y visible públicamente en el blog.            |
+| rejected          | Artículo rechazado tras revisión.                               |
+| archived          | Artículo oculto sin eliminar definitivamente.                   |
 
 ---
 
@@ -230,4 +232,42 @@ Tabla destinada a registrar visitas anónimas a páginas del sitio para construi
 
 El contador evita duplicar visitas de un mismo `visitor_key` dentro de una ventana de tiempo definida en backend.
 
-Actualmente, una misma persona vuelve a contar como nueva visita si regresa luego de 2 horas.
+## Actualmente, una misma persona vuelve a contar como nueva visita si regresa luego de 2 horas.
+
+## media_files
+
+Tabla destinada a guardar la metadata de imágenes, documentos y otros archivos multimedia vinculados al sitio.
+
+### Campos
+
+| Campo             | Descripción                                                      |
+| ----------------- | ---------------------------------------------------------------- |
+| id                | Identificador único del archivo.                                 |
+| original_name     | Nombre original del archivo subido.                              |
+| storage_path      | Ruta del archivo dentro de Supabase Storage.                     |
+| public_url        | URL pública del archivo, si corresponde.                         |
+| mime_type         | Tipo MIME del archivo.                                           |
+| file_size         | Tamaño del archivo en bytes.                                     |
+| section           | Sección del sitio asociada al archivo.                           |
+| status            | Estado editorial o administrativo del archivo.                   |
+| uploaded_by_name  | Nombre de la persona que subió el archivo, si aplica.            |
+| uploaded_by_email | Email de contacto de la persona que subió el archivo, si aplica. |
+| review_notes      | Observaciones internas o cambios solicitados por administración. |
+| rejection_reason  | Motivo por el cual el archivo fue rechazado.                     |
+| reviewed_at       | Fecha en la que el archivo fue revisado por administración.      |
+| created_at        | Fecha de creación del registro.                                  |
+| updated_at        | Fecha de última modificación.                                    |
+
+### Estados
+
+| Estado            | Descripción                                                         |
+| ----------------- | ------------------------------------------------------------------- |
+| pending           | Archivo recibido y pendiente de revisión.                           |
+| changes_requested | Archivo revisado con solicitud de cambios.                          |
+| approved          | Archivo aprobado para uso o visualización.                          |
+| rejected          | Archivo rechazado por administración.                               |
+| archived          | Archivo oculto o retirado sin eliminar definitivamente el registro. |
+
+### Criterio editorial
+
+Las personas externas no modifican directamente una propuesta ya enviada. Si administración solicita cambios, se registra la observación en `review_notes` y la persona puede enviar una nueva versión.
