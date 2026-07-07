@@ -5,3 +5,10 @@ export type UploadedStorageFile = {
   mime_type: string;
   file_size: number;
 };
+
+export type UploadFile = {
+  originalname: string;
+  mimetype: string;
+  size: number;
+  buffer: Buffer;
+};
