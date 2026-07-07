@@ -10,6 +10,7 @@ import { ParticipationMessagesModule } from './participation-messages/participat
 import { TestimonialsModule } from './testimonials/testimonials.module';
 import { FaqsModule } from './faqs/faqs.module';
 import { EducationTipsModule } from './education-tips/education-tips.module';
+import { VisitCounterModule } from './visit-counter/visit-counter.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { EducationTipsModule } from './education-tips/education-tips.module';
     TestimonialsModule,
     FaqsModule,
     EducationTipsModule,
+    VisitCounterModule,
   ],
   controllers: [AppController],
   providers: [AppService],

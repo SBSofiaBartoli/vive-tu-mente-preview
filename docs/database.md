@@ -210,3 +210,24 @@ Un tip se considera visible públicamente cuando:
 | is_active | Debe estar marcado como activo.                         |
 | starts_at | Si tiene fecha de inicio, debe ser menor o igual a hoy. |
 | ends_at   | Si tiene fecha de fin, debe ser mayor o igual a hoy.    |
+
+---
+
+## page_visits
+
+Tabla destinada a registrar visitas anónimas a páginas del sitio para construir un contador visible.
+
+### Campos
+
+| Campo       | Descripción                                                             |
+| ----------- | ----------------------------------------------------------------------- |
+| id          | Identificador único de la visita registrada.                            |
+| page_path   | Ruta de la página visitada. Por defecto se utiliza `/`.                 |
+| visitor_key | Clave anónima generada desde el frontend para identificar al visitante. |
+| visited_at  | Fecha y hora en la que se registró la visita.                           |
+
+### Regla de conteo
+
+El contador evita duplicar visitas de un mismo `visitor_key` dentro de una ventana de tiempo definida en backend.
+
+Actualmente, una misma persona vuelve a contar como nueva visita si regresa luego de 2 horas.
