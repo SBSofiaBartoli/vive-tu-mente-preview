@@ -148,3 +148,22 @@ Tabla destinada a almacenar testimonios enviados por personas que participaron, 
 | company      | Empresa vinculada con la fundación.               |
 | institution  | Institución vinculada con la fundación.           |
 | organization | Organización vinculada con la fundación.          |
+
+---
+
+## faqs
+
+Tabla destinada a gestionar preguntas frecuentes editables desde el dashboard administrativo y visibles como desplegables en el sitio.
+
+### Campos
+
+| Campo      | Descripción                                                        |
+| ---------- | ------------------------------------------------------------------ |
+| id         | Identificador único de la pregunta frecuente.                      |
+| question   | Pregunta visible para los usuarios del sitio.                      |
+| answer     | Respuesta asociada a la pregunta frecuente.                        |
+| category   | Categoría utilizada para agrupar preguntas por sección o temática. |
+| sort_order | Orden visual de la pregunta dentro de su categoría.                |
+| is_active  | Indica si la pregunta frecuente está visible públicamente.         |
+| created_at | Fecha de creación del registro.                                    |
+| updated_at | Fecha de última modificación.                                      |
