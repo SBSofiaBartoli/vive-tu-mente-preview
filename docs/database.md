@@ -237,6 +237,7 @@ El contador evita duplicar visitas de un mismo `visitor_key` dentro de una venta
 ## media_files
 
 Tabla destinada a guardar la metadata de imágenes, documentos y otros archivos multimedia vinculados al sitio.
+Los archivos físicos se almacenan en Supabase Storage. Esta tabla guarda únicamente la metadata necesaria para administrarlos, revisarlos y vincularlos con secciones del sitio.
 
 ### Campos
 
@@ -271,3 +272,17 @@ Tabla destinada a guardar la metadata de imágenes, documentos y otros archivos 
 ### Criterio editorial
 
 Las personas externas no modifican directamente una propuesta ya enviada. Si administración solicita cambios, se registra la observación en `review_notes` y la persona puede enviar una nueva versión.
+
+### Storage
+
+Los archivos se suben al bucket configurado en `SUPABASE_STORAGE_BUCKET`.
+
+La API valida:
+
+| Validación      | Criterio                                   |
+| --------------- | ------------------------------------------ |
+| Tamaño máximo   | Definido por `MAX_UPLOAD_SIZE_MB`.         |
+| Tipos aceptados | JPG, PNG, WebP, PDF, DOC y DOCX.           |
+| Organización    | Los archivos se agrupan por sección y año. |
+
+La subida devuelve la metadata básica del archivo para luego registrarla en `media_files`.
