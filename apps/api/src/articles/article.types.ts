@@ -1,6 +1,7 @@
 export type ArticleStatus =
   | 'draft'
   | 'pending_review'
+  | 'changes_requested'
   | 'published'
   | 'rejected'
   | 'archived';
@@ -20,6 +21,7 @@ export type Article = {
   submitted_by_name: string | null;
   submitted_by_email: string | null;
   rejection_reason: string | null;
+  review_notes: string | null;
   published_at: string | null;
   created_at: string;
   updated_at: string;
