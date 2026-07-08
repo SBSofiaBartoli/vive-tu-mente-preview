@@ -38,7 +38,14 @@ export class ArticleResponseDto {
 
   @ApiProperty({
     example: 'published',
-    enum: ['draft', 'pending_review', 'published', 'rejected', 'archived'],
+    enum: [
+      'draft',
+      'pending_review',
+      'changes_requested',
+      'published',
+      'rejected',
+      'archived',
+    ],
   })
   status!: string;
 
@@ -55,6 +62,11 @@ export class ArticleResponseDto {
     example: 'El contenido requiere fuentes verificables.',
   })
   rejection_reason!: string | null;
+
+  @ApiPropertyOptional({
+    example: 'Se solicita agregar fuentes y ajustar el cierre del artículo.',
+  })
+  review_notes!: string | null;
 
   @ApiPropertyOptional({ example: '2026-07-01T12:00:00.000Z' })
   published_at!: string | null;
