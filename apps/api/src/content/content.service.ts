@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { SupabaseService } from '../supabase/supabase.service';
+import type { UpsertSiteContentDto } from './dto/upsert-site-content.dto';
 
 type SiteContent = {
   id: string;
@@ -41,5 +42,50 @@ export class ContentService {
     }
 
     return data;
+  }
+
+  async findAllAdmin(): Promise<SiteContent[]> {
+    const response = await this.supabaseService
+      .getAdminClient()
+      .from('site_contents')
+      .select('*')
+      .returns<SiteContent[]>()
+      .order('section_key', { ascending: true });
+
+    if (response.error) {
+      throw new NotFoundException('No se pudo obtener el contenido del sitio.');
+    }
+
+    return response.data;
+  }
+
+  async upsert(
+    upsertSiteContentDto: UpsertSiteContentDto,
+  ): Promise<SiteContent> {
+    const response = await this.supabaseService
+      .getAdminClient()
+      .from('site_contents')
+      .upsert(
+        {
+          ...upsertSiteContentDto,
+          title: upsertSiteContentDto.title ?? null,
+          subtitle: upsertSiteContentDto.subtitle ?? null,
+          body: upsertSiteContentDto.body ?? null,
+          metadata: upsertSiteContentDto.metadata ?? null,
+          is_active: upsertSiteContentDto.is_active ?? true,
+        },
+        {
+          onConflict: 'section_key',
+        },
+      )
+      .select()
+      .returns<SiteContent>()
+      .single();
+
+    if (response.error) {
+      throw new NotFoundException('No se pudo guardar el contenido del sitio.');
+    }
+
+    return response.data;
   }
 }
