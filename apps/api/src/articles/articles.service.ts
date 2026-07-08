@@ -7,6 +7,7 @@ import { SupabaseService } from '../supabase/supabase.service';
 import { Article } from './article.types';
 import type { CreateArticleProposalDto } from './dto/create-article-proposal.dto';
 import type { RejectArticleDto } from './dto/reject-article.dto';
+import type { RequestArticleChangesDto } from './dto/request-article-changes.dto';
 
 @Injectable()
 export class ArticlesService {
@@ -106,6 +107,7 @@ export class ArticlesService {
       .update({
         status: 'published',
         rejection_reason: null,
+        review_notes: null,
         published_at: new Date().toISOString(),
       })
       .eq('id', id)
@@ -143,6 +145,37 @@ export class ArticlesService {
 
     if (error) {
       throw new InternalServerErrorException('Could not reject article');
+    }
+
+    if (!data) {
+      throw new NotFoundException('Article not found');
+    }
+
+    return data;
+  }
+
+  async requestChanges(
+    id: string,
+    requestArticleChangesDto: RequestArticleChangesDto,
+  ): Promise<Article> {
+    const supabase = this.supabaseService.getAdminClient();
+
+    const { data, error } = await supabase
+      .from('articles')
+      .update({
+        status: 'changes_requested',
+        review_notes: requestArticleChangesDto.review_notes,
+        rejection_reason: null,
+      })
+      .eq('id', id)
+      .select('*')
+      .returns<Article>()
+      .maybeSingle();
+
+    if (error) {
+      throw new InternalServerErrorException(
+        'Could not request article changes',
+      );
     }
 
     if (!data) {
