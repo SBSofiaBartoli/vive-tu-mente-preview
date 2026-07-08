@@ -21,6 +21,7 @@ import { AdminRolesGuard } from '../auth/admin-roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { RejectArticleDto } from './dto/reject-article.dto';
 import { ArticleResponseDto } from './dto/article-response.dto';
+import { RequestArticleChangesDto } from './dto/request-article-changes.dto';
 
 @ApiTags('Articles')
 @Controller('articles')
@@ -153,6 +154,36 @@ export class ArticlesController {
     @Body() rejectArticleDto: RejectArticleDto,
   ) {
     return this.articlesService.rejectArticle(id, rejectArticleDto);
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Solicitar cambios en artículo',
+    description:
+      'Permite marcar una propuesta como pendiente de ajustes y registrar observaciones para contactar a la persona autora.',
+  })
+  @ApiParam({ name: 'id', description: 'ID del artículo.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Solicitud de cambios registrada correctamente.',
+    type: ArticleResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Datos inválidos para solicitar cambios.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Artículo no encontrado.',
+  })
+  @UseGuards(AdminAuthGuard, AdminRolesGuard)
+  @Roles('admin', 'reviewer')
+  @Patch('admin/:id/request-changes')
+  requestChanges(
+    @Param('id') id: string,
+    @Body() requestArticleChangesDto: RequestArticleChangesDto,
+  ) {
+    return this.articlesService.requestChanges(id, requestArticleChangesDto);
   }
 
   @ApiOperation({
