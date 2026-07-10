@@ -285,4 +285,26 @@ La API valida:
 | Tipos aceptados | JPG, PNG, WebP, PDF, DOC y DOCX.           |
 | Organización    | Los archivos se agrupan por sección y año. |
 
-La subida devuelve la metadata básica del archivo para luego registrarla en `media_files`.
+## La subida devuelve la metadata básica del archivo para luego registrarla en `media_files`.
+
+## education_cards
+
+Tabla destinada a gestionar las cards visibles de la sección Educación desde el dashboard administrativo.
+
+### Campos
+
+| Campo       | Descripción                                                |
+| ----------- | ---------------------------------------------------------- |
+| id          | Identificador único de la card educativa.                  |
+| segment_key | Clave única del segmento educativo y vínculo con sus tips. |
+| title       | Título visible de la card educativa.                       |
+| description | Descripción visible dentro de la card.                     |
+| icon_name   | Nombre del icono que el frontend debe renderizar.          |
+| sort_order  | Orden visual de la card dentro de la sección Educación.    |
+| is_active   | Indica si la card debe mostrarse públicamente.             |
+| created_at  | Fecha de creación del registro.                            |
+| updated_at  | Fecha de última modificación.                              |
+
+### Relación con tips educativos
+
+El campo `segment_key` permite vincular cada card con sus tips en la tabla `education_tips`.
