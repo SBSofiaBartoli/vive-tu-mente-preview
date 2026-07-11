@@ -17,21 +17,21 @@ export default function AdminLayout({
 }>) {
   return (
     <main className="min-h-screen bg-[#f7fbfb] text-[#071a2f]">
-      <div className="grid min-h-screen lg:grid-cols-[280px_1fr]">
-        <aside className="border-r border-[#dcebea] bg-white px-6 py-6">
-          <div className="mb-8">
+      <div className="min-h-screen lg:grid lg:grid-cols-[280px_1fr]">
+        <aside className="border-b border-[#dcebea] bg-white px-4 py-5 lg:border-b-0 lg:border-r lg:px-6 lg:py-6">
+          <div className="mb-5 lg:mb-8">
             <p className="text-sm font-semibold text-[#39b8bb]">
               Fundación Vive Tu Mente
             </p>
             <h1 className="mt-2 text-2xl font-bold">Dashboard</h1>
           </div>
 
-          <nav className="space-y-2">
+          <nav className="-mx-1 flex gap-2 overflow-x-auto pb-1 lg:mx-0 lg:block lg:space-y-2 lg:overflow-visible lg:pb-0">
             {adminNavItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="block rounded-lg px-4 py-3 text-sm font-semibold text-[#1d3351] transition hover:bg-[#e7f8f8] hover:text-[#0b777b]"
+                className="shrink-0 rounded-lg px-4 py-3 text-sm font-semibold text-[#1d3351] transition hover:bg-[#e7f8f8] hover:text-[#0b777b] lg:block"
               >
                 {item.label}
               </Link>
@@ -40,13 +40,13 @@ export default function AdminLayout({
         </aside>
 
         <section className="flex min-w-0 flex-col">
-          <header className="border-b border-[#dcebea] bg-white px-6 py-5">
+          <header className="border-b border-[#dcebea] bg-white px-4 py-4 lg:px-6 lg:py-5">
             <p className="text-sm font-medium text-[#52708a]">
               Panel administrativo
             </p>
           </header>
 
-          <div className="flex-1 px-6 py-8">{children}</div>
+          <div className="flex-1 px-4 py-6 lg:px-6 lg:py-8">{children}</div>
         </section>
       </div>
     </main>
