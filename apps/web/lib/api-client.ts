@@ -12,6 +12,10 @@ type ApiClientOptions = {
   accessToken: string;
 };
 
+type ApiClientMutationOptions<TBody> = ApiClientOptions & {
+  body: TBody;
+};
+
 export const adminApiClient = async <T>(
   path: string,
   { accessToken }: ApiClientOptions,
@@ -27,4 +31,24 @@ export const adminApiClient = async <T>(
   }
 
   return response.json() as Promise<T>;
+};
+
+export const adminApiPatchClient = async <TResponse, TBody>(
+  path: string,
+  { accessToken, body }: ApiClientMutationOptions<TBody>,
+): Promise<TResponse> => {
+  const response = await fetch(`${getApiUrl()}${path}`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    throw new Error("API request failed");
+  }
+
+  return response.json() as Promise<TResponse>;
 };
