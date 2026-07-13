@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { adminApiClient } from "@/lib/api-client";
+import { adminApiClient, adminApiPatchClient } from "@/lib/api-client";
 import { createSupabaseBrowserClient } from "@/lib/supabase-client";
 import type { ParticipationMessage } from "@/types/participation-message";
 
@@ -15,6 +15,9 @@ export function ParticipationMessagesPanel() {
   const [messages, setMessages] = useState<ParticipationMessage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [updatingMessageId, setUpdatingMessageId] = useState<string | null>(
+    null,
+  );
 
   useEffect(() => {
     const loadMessages = async () => {
@@ -43,6 +46,43 @@ export function ParticipationMessagesPanel() {
 
     void loadMessages();
   }, []);
+
+  const updateMessageStatus = async (
+    messageId: string,
+    status: Partial<
+      Pick<ParticipationMessage, "is_read" | "is_starred" | "is_contacted">
+    >,
+  ) => {
+    try {
+      setUpdatingMessageId(messageId);
+
+      const supabaseClient = createSupabaseBrowserClient();
+      const { data } = await supabaseClient.auth.getSession();
+
+      if (!data.session) {
+        setErrorMessage("No se encontró una sesión activa.");
+        return;
+      }
+
+      const updatedMessage = await adminApiPatchClient<
+        ParticipationMessage,
+        typeof status
+      >(`/api/participation/messages/admin/${messageId}/status`, {
+        accessToken: data.session.access_token,
+        body: status,
+      });
+
+      setMessages((currentMessages) =>
+        currentMessages.map((message) =>
+          message.id === messageId ? updatedMessage : message,
+        ),
+      );
+    } catch {
+      setErrorMessage("No se pudo actualizar el estado del mensaje.");
+    } finally {
+      setUpdatingMessageId(null);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -118,6 +158,48 @@ export function ParticipationMessagesPanel() {
           <p className="mt-4 text-xs font-semibold text-[#52708a]">
             Enviado el {formatDate(message.created_at)}
           </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <button
+              type="button"
+              disabled={updatingMessageId === message.id}
+              onClick={() =>
+                updateMessageStatus(message.id, {
+                  is_read: !message.is_read,
+                })
+              }
+              className="rounded-full border border-[#dcebea] px-3 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] hover:text-[#168c91] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {message.is_read ? "Marcar no leído" : "Marcar leído"}
+            </button>
+
+            <button
+              type="button"
+              disabled={updatingMessageId === message.id}
+              onClick={() =>
+                updateMessageStatus(message.id, {
+                  is_starred: !message.is_starred,
+                })
+              }
+              className="rounded-full border border-[#dcebea] px-3 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] hover:text-[#168c91] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {message.is_starred ? "Quitar destacado" : "Destacar"}
+            </button>
+
+            <button
+              type="button"
+              disabled={updatingMessageId === message.id}
+              onClick={() =>
+                updateMessageStatus(message.id, {
+                  is_contacted: !message.is_contacted,
+                })
+              }
+              className="rounded-full border border-[#dcebea] px-3 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] hover:text-[#168c91] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {message.is_contacted
+                ? "Marcar no contactado"
+                : "Marcar contactado"}
+            </button>
+          </div>
         </article>
       ))}
     </div>
