@@ -161,6 +161,15 @@ export function PendingArticlesPanel() {
         </div>
       ) : null}
 
+      <div className="rounded-lg border border-[#dcebea] bg-white p-4">
+        <p className="text-sm font-semibold text-[#52708a]">
+          Propuestas pendientes
+        </p>
+        <p className="mt-1 text-3xl font-bold text-[#071a2f]">
+          {articles.length}
+        </p>
+      </div>
+
       {articles.map((article) => (
         <article
           key={article.id}
