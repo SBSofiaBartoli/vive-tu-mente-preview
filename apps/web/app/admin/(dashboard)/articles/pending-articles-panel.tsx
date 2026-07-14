@@ -18,6 +18,9 @@ export function PendingArticlesPanel() {
   const [updatingArticleId, setUpdatingArticleId] = useState<string | null>(
     null,
   );
+  const [rejectionReasons, setRejectionReasons] = useState<
+    Record<string, string>
+  >({});
 
   useEffect(() => {
     const loadPendingArticles = async () => {
@@ -48,7 +51,10 @@ export function PendingArticlesPanel() {
     void loadPendingArticles();
   }, []);
 
-  const updateArticle = async (articleId: string, endpoint: string) => {
+  const updateArticle = async (
+    articleId: string,
+    endpoint: "publish" | "reject",
+  ) => {
     try {
       setUpdatingArticleId(articleId);
 
@@ -60,17 +66,33 @@ export function PendingArticlesPanel() {
         return;
       }
 
-      await adminApiPatchClient<Article, Record<string, never>>(
+      const body =
+        endpoint === "reject"
+          ? { rejection_reason: rejectionReasons[articleId]?.trim() }
+          : {};
+
+      if (endpoint === "reject" && !body.rejection_reason) {
+        setErrorMessage("Para rechazar una propuesta, indicá el motivo.");
+        return;
+      }
+
+      await adminApiPatchClient<Article, typeof body>(
         `/api/articles/admin/${articleId}/${endpoint}`,
         {
           accessToken: data.session.access_token,
-          body: {},
+          body,
         },
       );
 
       setArticles((currentArticles) =>
         currentArticles.filter((article) => article.id !== articleId),
       );
+
+      setRejectionReasons((currentReasons) => {
+        const nextReasons = { ...currentReasons };
+        delete nextReasons[articleId];
+        return nextReasons;
+      });
     } catch {
       setErrorMessage("No se pudo actualizar la propuesta.");
     } finally {
@@ -144,6 +166,25 @@ export function PendingArticlesPanel() {
           <p className="mt-4 text-xs font-semibold text-[#52708a]">
             Recibido el {formatDate(article.created_at)}
           </p>
+
+          <label className="mt-4 block">
+            <span className="text-xs font-bold text-[#52708a]">
+              Motivo de rechazo
+            </span>
+            <textarea
+              value={rejectionReasons[article.id] ?? ""}
+              onChange={(event) =>
+                setRejectionReasons((currentReasons) => ({
+                  ...currentReasons,
+                  [article.id]: event.target.value,
+                }))
+              }
+              rows={3}
+              className="mt-2 w-full rounded-lg border border-[#dcebea] bg-white px-3 py-2 text-sm text-[#071a2f] outline-none transition focus:border-[#39b8bb]"
+              placeholder="Explicá brevemente por qué se rechaza la propuesta."
+            />
+          </label>
+
           <div className="mt-4 flex flex-wrap gap-2">
             <button
               type="button"
