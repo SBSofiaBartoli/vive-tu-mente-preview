@@ -21,6 +21,7 @@ export function PendingArticlesPanel() {
   const [rejectionReasons, setRejectionReasons] = useState<
     Record<string, string>
   >({});
+  const [reviewNotes, setReviewNotes] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const loadPendingArticles = async () => {
@@ -53,7 +54,7 @@ export function PendingArticlesPanel() {
 
   const updateArticle = async (
     articleId: string,
-    endpoint: "publish" | "reject",
+    endpoint: "publish" | "reject" | "request-changes",
   ) => {
     try {
       setUpdatingArticleId(articleId);
@@ -69,10 +70,23 @@ export function PendingArticlesPanel() {
       const body =
         endpoint === "reject"
           ? { rejection_reason: rejectionReasons[articleId]?.trim() }
-          : {};
+          : endpoint === "request-changes"
+            ? { review_notes: reviewNotes[articleId]?.trim() }
+            : {};
 
-      if (endpoint === "reject" && !body.rejection_reason) {
+      if (
+        endpoint === "reject" &&
+        !("rejection_reason" in body && body.rejection_reason)
+      ) {
         setErrorMessage("Para rechazar una propuesta, indicá el motivo.");
+        return;
+      }
+
+      if (
+        endpoint === "request-changes" &&
+        !("review_notes" in body && body.review_notes)
+      ) {
+        setErrorMessage("Para solicitar cambios, indicá las observaciones.");
         return;
       }
 
@@ -92,6 +106,12 @@ export function PendingArticlesPanel() {
         const nextReasons = { ...currentReasons };
         delete nextReasons[articleId];
         return nextReasons;
+      });
+
+      setReviewNotes((currentNotes) => {
+        const nextNotes = { ...currentNotes };
+        delete nextNotes[articleId];
+        return nextNotes;
       });
     } catch {
       setErrorMessage("No se pudo actualizar la propuesta.");
@@ -185,6 +205,24 @@ export function PendingArticlesPanel() {
             />
           </label>
 
+          <label className="mt-4 block">
+            <span className="text-xs font-bold text-[#52708a]">
+              Observaciones para solicitar cambios
+            </span>
+            <textarea
+              value={reviewNotes[article.id] ?? ""}
+              onChange={(event) =>
+                setReviewNotes((currentNotes) => ({
+                  ...currentNotes,
+                  [article.id]: event.target.value,
+                }))
+              }
+              rows={3}
+              className="mt-2 w-full rounded-lg border border-[#dcebea] bg-white px-3 py-2 text-sm text-[#071a2f] outline-none transition focus:border-[#39b8bb]"
+              placeholder="Indicá qué cambios debería realizar la persona autora."
+            />
+          </label>
+
           <div className="mt-4 flex flex-wrap gap-2">
             <button
               type="button"
@@ -193,6 +231,15 @@ export function PendingArticlesPanel() {
               className="rounded-full bg-[#39b8bb] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:bg-[#5fd0d2] disabled:cursor-not-allowed disabled:opacity-60"
             >
               Publicar
+            </button>
+
+            <button
+              type="button"
+              disabled={updatingArticleId === article.id}
+              onClick={() => updateArticle(article.id, "request-changes")}
+              className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] hover:text-[#168c91] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Solicitar cambios
             </button>
 
             <button
