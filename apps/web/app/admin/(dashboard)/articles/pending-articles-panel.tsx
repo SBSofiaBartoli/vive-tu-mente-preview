@@ -216,69 +216,74 @@ export function PendingArticlesPanel() {
             Recibido el {formatDate(article.created_at)}
           </p>
 
-          <label className="mt-4 block">
-            <span className="text-xs font-bold text-[#52708a]">
-              Motivo de rechazo
-            </span>
-            <textarea
-              value={rejectionReasons[article.id] ?? ""}
-              onChange={(event) =>
-                setRejectionReasons((currentReasons) => ({
-                  ...currentReasons,
-                  [article.id]: event.target.value,
-                }))
-              }
-              rows={3}
-              className="mt-2 w-full rounded-lg border border-[#dcebea] bg-white px-3 py-2 text-sm text-[#071a2f] outline-none transition focus:border-[#39b8bb]"
-              placeholder="Explicá brevemente por qué se rechaza la propuesta."
-            />
-          </label>
+          <div className="mt-5 rounded-lg border border-[#dcebea] bg-[#f7fbfb] p-4">
+            <p className="text-sm font-bold text-[#071a2f]">
+              Revisión administrativa
+            </p>
+            <label className="mt-3 block">
+              <span className="text-xs font-bold text-[#52708a]">
+                Motivo de rechazo
+              </span>
+              <textarea
+                value={rejectionReasons[article.id] ?? ""}
+                onChange={(event) =>
+                  setRejectionReasons((currentReasons) => ({
+                    ...currentReasons,
+                    [article.id]: event.target.value,
+                  }))
+                }
+                rows={3}
+                className="mt-2 w-full rounded-lg border border-[#dcebea] bg-white px-3 py-2 text-sm text-[#071a2f] outline-none transition focus:border-[#39b8bb]"
+                placeholder="Explicá brevemente por qué se rechaza la propuesta."
+              />
+            </label>
 
-          <label className="mt-4 block">
-            <span className="text-xs font-bold text-[#52708a]">
-              Observaciones para solicitar cambios
-            </span>
-            <textarea
-              value={reviewNotes[article.id] ?? ""}
-              onChange={(event) =>
-                setReviewNotes((currentNotes) => ({
-                  ...currentNotes,
-                  [article.id]: event.target.value,
-                }))
-              }
-              rows={3}
-              className="mt-2 w-full rounded-lg border border-[#dcebea] bg-white px-3 py-2 text-sm text-[#071a2f] outline-none transition focus:border-[#39b8bb]"
-              placeholder="Indicá qué cambios debería realizar la persona autora."
-            />
-          </label>
+            <label className="mt-4 block">
+              <span className="text-xs font-bold text-[#52708a]">
+                Observaciones para solicitar cambios
+              </span>
+              <textarea
+                value={reviewNotes[article.id] ?? ""}
+                onChange={(event) =>
+                  setReviewNotes((currentNotes) => ({
+                    ...currentNotes,
+                    [article.id]: event.target.value,
+                  }))
+                }
+                rows={3}
+                className="mt-2 w-full rounded-lg border border-[#dcebea] bg-white px-3 py-2 text-sm text-[#071a2f] outline-none transition focus:border-[#39b8bb]"
+                placeholder="Indicá qué cambios debería realizar la persona autora."
+              />
+            </label>
 
-          <div className="mt-4 flex flex-wrap gap-2">
-            <button
-              type="button"
-              disabled={updatingArticleId === article.id}
-              onClick={() => updateArticle(article.id, "publish")}
-              className="rounded-full bg-[#39b8bb] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:bg-[#5fd0d2] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              Publicar
-            </button>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <button
+                type="button"
+                disabled={updatingArticleId === article.id}
+                onClick={() => updateArticle(article.id, "publish")}
+                className="rounded-full bg-[#39b8bb] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:bg-[#5fd0d2] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Publicar
+              </button>
 
-            <button
-              type="button"
-              disabled={updatingArticleId === article.id}
-              onClick={() => updateArticle(article.id, "request-changes")}
-              className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] hover:text-[#168c91] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              Solicitar cambios
-            </button>
+              <button
+                type="button"
+                disabled={updatingArticleId === article.id}
+                onClick={() => updateArticle(article.id, "request-changes")}
+                className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] hover:text-[#168c91] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Solicitar cambios
+              </button>
 
-            <button
-              type="button"
-              disabled={updatingArticleId === article.id}
-              onClick={() => updateArticle(article.id, "reject")}
-              className="rounded-full border border-red-200 px-4 py-2 text-xs font-bold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              Rechazar
-            </button>
+              <button
+                type="button"
+                disabled={updatingArticleId === article.id}
+                onClick={() => updateArticle(article.id, "reject")}
+                className="rounded-full border border-red-200 px-4 py-2 text-xs font-bold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Rechazar
+              </button>
+            </div>
           </div>
         </article>
       ))}
