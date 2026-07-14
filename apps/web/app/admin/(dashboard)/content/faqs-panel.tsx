@@ -23,6 +23,9 @@ export function FaqsPanel() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [updatingFaqId, setUpdatingFaqId] = useState<string | null>(null);
+  const [editingFaqs, setEditingFaqs] = useState<
+    Record<string, UpdateFaqPayload>
+  >({});
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -127,6 +130,55 @@ export function FaqsPanel() {
           ? "La pregunta frecuente fue activada."
           : "La pregunta frecuente fue desactivada.",
       );
+    } catch {
+      setErrorMessage("No se pudo actualizar la pregunta frecuente.");
+    } finally {
+      setUpdatingFaqId(null);
+    }
+  };
+
+  const updateFaq = async (faq: Faq) => {
+    try {
+      setUpdatingFaqId(faq.id);
+      setErrorMessage("");
+      setSuccessMessage("");
+
+      const changes = editingFaqs[faq.id];
+
+      if (!changes) {
+        setSuccessMessage("No hay cambios para guardar.");
+        return;
+      }
+
+      const supabaseClient = createSupabaseBrowserClient();
+      const { data } = await supabaseClient.auth.getSession();
+
+      if (!data.session) {
+        setErrorMessage("No se encontró una sesión activa.");
+        return;
+      }
+
+      const updatedFaq = await adminApiPatchClient<Faq, UpdateFaqPayload>(
+        `/api/faqs/admin/${faq.id}`,
+        {
+          accessToken: data.session.access_token,
+          body: changes,
+        },
+      );
+
+      setFaqs((currentFaqs) =>
+        currentFaqs.map((currentFaq) =>
+          currentFaq.id === faq.id ? updatedFaq : currentFaq,
+        ),
+      );
+
+      setEditingFaqs((currentEditingFaqs) => {
+        const nextEditingFaqs = { ...currentEditingFaqs };
+        delete nextEditingFaqs[faq.id];
+        return nextEditingFaqs;
+      });
+
+      setSuccessMessage("La pregunta frecuente fue actualizada.");
     } catch {
       setErrorMessage("No se pudo actualizar la pregunta frecuente.");
     } finally {
@@ -279,9 +331,19 @@ export function FaqsPanel() {
                 <p className="text-xs font-bold uppercase text-[#39b8bb]">
                   {faq.category}
                 </p>
-                <h3 className="mt-1 text-lg font-bold text-[#071a2f]">
-                  {faq.question}
-                </h3>
+                <input
+                  value={editingFaqs[faq.id]?.question ?? faq.question}
+                  onChange={(event) =>
+                    setEditingFaqs((currentEditingFaqs) => ({
+                      ...currentEditingFaqs,
+                      [faq.id]: {
+                        ...currentEditingFaqs[faq.id],
+                        question: event.target.value,
+                      },
+                    }))
+                  }
+                  className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm font-bold text-[#071a2f] outline-none transition focus:border-[#39b8bb]"
+                />
               </div>
 
               <span
@@ -295,14 +357,48 @@ export function FaqsPanel() {
               </span>
             </div>
 
-            <p className="mt-4 whitespace-pre-line text-sm leading-6 text-[#52708a]">
-              {faq.answer}
-            </p>
+            <textarea
+              value={editingFaqs[faq.id]?.answer ?? faq.answer}
+              onChange={(event) =>
+                setEditingFaqs((currentEditingFaqs) => ({
+                  ...currentEditingFaqs,
+                  [faq.id]: {
+                    ...currentEditingFaqs[faq.id],
+                    answer: event.target.value,
+                  },
+                }))
+              }
+              rows={4}
+              className="mt-4 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm leading-6 text-[#52708a] outline-none transition focus:border-[#39b8bb]"
+            />
 
             <div className="mt-4 flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold text-[#52708a]">
-                Orden: {faq.sort_order}
-              </span>
+              <label className="flex items-center gap-2 text-xs font-semibold text-[#52708a]">
+                Orden:
+                <input
+                  type="number"
+                  value={editingFaqs[faq.id]?.sort_order ?? faq.sort_order}
+                  onChange={(event) =>
+                    setEditingFaqs((currentEditingFaqs) => ({
+                      ...currentEditingFaqs,
+                      [faq.id]: {
+                        ...currentEditingFaqs[faq.id],
+                        sort_order: Number(event.target.value),
+                      },
+                    }))
+                  }
+                  className="w-20 rounded-lg border border-[#dcebea] px-2 py-1 text-xs outline-none transition focus:border-[#39b8bb]"
+                />
+              </label>
+
+              <button
+                type="button"
+                disabled={updatingFaqId === faq.id}
+                onClick={() => updateFaq(faq)}
+                className="rounded-full bg-[#39b8bb] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:bg-[#5fd0d2] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Guardar cambios
+              </button>
 
               <button
                 type="button"
