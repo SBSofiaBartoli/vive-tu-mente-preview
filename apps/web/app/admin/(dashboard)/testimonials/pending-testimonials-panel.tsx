@@ -31,6 +31,9 @@ export function PendingTestimonialsPanel() {
   const [rejectionReasons, setRejectionReasons] = useState<
     Record<string, string>
   >({});
+  const [featuredSelections, setFeaturedSelections] = useState<
+    Record<string, boolean>
+  >({});
 
   useEffect(() => {
     const loadPendingTestimonials = async () => {
@@ -99,6 +102,16 @@ export function PendingTestimonialsPanel() {
         },
       );
 
+      if (endpoint === "approve" && featuredSelections[testimonialId]) {
+        await adminApiPatchClient<Testimonial, { is_featured: boolean }>(
+          `/api/testimonials/admin/${testimonialId}/featured`,
+          {
+            accessToken: data.session.access_token,
+            body: { is_featured: true },
+          },
+        );
+      }
+
       setTestimonials((currentTestimonials) =>
         currentTestimonials.filter(
           (testimonial) => testimonial.id !== testimonialId,
@@ -115,6 +128,12 @@ export function PendingTestimonialsPanel() {
         const nextReasons = { ...currentReasons };
         delete nextReasons[testimonialId];
         return nextReasons;
+      });
+
+      setFeaturedSelections((currentSelections) => {
+        const nextSelections = { ...currentSelections };
+        delete nextSelections[testimonialId];
+        return nextSelections;
       });
     } catch {
       setErrorMessage("No se pudo actualizar el testimonio.");
@@ -217,6 +236,21 @@ export function PendingTestimonialsPanel() {
                     className="mt-2 w-full rounded-lg border border-[#dcebea] bg-white px-3 py-2 text-sm text-[#071a2f] outline-none transition focus:border-[#39b8bb]"
                     placeholder="Explicá brevemente por qué se rechaza el testimonio."
                   />
+                </label>
+
+                <label className="mt-4 flex items-center gap-2 text-sm font-semibold text-[#071a2f]">
+                  <input
+                    type="checkbox"
+                    checked={featuredSelections[testimonial.id] ?? false}
+                    onChange={(event) =>
+                      setFeaturedSelections((currentSelections) => ({
+                        ...currentSelections,
+                        [testimonial.id]: event.target.checked,
+                      }))
+                    }
+                    className="h-4 w-4 accent-[#39b8bb]"
+                  />
+                  Destacar al aprobar
                 </label>
 
                 <div className="mt-4 flex flex-wrap gap-2">
