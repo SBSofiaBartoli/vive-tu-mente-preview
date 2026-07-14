@@ -76,6 +76,13 @@ export function ParticipationMessagesPanel() {
     return true;
   });
 
+  const filterCounts: Record<ParticipationFilter, number> = {
+    all: messages.length,
+    unread: messages.filter((message) => !message.is_read).length,
+    starred: messages.filter((message) => message.is_starred).length,
+    contacted: messages.filter((message) => message.is_contacted).length,
+  };
+
   const updateMessageStatus = async (
     messageId: string,
     status: Partial<
@@ -157,6 +164,9 @@ export function ParticipationMessagesPanel() {
               }
             >
               {option.label}
+              <span className="ml-2 rounded-full bg-white/70 px-2 py-0.5 text-xs">
+                {filterCounts[option.value]}
+              </span>
             </button>
           );
         })}
