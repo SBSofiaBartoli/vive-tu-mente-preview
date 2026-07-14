@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AdminAuthGuard } from "../admin-auth-guard";
+import { AdminLogoutButton } from "./admin-logout-button";
 
 const adminNavItems = [
   { href: "/admin", label: "Resumen" },
@@ -42,10 +43,11 @@ export default function AdminLayout({
           </aside>
 
           <section className="flex min-w-0 flex-col">
-            <header className="border-b border-[#dcebea] bg-white px-4 py-4 lg:px-6 lg:py-5">
+            <header className="flex flex-col gap-3 border-b border-[#dcebea] bg-white px-4 py-4 sm:flex-row sm:items-center sm:justify-between lg:px-6 lg:py-5">
               <p className="text-sm font-medium text-[#52708a]">
                 Panel administrativo
               </p>
+              <AdminLogoutButton />
             </header>
 
             <div className="flex-1 px-4 py-6 lg:px-6 lg:py-8">{children}</div>
