@@ -15,6 +15,7 @@ export function PendingArticlesPanel() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [updatingArticleId, setUpdatingArticleId] = useState<string | null>(
     null,
   );
@@ -58,6 +59,8 @@ export function PendingArticlesPanel() {
   ) => {
     try {
       setUpdatingArticleId(articleId);
+      setErrorMessage("");
+      setSuccessMessage("");
 
       const supabaseClient = createSupabaseBrowserClient();
       const { data } = await supabaseClient.auth.getSession();
@@ -102,6 +105,14 @@ export function PendingArticlesPanel() {
         currentArticles.filter((article) => article.id !== articleId),
       );
 
+      setSuccessMessage(
+        endpoint === "publish"
+          ? "La propuesta fue publicada correctamente."
+          : endpoint === "reject"
+            ? "La propuesta fue rechazada correctamente."
+            : "La solicitud de cambios fue registrada correctamente.",
+      );
+
       setRejectionReasons((currentReasons) => {
         const nextReasons = { ...currentReasons };
         delete nextReasons[articleId];
@@ -128,14 +139,6 @@ export function PendingArticlesPanel() {
     );
   }
 
-  if (errorMessage) {
-    return (
-      <div className="rounded-lg border border-red-100 bg-red-50 p-6 text-sm font-semibold text-red-700">
-        {errorMessage}
-      </div>
-    );
-  }
-
   if (articles.length === 0) {
     return (
       <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
@@ -146,6 +149,18 @@ export function PendingArticlesPanel() {
 
   return (
     <div className="space-y-4">
+      {errorMessage ? (
+        <div className="rounded-lg border border-red-100 bg-red-50 p-4 text-sm font-semibold text-red-700">
+          {errorMessage}
+        </div>
+      ) : null}
+
+      {successMessage ? (
+        <div className="rounded-lg border border-[#cbeee8] bg-[#eefafa] p-4 text-sm font-semibold text-[#168c91]">
+          {successMessage}
+        </div>
+      ) : null}
+
       {articles.map((article) => (
         <article
           key={article.id}
