@@ -203,9 +203,14 @@ export function PendingArticlesPanel() {
             </p>
           ) : null}
 
-          <p className="mt-4 line-clamp-4 whitespace-pre-line text-sm leading-6 text-[#52708a]">
-            {article.content}
-          </p>
+          <details className="mt-4 rounded-lg border border-[#dcebea] bg-[#f7fbfb] p-4">
+            <summary className="cursor-pointer text-sm font-bold text-[#071a2f]">
+              Ver contenido enviado
+            </summary>
+            <p className="mt-4 line-clamp-4 whitespace-pre-line text-sm leading-6 text-[#52708a]">
+              {article.content}
+            </p>
+          </details>
 
           <p className="mt-4 text-xs font-semibold text-[#52708a]">
             Recibido el {formatDate(article.created_at)}
