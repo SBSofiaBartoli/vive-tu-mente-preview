@@ -52,3 +52,23 @@ export const adminApiPatchClient = async <TResponse, TBody>(
 
   return response.json() as Promise<TResponse>;
 };
+
+export const adminApiPostClient = async <TResponse, TBody>(
+  path: string,
+  { accessToken, body }: ApiClientMutationOptions<TBody>,
+): Promise<TResponse> => {
+  const response = await fetch(`${getApiUrl()}${path}`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    throw new Error("API request failed");
+  }
+
+  return response.json() as Promise<TResponse>;
+};
