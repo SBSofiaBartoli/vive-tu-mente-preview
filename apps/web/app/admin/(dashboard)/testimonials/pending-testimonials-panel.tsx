@@ -238,20 +238,26 @@ export function PendingTestimonialsPanel() {
                   />
                 </label>
 
-                <label className="mt-4 flex items-center gap-2 text-sm font-semibold text-[#071a2f]">
-                  <input
-                    type="checkbox"
-                    checked={featuredSelections[testimonial.id] ?? false}
-                    onChange={(event) =>
-                      setFeaturedSelections((currentSelections) => ({
-                        ...currentSelections,
-                        [testimonial.id]: event.target.checked,
-                      }))
-                    }
-                    className="h-4 w-4 accent-[#39b8bb]"
-                  />
-                  Destacar al aprobar
-                </label>
+                <div className="mt-4 rounded-lg border border-[#dcebea] bg-white p-3">
+                  <label className="mt-4 flex items-center gap-2 text-sm font-semibold text-[#071a2f]">
+                    <input
+                      type="checkbox"
+                      checked={featuredSelections[testimonial.id] ?? false}
+                      onChange={(event) =>
+                        setFeaturedSelections((currentSelections) => ({
+                          ...currentSelections,
+                          [testimonial.id]: event.target.checked,
+                        }))
+                      }
+                      className="h-4 w-4 accent-[#39b8bb]"
+                    />
+                    Destacar al aprobar
+                  </label>
+                  <p className="mt-1 text-xs font-semibold text-[#52708a]">
+                    Los testimonios destacados podrán mostrarse en secciones
+                    principales del sitio.
+                  </p>
+                </div>
 
                 <div className="mt-4 flex flex-wrap gap-2">
                   <button
