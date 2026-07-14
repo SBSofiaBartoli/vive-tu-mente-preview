@@ -11,6 +11,18 @@ const formatDate = (date: string) =>
     timeStyle: "short",
   }).format(new Date(date));
 
+type ParticipationFilter = "all" | "unread" | "starred" | "contacted";
+
+const filterOptions: Array<{
+  label: string;
+  value: ParticipationFilter;
+}> = [
+  { label: "Todos", value: "all" },
+  { label: "No leídos", value: "unread" },
+  { label: "Destacados", value: "starred" },
+  { label: "Contactados", value: "contacted" },
+];
+
 export function ParticipationMessagesPanel() {
   const [messages, setMessages] = useState<ParticipationMessage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -18,6 +30,7 @@ export function ParticipationMessagesPanel() {
   const [updatingMessageId, setUpdatingMessageId] = useState<string | null>(
     null,
   );
+  const [activeFilter, setActiveFilter] = useState<ParticipationFilter>("all");
 
   useEffect(() => {
     const loadMessages = async () => {
@@ -46,6 +59,22 @@ export function ParticipationMessagesPanel() {
 
     void loadMessages();
   }, []);
+
+  const filteredMessages = messages.filter((message) => {
+    if (activeFilter === "unread") {
+      return !message.is_read;
+    }
+
+    if (activeFilter === "starred") {
+      return message.is_starred;
+    }
+
+    if (activeFilter === "contacted") {
+      return message.is_contacted;
+    }
+
+    return true;
+  });
 
   const updateMessageStatus = async (
     messageId: string,
@@ -108,9 +137,38 @@ export function ParticipationMessagesPanel() {
     );
   }
 
+  const hasFilteredMessages = filteredMessages.length > 0;
+
   return (
     <div className="space-y-4">
-      {messages.map((message) => (
+      <div className="flex flex-wrap gap-2 rounded-lg border border-[#dcebea] bg-white p-3">
+        {filterOptions.map((option) => {
+          const isActive = activeFilter === option.value;
+
+          return (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => setActiveFilter(option.value)}
+              className={
+                isActive
+                  ? "rounded-full bg-[#39b8bb] px-4 py-2 text-sm font-bold text-[#071a2f]"
+                  : "rounded-full border border-[#dcebea] px-4 py-2 text-sm font-bold text-[#52708a] transition hover:border-[#39b8bb] hover:text-[#168c91]"
+              }
+            >
+              {option.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {!hasFilteredMessages ? (
+        <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
+          No hay mensajes para este filtro.
+        </div>
+      ) : null}
+
+      {filteredMessages.map((message) => (
         <article
           key={message.id}
           className="rounded-lg border border-[#dcebea] bg-white p-5 shadow-sm"
