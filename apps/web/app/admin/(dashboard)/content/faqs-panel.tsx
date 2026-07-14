@@ -328,9 +328,25 @@ export function FaqsPanel() {
           >
             <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
               <div>
-                <p className="text-xs font-bold uppercase text-[#39b8bb]">
-                  {faq.category}
-                </p>
+                <label className="block">
+                  <span className="text-xs font-bold uppercase text-[#39b8bb]">
+                    Categoría
+                  </span>
+                  <input
+                    value={editingFaqs[faq.id]?.category ?? faq.category}
+                    onChange={(event) =>
+                      setEditingFaqs((currentEditingFaqs) => ({
+                        ...currentEditingFaqs,
+                        [faq.id]: {
+                          ...currentEditingFaqs[faq.id],
+                          category: event.target.value,
+                        },
+                      }))
+                    }
+                    className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm text-[#071a2f] outline-none transition focus:border-[#39b8bb]"
+                  />
+                </label>
+
                 <input
                   value={editingFaqs[faq.id]?.question ?? faq.question}
                   onChange={(event) =>
