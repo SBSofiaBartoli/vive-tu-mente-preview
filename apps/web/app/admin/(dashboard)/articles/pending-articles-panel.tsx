@@ -220,6 +220,10 @@ export function PendingArticlesPanel() {
             <p className="text-sm font-bold text-[#071a2f]">
               Revisión administrativa
             </p>
+            <p className="mt-1 text-xs font-semibold text-[#52708a]">
+              Contacto para devolución:{" "}
+              {article.submitted_by_email ?? "No informado"}
+            </p>
             <label className="mt-3 block">
               <span className="text-xs font-bold text-[#52708a]">
                 Motivo de rechazo
