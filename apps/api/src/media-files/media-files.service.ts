@@ -7,6 +7,8 @@ import { SupabaseService } from '../supabase/supabase.service';
 import type { CreateMediaFileDto } from './dto/create-media-file.dto';
 import type { UpdateMediaFileStatusDto } from './dto/update-media-file-status.dto';
 import type { MediaFile } from './media-file.types';
+import type { PaginatedResponse } from '../common/types/paginated-response.type';
+import type { ListMediaFilesAdminQueryDto } from './dto/list-media-files-admin-query.dto';
 
 const ensureData = <T>(data: unknown): T => {
   if (!data) {
@@ -41,19 +43,33 @@ export class MediaFilesService {
     return ensureData<MediaFile[]>(response.data);
   }
 
-  async findAllAdmin(status?: string, section?: string): Promise<MediaFile[]> {
+  async findAllAdmin(
+    filters: ListMediaFilesAdminQueryDto,
+  ): Promise<PaginatedResponse<MediaFile>> {
+    const page = filters.page ?? 1;
+    const limit = filters.limit ?? 10;
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+
     let query = this.supabaseService
       .getAdminClient()
       .from('media_files')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .select('*', { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .range(from, to);
 
-    if (status) {
-      query = query.eq('status', status);
+    if (filters.status) {
+      query = query.eq('status', filters.status);
     }
 
-    if (section) {
-      query = query.eq('section', section);
+    if (filters.section) {
+      query = query.eq('section', filters.section);
+    }
+
+    if (filters.search) {
+      query = query.or(
+        `original_name.ilike.%${filters.search}%,uploaded_by_name.ilike.%${filters.search}%`,
+      );
     }
 
     const response = await query;
@@ -62,7 +78,17 @@ export class MediaFilesService {
       throw new BadRequestException(response.error.message);
     }
 
-    return ensureData<MediaFile[]>(response.data);
+    const total = response.count ?? 0;
+
+    return {
+      items: ensureData<MediaFile[]>(response.data),
+      meta: {
+        page,
+        limit,
+        total,
+        total_pages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async create(createMediaFileDto: CreateMediaFileDto): Promise<MediaFile> {
