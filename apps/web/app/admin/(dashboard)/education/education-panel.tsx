@@ -1,18 +1,35 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { adminApiClient, adminApiPatchClient } from "@/lib/api-client";
+import {
+  adminApiClient,
+  adminApiPatchClient,
+  adminApiPostClient,
+} from "@/lib/api-client";
 import { createSupabaseBrowserClient } from "@/lib/supabase-client";
 import type {
+  CreateEducationCardPayload,
   EducationCard,
   EducationTip,
   UpdateEducationCardPayload,
   UpdateEducationTipPayload,
 } from "@/types/education";
 
+const emptyCardForm: CreateEducationCardPayload = {
+  segment_key: "",
+  title: "",
+  description: "",
+  icon_name: "book-open",
+  sort_order: 0,
+  is_active: true,
+};
+
 export function EducationPanel() {
   const [cards, setCards] = useState<EducationCard[]>([]);
   const [tips, setTips] = useState<EducationTip[]>([]);
+  const [cardForm, setCardForm] =
+    useState<CreateEducationCardPayload>(emptyCardForm);
+  const [isSavingCard, setIsSavingCard] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
@@ -130,6 +147,56 @@ export function EducationPanel() {
     }
   };
 
+  const createEducationCard = async () => {
+    try {
+      setIsSavingCard(true);
+      setErrorMessage("");
+      setSuccessMessage("");
+
+      if (
+        !cardForm.segment_key.trim() ||
+        !cardForm.title.trim() ||
+        !cardForm.description.trim() ||
+        !cardForm.icon_name.trim()
+      ) {
+        setErrorMessage(
+          "Completá los campos obligatorios de la card educativa.",
+        );
+        return;
+      }
+
+      const supabaseClient = createSupabaseBrowserClient();
+      const { data } = await supabaseClient.auth.getSession();
+
+      if (!data.session) {
+        setErrorMessage("No se encontró una sesión activa.");
+        return;
+      }
+
+      const createdCard = await adminApiPostClient<
+        EducationCard,
+        CreateEducationCardPayload
+      >("/api/education-cards/admin", {
+        accessToken: data.session.access_token,
+        body: {
+          ...cardForm,
+          segment_key: cardForm.segment_key.trim(),
+          title: cardForm.title.trim(),
+          description: cardForm.description.trim(),
+          icon_name: cardForm.icon_name.trim(),
+        },
+      });
+
+      setCards((currentCards) => [...currentCards, createdCard]);
+      setCardForm(emptyCardForm);
+      setSuccessMessage("La card educativa fue creada correctamente.");
+    } catch {
+      setErrorMessage("No se pudo crear la card educativa.");
+    } finally {
+      setIsSavingCard(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
@@ -171,6 +238,120 @@ export function EducationPanel() {
           </p>
         </div>
       </div>
+
+      <section className="rounded-lg border border-[#dcebea] bg-white p-5">
+        <h3 className="text-lg font-bold text-[#071a2f]">
+          Nueva card educativa
+        </h3>
+
+        <div className="mt-4 grid gap-4">
+          <div className="grid gap-4 md:grid-cols-2">
+            <label className="block">
+              <span className="text-sm font-bold text-[#52708a]">Segmento</span>
+              <input
+                value={cardForm.segment_key}
+                onChange={(event) =>
+                  setCardForm((currentForm) => ({
+                    ...currentForm,
+                    segment_key: event.target.value,
+                  }))
+                }
+                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                placeholder="ia-aplicada"
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-sm font-bold text-[#52708a]">Ícono</span>
+              <input
+                value={cardForm.icon_name}
+                onChange={(event) =>
+                  setCardForm((currentForm) => ({
+                    ...currentForm,
+                    icon_name: event.target.value,
+                  }))
+                }
+                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                placeholder="book-open"
+              />
+            </label>
+          </div>
+
+          <label className="block">
+            <span className="text-sm font-bold text-[#52708a]">Título</span>
+            <input
+              value={cardForm.title}
+              onChange={(event) =>
+                setCardForm((currentForm) => ({
+                  ...currentForm,
+                  title: event.target.value,
+                }))
+              }
+              className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+              placeholder="IA aplicada"
+            />
+          </label>
+
+          <label className="block">
+            <span className="text-sm font-bold text-[#52708a]">
+              Descripción
+            </span>
+            <textarea
+              value={cardForm.description}
+              onChange={(event) =>
+                setCardForm((currentForm) => ({
+                  ...currentForm,
+                  description: event.target.value,
+                }))
+              }
+              rows={4}
+              className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+              placeholder="Describí brevemente el contenido de la card."
+            />
+          </label>
+
+          <div className="grid gap-4 md:grid-cols-[160px_1fr]">
+            <label className="block">
+              <span className="text-sm font-bold text-[#52708a]">Orden</span>
+              <input
+                type="number"
+                value={cardForm.sort_order}
+                onChange={(event) =>
+                  setCardForm((currentForm) => ({
+                    ...currentForm,
+                    sort_order: Number(event.target.value),
+                  }))
+                }
+                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+              />
+            </label>
+
+            <label className="mt-7 flex items-center gap-2 text-sm font-semibold text-[#071a2f]">
+              <input
+                type="checkbox"
+                checked={cardForm.is_active}
+                onChange={(event) =>
+                  setCardForm((currentForm) => ({
+                    ...currentForm,
+                    is_active: event.target.checked,
+                  }))
+                }
+                className="h-4 w-4 accent-[#39b8bb]"
+              />
+              Publicar activa
+            </label>
+          </div>
+
+          <button
+            type="button"
+            disabled={isSavingCard}
+            onClick={createEducationCard}
+            className="w-fit rounded-full bg-[#39b8bb] px-5 py-2.5 text-sm font-bold text-[#071a2f] transition hover:bg-[#5fd0d2] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Crear card
+          </button>
+        </div>
+      </section>
 
       <section className="space-y-4">
         <h3 className="text-xl font-bold text-[#071a2f]">Cards educativas</h3>
