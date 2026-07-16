@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   adminApiClient,
   adminApiPatchClient,
@@ -12,6 +12,7 @@ import type {
   CreateMediaFilePayload,
   MediaFile,
   MediaFileStatus,
+  PaginatedMediaFilesResponse,
   UpdateMediaFileStatusPayload,
   UploadedStorageFile,
 } from "@/types/media-file";
@@ -38,8 +39,22 @@ const emptyUploadForm = {
   uploaded_by_email: "",
 };
 
+const mediaFilesPageSize = 10;
+type MediaFileStatusFilter = MediaFileStatus | "all";
+
 export function MediaFilesPanel() {
   const [files, setFiles] = useState<MediaFile[]>([]);
+  const [page, setPage] = useState(1);
+  const [paginationMeta, setPaginationMeta] = useState({
+    page: 1,
+    limit: mediaFilesPageSize,
+    total: 0,
+    total_pages: 1,
+  });
+  const [statusFilter, setStatusFilter] =
+    useState<MediaFileStatusFilter>("all");
+  const [sectionFilter, setSectionFilter] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadForm, setUploadForm] = useState(emptyUploadForm);
   const [isUploading, setIsUploading] = useState(false);
@@ -52,34 +67,62 @@ export function MediaFilesPanel() {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  useEffect(() => {
-    const loadFiles = async () => {
-      try {
-        const supabaseClient = createSupabaseBrowserClient();
-        const { data } = await supabaseClient.auth.getSession();
+  const loadFiles = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const supabaseClient = createSupabaseBrowserClient();
+      const { data } = await supabaseClient.auth.getSession();
 
-        if (!data.session) {
-          setErrorMessage("No se encontró una sesión activa.");
-          return;
-        }
+      if (!data.session) {
+        setErrorMessage("No se encontró una sesión activa.");
+        return;
+      }
 
-        const adminFiles = await adminApiClient<MediaFile[]>(
-          "/api/media-files/admin",
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: String(mediaFilesPageSize),
+      });
+
+      if (statusFilter !== "all") {
+        params.set("status", statusFilter);
+      }
+
+      if (sectionFilter.trim()) {
+        params.set("section", sectionFilter.trim());
+      }
+
+      if (searchTerm.trim()) {
+        params.set("search", searchTerm.trim());
+      }
+
+      const adminFilesResponse =
+        await adminApiClient<PaginatedMediaFilesResponse>(
+          `/api/media-files/admin?${params.toString()}`,
           {
             accessToken: data.session.access_token,
           },
         );
 
-        setFiles(adminFiles);
-      } catch {
-        setErrorMessage("No se pudieron cargar los archivos.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      setFiles(adminFilesResponse.items);
+      setPaginationMeta(adminFilesResponse.meta);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "No se pudieron cargar los archivos.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page, searchTerm, sectionFilter, statusFilter]);
 
-    void loadFiles();
-  }, []);
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      void loadFiles();
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [loadFiles]);
 
   const updateFileStatus = async (file: MediaFile, status: MediaFileStatus) => {
     try {
@@ -131,6 +174,8 @@ export function MediaFilesPanel() {
         ),
       );
 
+      void loadFiles();
+
       setSuccessMessage(`El archivo quedó en estado: ${statusLabels[status]}.`);
     } catch {
       setErrorMessage("No se pudo actualizar el archivo.");
@@ -158,17 +203,17 @@ export function MediaFilesPanel() {
         formData,
       );
 
-      const registeredFile = await apiPostClient<
-        MediaFile,
-        CreateMediaFilePayload
-      >("/api/media-files", {
-        ...uploadedFile,
-        section: uploadForm.section.trim() || "general",
-        uploaded_by_name: uploadForm.uploaded_by_name.trim() || null,
-        uploaded_by_email: uploadForm.uploaded_by_email.trim() || null,
-      });
+      await apiPostClient<MediaFile, CreateMediaFilePayload>(
+        "/api/media-files",
+        {
+          ...uploadedFile,
+          section: uploadForm.section.trim() || "general",
+          uploaded_by_name: uploadForm.uploaded_by_name.trim() || null,
+          uploaded_by_email: uploadForm.uploaded_by_email.trim() || null,
+        },
+      );
 
-      setFiles((currentFiles) => [registeredFile, ...currentFiles]);
+      void loadFiles();
       setSelectedFile(null);
       setUploadForm(emptyUploadForm);
       setSuccessMessage("El archivo fue subido y registrado correctamente.");
@@ -282,11 +327,65 @@ export function MediaFilesPanel() {
         </div>
       </section>
 
+      <section className="rounded-lg border border-[#dcebea] bg-white p-5">
+        <div className="grid gap-4 md:grid-cols-3">
+          <label className="block">
+            <span className="text-sm font-bold text-[#52708a]">Buscar</span>
+            <input
+              value={searchTerm}
+              onChange={(event) => {
+                setSearchTerm(event.target.value);
+                setPage(1);
+              }}
+              className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+              placeholder="Nombre del archivo o persona"
+            />
+          </label>
+
+          <label className="block">
+            <span className="text-sm font-bold text-[#52708a]">Estado</span>
+            <select
+              value={statusFilter}
+              onChange={(event) => {
+                setStatusFilter(event.target.value as MediaFileStatusFilter);
+                setPage(1);
+              }}
+              className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+            >
+              <option value="all">Todos</option>
+              <option value="pending">Pendiente</option>
+              <option value="changes_requested">Cambios solicitados</option>
+              <option value="approved">Aprobado</option>
+              <option value="rejected">Rechazado</option>
+              <option value="archived">Archivado</option>
+            </select>
+          </label>
+
+          <label className="block">
+            <span className="text-sm font-bold text-[#52708a]">Sección</span>
+            <input
+              value={sectionFilter}
+              onChange={(event) => {
+                setSectionFilter(event.target.value);
+                setPage(1);
+              }}
+              className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+              placeholder="general, blog, donation..."
+            />
+          </label>
+        </div>
+      </section>
+
       <div className="rounded-lg border border-[#dcebea] bg-white p-4">
         <p className="text-sm font-semibold text-[#52708a]">
           Archivos cargados
         </p>
-        <p className="mt-1 text-3xl font-bold text-[#071a2f]">{files.length}</p>
+        <p className="mt-1 text-3xl font-bold text-[#071a2f]">
+          {paginationMeta.total}
+        </p>
+        <p className="mt-1 text-sm text-[#52708a]">
+          Mostrando {files.length} resultados en esta página.
+        </p>
       </div>
 
       {files.length === 0 ? (
@@ -435,6 +534,37 @@ export function MediaFilesPanel() {
           </div>
         </article>
       ))}
+      {paginationMeta.total_pages > 1 ? (
+        <div className="flex items-center justify-between rounded-lg border border-[#dcebea] bg-white p-4">
+          <button
+            type="button"
+            disabled={page <= 1}
+            onClick={() =>
+              setPage((currentPage) => Math.max(1, currentPage - 1))
+            }
+            className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Anterior
+          </button>
+
+          <p className="text-sm font-semibold text-[#52708a]">
+            Página {paginationMeta.page} de {paginationMeta.total_pages}
+          </p>
+
+          <button
+            type="button"
+            disabled={page >= paginationMeta.total_pages}
+            onClick={() =>
+              setPage((currentPage) =>
+                Math.min(paginationMeta.total_pages, currentPage + 1),
+              )
+            }
+            className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Siguiente
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -42,3 +42,15 @@ export type CreateMediaFilePayload = UploadedStorageFile & {
   uploaded_by_name?: string | null;
   uploaded_by_email?: string | null;
 };
+
+export type PaginationMeta = {
+  page: number;
+  limit: number;
+  total: number;
+  total_pages: number;
+};
+
+export type PaginatedMediaFilesResponse = {
+  items: MediaFile[];
+  meta: PaginationMeta;
+};
