@@ -172,8 +172,12 @@ export function MediaFilesPanel() {
       setSelectedFile(null);
       setUploadForm(emptyUploadForm);
       setSuccessMessage("El archivo fue subido y registrado correctamente.");
-    } catch {
-      setErrorMessage("No se pudo subir o registrar el archivo.");
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "No se pudo subir o registrar el archivo.",
+      );
     } finally {
       setIsUploading(false);
     }
@@ -376,41 +380,57 @@ export function MediaFilesPanel() {
             </label>
 
             <div className="mt-4 flex flex-wrap gap-2">
-              <button
-                type="button"
-                disabled={updatingFileId === file.id}
-                onClick={() => updateFileStatus(file, "approved")}
-                className="rounded-full bg-[#39b8bb] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:bg-[#5fd0d2] disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                Aprobar
-              </button>
+              {file.status === "pending" ||
+              file.status === "changes_requested" ? (
+                <button
+                  type="button"
+                  disabled={updatingFileId === file.id}
+                  onClick={() => updateFileStatus(file, "approved")}
+                  className="rounded-full bg-[#39b8bb] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:bg-[#5fd0d2] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  Aprobar
+                </button>
+              ) : null}
 
-              <button
-                type="button"
-                disabled={updatingFileId === file.id}
-                onClick={() => updateFileStatus(file, "changes_requested")}
-                className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] hover:text-[#168c91] disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                Solicitar cambios
-              </button>
+              {file.status === "pending" ? (
+                <button
+                  type="button"
+                  disabled={updatingFileId === file.id}
+                  onClick={() => updateFileStatus(file, "changes_requested")}
+                  className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] hover:text-[#168c91] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  Solicitar cambios
+                </button>
+              ) : null}
 
-              <button
-                type="button"
-                disabled={updatingFileId === file.id}
-                onClick={() => updateFileStatus(file, "rejected")}
-                className="rounded-full border border-red-200 px-4 py-2 text-xs font-bold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                Rechazar
-              </button>
+              {file.status === "pending" ||
+              file.status === "changes_requested" ? (
+                <button
+                  type="button"
+                  disabled={updatingFileId === file.id}
+                  onClick={() => updateFileStatus(file, "rejected")}
+                  className="rounded-full border border-red-200 px-4 py-2 text-xs font-bold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  Rechazar
+                </button>
+              ) : null}
 
-              <button
-                type="button"
-                disabled={updatingFileId === file.id}
-                onClick={() => updateFileStatus(file, "archived")}
-                className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#52708a] transition hover:border-[#39b8bb] hover:text-[#168c91] disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                Archivar
-              </button>
+              {file.status !== "archived" ? (
+                <button
+                  type="button"
+                  disabled={updatingFileId === file.id}
+                  onClick={() => updateFileStatus(file, "archived")}
+                  className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#52708a] transition hover:border-[#39b8bb] hover:text-[#168c91] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  Archivar
+                </button>
+              ) : null}
+
+              {file.status === "archived" ? (
+                <p className="text-xs font-semibold text-[#52708a]">
+                  Este archivo está archivado.
+                </p>
+              ) : null}
             </div>
           </div>
         </article>
