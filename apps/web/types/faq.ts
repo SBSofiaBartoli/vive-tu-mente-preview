@@ -18,3 +18,15 @@ export type CreateFaqPayload = {
 };
 
 export type UpdateFaqPayload = Partial<CreateFaqPayload>;
+
+export type PaginationMeta = {
+  page: number;
+  limit: number;
+  total: number;
+  total_pages: number;
+};
+
+export type PaginatedFaqsResponse = {
+  items: Faq[];
+  meta: PaginationMeta;
+};

@@ -1,13 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   adminApiClient,
   adminApiPatchClient,
   adminApiPostClient,
 } from "@/lib/api-client";
 import { createSupabaseBrowserClient } from "@/lib/supabase-client";
-import type { CreateFaqPayload, Faq, UpdateFaqPayload } from "@/types/faq";
+import type {
+  CreateFaqPayload,
+  Faq,
+  UpdateFaqPayload,
+  PaginatedFaqsResponse,
+} from "@/types/faq";
 
 const emptyForm: CreateFaqPayload = {
   question: "",
@@ -17,8 +22,21 @@ const emptyForm: CreateFaqPayload = {
   is_active: true,
 };
 
+const faqsPageSize = 10;
+type FaqStatusFilter = "all" | "active" | "inactive";
+
 export function FaqsPanel() {
   const [faqs, setFaqs] = useState<Faq[]>([]);
+  const [page, setPage] = useState(1);
+  const [paginationMeta, setPaginationMeta] = useState({
+    page: 1,
+    limit: faqsPageSize,
+    total: 0,
+    total_pages: 1,
+  });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState<FaqStatusFilter>("all");
   const [form, setForm] = useState<CreateFaqPayload>(emptyForm);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -29,31 +47,65 @@ export function FaqsPanel() {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  useEffect(() => {
-    const loadFaqs = async () => {
-      try {
-        const supabaseClient = createSupabaseBrowserClient();
-        const { data } = await supabaseClient.auth.getSession();
+  const loadFaqs = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const supabaseClient = createSupabaseBrowserClient();
+      const { data } = await supabaseClient.auth.getSession();
 
-        if (!data.session) {
-          setErrorMessage("No se encontró una sesión activa.");
-          return;
-        }
-
-        const adminFaqs = await adminApiClient<Faq[]>("/api/faqs/admin", {
-          accessToken: data.session.access_token,
-        });
-
-        setFaqs(adminFaqs);
-      } catch {
-        setErrorMessage("No se pudieron cargar las preguntas frecuentes.");
-      } finally {
-        setIsLoading(false);
+      if (!data.session) {
+        setErrorMessage("No se encontró una sesión activa.");
+        return;
       }
-    };
 
-    void loadFaqs();
-  }, []);
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: String(faqsPageSize),
+      });
+
+      if (searchTerm.trim()) {
+        params.set("search", searchTerm.trim());
+      }
+
+      if (categoryFilter.trim()) {
+        params.set("category", categoryFilter.trim());
+      }
+
+      if (statusFilter === "active") {
+        params.set("is_active", "true");
+      }
+
+      if (statusFilter === "inactive") {
+        params.set("is_active", "false");
+      }
+
+      const adminFaqsResponse = await adminApiClient<PaginatedFaqsResponse>(
+        `/api/faqs/admin?${params.toString()}`,
+        {
+          accessToken: data.session.access_token,
+        },
+      );
+
+      setFaqs(adminFaqsResponse.items);
+      setPaginationMeta(adminFaqsResponse.meta);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "No se pudieron cargar las preguntas frecuentes.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, [categoryFilter, page, searchTerm, statusFilter]);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      void loadFaqs();
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [loadFaqs]);
 
   const createFaq = async () => {
     try {
@@ -74,20 +126,17 @@ export function FaqsPanel() {
         return;
       }
 
-      const createdFaq = await adminApiPostClient<Faq, CreateFaqPayload>(
-        "/api/faqs/admin",
-        {
-          accessToken: data.session.access_token,
-          body: {
-            ...form,
-            question: form.question.trim(),
-            answer: form.answer.trim(),
-            category: form.category.trim() || "general",
-          },
+      await adminApiPostClient<Faq, CreateFaqPayload>("/api/faqs/admin", {
+        accessToken: data.session.access_token,
+        body: {
+          ...form,
+          question: form.question.trim(),
+          answer: form.answer.trim(),
+          category: form.category.trim() || "general",
         },
-      );
+      });
 
-      setFaqs((currentFaqs) => [...currentFaqs, createdFaq]);
+      void loadFaqs();
       setForm(emptyForm);
       setSuccessMessage("La pregunta frecuente fue creada correctamente.");
     } catch (error) {
@@ -128,6 +177,8 @@ export function FaqsPanel() {
           currentFaq.id === faq.id ? updatedFaq : currentFaq,
         ),
       );
+
+      void loadFaqs();
 
       setSuccessMessage(
         updatedFaq.is_active
@@ -175,6 +226,8 @@ export function FaqsPanel() {
           currentFaq.id === faq.id ? updatedFaq : currentFaq,
         ),
       );
+
+      void loadFaqs();
 
       setEditingFaqs((currentEditingFaqs) => {
         const nextEditingFaqs = { ...currentEditingFaqs };
@@ -310,12 +363,62 @@ export function FaqsPanel() {
       </section>
 
       <section className="space-y-4">
+        <div className="rounded-lg border border-[#dcebea] bg-white p-5">
+          <div className="grid gap-4 md:grid-cols-3">
+            <label className="block">
+              <span className="text-sm font-bold text-[#52708a]">Buscar</span>
+              <input
+                value={searchTerm}
+                onChange={(event) => {
+                  setSearchTerm(event.target.value);
+                  setPage(1);
+                }}
+                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                placeholder="Pregunta o respuesta"
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-sm font-bold text-[#52708a]">
+                Categoría
+              </span>
+              <input
+                value={categoryFilter}
+                onChange={(event) => {
+                  setCategoryFilter(event.target.value);
+                  setPage(1);
+                }}
+                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                placeholder="general, programas..."
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-sm font-bold text-[#52708a]">Estado</span>
+              <select
+                value={statusFilter}
+                onChange={(event) => {
+                  setStatusFilter(event.target.value as FaqStatusFilter);
+                  setPage(1);
+                }}
+                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+              >
+                <option value="all">Todas</option>
+                <option value="active">Activas</option>
+                <option value="inactive">Inactivas</option>
+              </select>
+            </label>
+          </div>
+        </div>
         <div className="rounded-lg border border-[#dcebea] bg-white p-4">
           <p className="text-sm font-semibold text-[#52708a]">
             Preguntas frecuentes
           </p>
           <p className="mt-1 text-3xl font-bold text-[#071a2f]">
-            {faqs.length}
+            {paginationMeta.total}
+          </p>
+          <p className="mt-1 text-sm text-[#52708a]">
+            Mostrando {faqs.length} resultados en esta página.
           </p>
         </div>
 
@@ -431,6 +534,37 @@ export function FaqsPanel() {
             </div>
           </article>
         ))}
+        {paginationMeta.total_pages > 1 ? (
+          <div className="flex items-center justify-between rounded-lg border border-[#dcebea] bg-white p-4">
+            <button
+              type="button"
+              disabled={page <= 1}
+              onClick={() =>
+                setPage((currentPage) => Math.max(1, currentPage - 1))
+              }
+              className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Anterior
+            </button>
+
+            <p className="text-sm font-semibold text-[#52708a]">
+              Página {paginationMeta.page} de {paginationMeta.total_pages}
+            </p>
+
+            <button
+              type="button"
+              disabled={page >= paginationMeta.total_pages}
+              onClick={() =>
+                setPage((currentPage) =>
+                  Math.min(paginationMeta.total_pages, currentPage + 1),
+                )
+              }
+              className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Siguiente
+            </button>
+          </div>
+        ) : null}
       </section>
     </div>
   );
