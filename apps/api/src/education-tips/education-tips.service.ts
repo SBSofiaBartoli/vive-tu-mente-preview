@@ -7,6 +7,8 @@ import { SupabaseService } from '../supabase/supabase.service';
 import type { CreateEducationTipDto } from './dto/create-education-tip.dto';
 import type { UpdateEducationTipDto } from './dto/update-education-tip.dto';
 import type { EducationTip } from './education-tip.types';
+import type { PaginatedResponse } from '../common/types/paginated-response.type';
+import type { ListEducationTipsAdminQueryDto } from './dto/list-education-tips-admin-query.dto';
 
 const ensureData = <T>(data: unknown): T => {
   if (!data) {
@@ -45,19 +47,57 @@ export class EducationTipsService {
     return ensureData<EducationTip[]>(response.data);
   }
 
-  async findAllAdmin(): Promise<EducationTip[]> {
-    const response = await this.supabaseService
+  async findAllAdmin(
+    filters: ListEducationTipsAdminQueryDto,
+  ): Promise<PaginatedResponse<EducationTip>> {
+    const page = filters.page ?? 1;
+    const limit = filters.limit ?? 10;
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+
+    let query = this.supabaseService
       .getAdminClient()
       .from('education_tips')
-      .select('*')
+      .select('*', { count: 'exact' })
       .order('segment_key', { ascending: true })
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .range(from, to);
+
+    if (filters.segment_key) {
+      query = query.eq('segment_key', filters.segment_key);
+    }
+
+    if (filters.is_active === 'true') {
+      query = query.eq('is_active', true);
+    }
+
+    if (filters.is_active === 'false') {
+      query = query.eq('is_active', false);
+    }
+
+    if (filters.search) {
+      query = query.or(
+        `title.ilike.%${filters.search}%,content.ilike.%${filters.search}%`,
+      );
+    }
+
+    const response = await query;
 
     if (response.error) {
       throw new BadRequestException(response.error.message);
     }
 
-    return ensureData<EducationTip[]>(response.data);
+    const total = response.count ?? 0;
+
+    return {
+      items: ensureData<EducationTip[]>(response.data),
+      meta: {
+        page,
+        limit,
+        total,
+        total_pages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async create(
