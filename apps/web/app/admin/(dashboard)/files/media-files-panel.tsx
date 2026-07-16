@@ -1,12 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { adminApiClient, adminApiPatchClient } from "@/lib/api-client";
+import {
+  adminApiClient,
+  adminApiPatchClient,
+  adminApiPostClient,
+  apiFormDataPostClient,
+} from "@/lib/api-client";
 import { createSupabaseBrowserClient } from "@/lib/supabase-client";
 import type {
+  CreateMediaFilePayload,
   MediaFile,
   MediaFileStatus,
   UpdateMediaFileStatusPayload,
+  UploadedStorageFile,
 } from "@/types/media-file";
 
 const statusLabels: Record<MediaFileStatus, string> = {
@@ -25,8 +32,17 @@ const formatFileSize = (size: number) => {
   return `${(size / 1024 / 1024).toFixed(1)} MB`;
 };
 
+const emptyUploadForm = {
+  section: "general",
+  uploaded_by_name: "",
+  uploaded_by_email: "",
+};
+
 export function MediaFilesPanel() {
   const [files, setFiles] = useState<MediaFile[]>([]);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadForm, setUploadForm] = useState(emptyUploadForm);
+  const [isUploading, setIsUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [updatingFileId, setUpdatingFileId] = useState<string | null>(null);
   const [reviewNotes, setReviewNotes] = useState<Record<string, string>>({});
@@ -123,6 +139,49 @@ export function MediaFilesPanel() {
     }
   };
 
+  const uploadAndRegisterFile = async () => {
+    try {
+      setIsUploading(true);
+      setErrorMessage("");
+      setSuccessMessage("");
+
+      if (!selectedFile) {
+        setErrorMessage("Seleccioná un archivo para subir.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      const uploadedFile = await apiFormDataPostClient<UploadedStorageFile>(
+        `/api/storage/upload?section=${encodeURIComponent(uploadForm.section || "general")}`,
+        formData,
+      );
+
+      const registeredFile = await adminApiPostClient<
+        MediaFile,
+        CreateMediaFilePayload
+      >("/api/media-files", {
+        accessToken: "",
+        body: {
+          ...uploadedFile,
+          section: uploadForm.section.trim() || "general",
+          uploaded_by_name: uploadForm.uploaded_by_name.trim() || null,
+          uploaded_by_email: uploadForm.uploaded_by_email.trim() || null,
+        },
+      });
+
+      setFiles((currentFiles) => [registeredFile, ...currentFiles]);
+      setSelectedFile(null);
+      setUploadForm(emptyUploadForm);
+      setSuccessMessage("El archivo fue subido y registrado correctamente.");
+    } catch {
+      setErrorMessage("No se pudo subir o registrar el archivo.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
@@ -144,6 +203,83 @@ export function MediaFilesPanel() {
           {successMessage}
         </div>
       ) : null}
+
+      <section className="rounded-lg border border-[#dcebea] bg-white p-5">
+        <h3 className="text-lg font-bold text-[#071a2f]">Subir archivo</h3>
+
+        <div className="mt-4 grid gap-4">
+          <label className="block">
+            <span className="text-sm font-bold text-[#52708a]">Archivo</span>
+            <input
+              type="file"
+              onChange={(event) =>
+                setSelectedFile(event.target.files?.[0] ?? null)
+              }
+              className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm"
+            />
+          </label>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            <label className="block">
+              <span className="text-sm font-bold text-[#52708a]">Sección</span>
+              <input
+                value={uploadForm.section}
+                onChange={(event) =>
+                  setUploadForm((currentForm) => ({
+                    ...currentForm,
+                    section: event.target.value,
+                  }))
+                }
+                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                placeholder="blog"
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-sm font-bold text-[#52708a]">
+                Nombre de quien sube
+              </span>
+              <input
+                value={uploadForm.uploaded_by_name}
+                onChange={(event) =>
+                  setUploadForm((currentForm) => ({
+                    ...currentForm,
+                    uploaded_by_name: event.target.value,
+                  }))
+                }
+                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                placeholder="Sofía Bartoli"
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-sm font-bold text-[#52708a]">
+                Email de contacto
+              </span>
+              <input
+                value={uploadForm.uploaded_by_email}
+                onChange={(event) =>
+                  setUploadForm((currentForm) => ({
+                    ...currentForm,
+                    uploaded_by_email: event.target.value,
+                  }))
+                }
+                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                placeholder="correo@ejemplo.com"
+              />
+            </label>
+          </div>
+
+          <button
+            type="button"
+            disabled={isUploading}
+            onClick={uploadAndRegisterFile}
+            className="w-fit rounded-full bg-[#39b8bb] px-5 py-2.5 text-sm font-bold text-[#071a2f] transition hover:bg-[#5fd0d2] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Subir archivo
+          </button>
+        </div>
+      </section>
 
       <div className="rounded-lg border border-[#dcebea] bg-white p-4">
         <p className="text-sm font-semibold text-[#52708a]">
