@@ -27,7 +27,15 @@ export const adminApiClient = async <T>(
   });
 
   if (!response.ok) {
-    throw new Error("API request failed");
+    const errorBody = (await response.json().catch(() => null)) as {
+      message?: string | string[];
+    } | null;
+
+    const errorMessage = Array.isArray(errorBody?.message)
+      ? errorBody.message.join(" ")
+      : errorBody?.message;
+
+    throw new Error(errorMessage ?? "API request failed");
   }
 
   return response.json() as Promise<T>;
@@ -47,7 +55,15 @@ export const adminApiPatchClient = async <TResponse, TBody>(
   });
 
   if (!response.ok) {
-    throw new Error("API request failed");
+    const errorBody = (await response.json().catch(() => null)) as {
+      message?: string | string[];
+    } | null;
+
+    const errorMessage = Array.isArray(errorBody?.message)
+      ? errorBody.message.join(" ")
+      : errorBody?.message;
+
+    throw new Error(errorMessage ?? "API request failed");
   }
 
   return response.json() as Promise<TResponse>;
@@ -67,7 +83,15 @@ export const adminApiPostClient = async <TResponse, TBody>(
   });
 
   if (!response.ok) {
-    throw new Error("API request failed");
+    const errorBody = (await response.json().catch(() => null)) as {
+      message?: string | string[];
+    } | null;
+
+    const errorMessage = Array.isArray(errorBody?.message)
+      ? errorBody.message.join(" ")
+      : errorBody?.message;
+
+    throw new Error(errorMessage ?? "API request failed");
   }
 
   return response.json() as Promise<TResponse>;
@@ -86,7 +110,15 @@ export const apiPostClient = async <TResponse, TBody>(
   });
 
   if (!response.ok) {
-    throw new Error("API request failed");
+    const errorBody = (await response.json().catch(() => null)) as {
+      message?: string | string[];
+    } | null;
+
+    const errorMessage = Array.isArray(errorBody?.message)
+      ? errorBody.message.join(" ")
+      : errorBody?.message;
+
+    throw new Error(errorMessage ?? "API request failed");
   }
 
   return response.json() as Promise<TResponse>;
@@ -102,7 +134,15 @@ export const apiFormDataPostClient = async <TResponse>(
   });
 
   if (!response.ok) {
-    throw new Error("API request failed");
+    const errorBody = (await response.json().catch(() => null)) as {
+      message?: string | string[];
+    } | null;
+
+    const errorMessage = Array.isArray(errorBody?.message)
+      ? errorBody.message.join(" ")
+      : errorBody?.message;
+
+    throw new Error(errorMessage ?? "API request failed");
   }
 
   return response.json() as Promise<TResponse>;

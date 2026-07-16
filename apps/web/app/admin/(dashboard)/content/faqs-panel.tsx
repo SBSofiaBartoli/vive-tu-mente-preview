@@ -90,8 +90,12 @@ export function FaqsPanel() {
       setFaqs((currentFaqs) => [...currentFaqs, createdFaq]);
       setForm(emptyForm);
       setSuccessMessage("La pregunta frecuente fue creada correctamente.");
-    } catch {
-      setErrorMessage("No se pudo crear la pregunta frecuente.");
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "No se pudo crear la pregunta frecuente.",
+      );
     } finally {
       setIsSaving(false);
     }
