@@ -26,3 +26,15 @@ export type Article = {
   created_at: string;
   updated_at: string;
 };
+
+export type PaginationMeta = {
+  page: number;
+  limit: number;
+  total: number;
+  total_pages: number;
+};
+
+export type PaginatedArticlesResponse = {
+  items: Article[];
+  meta: PaginationMeta;
+};
