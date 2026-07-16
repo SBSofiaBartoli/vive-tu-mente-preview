@@ -72,3 +72,19 @@ export const adminApiPostClient = async <TResponse, TBody>(
 
   return response.json() as Promise<TResponse>;
 };
+
+export const apiFormDataPostClient = async <TResponse>(
+  path: string,
+  body: FormData,
+): Promise<TResponse> => {
+  const response = await fetch(`${getApiUrl()}${path}`, {
+    method: "POST",
+    body,
+  });
+
+  if (!response.ok) {
+    throw new Error("API request failed");
+  }
+
+  return response.json() as Promise<TResponse>;
+};
