@@ -45,3 +45,20 @@ export type CreateEducationTipPayload = {
 };
 
 export type UpdateEducationTipPayload = Partial<CreateEducationTipPayload>;
+
+export type PaginationMeta = {
+  page: number;
+  limit: number;
+  total: number;
+  total_pages: number;
+};
+
+export type PaginatedEducationCardsResponse = {
+  items: EducationCard[];
+  meta: PaginationMeta;
+};
+
+export type PaginatedEducationTipsResponse = {
+  items: EducationTip[];
+  meta: PaginationMeta;
+};

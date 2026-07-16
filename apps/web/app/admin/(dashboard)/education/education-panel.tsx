@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   adminApiClient,
   adminApiPatchClient,
@@ -14,6 +14,8 @@ import type {
   EducationTip,
   UpdateEducationCardPayload,
   UpdateEducationTipPayload,
+  PaginatedEducationCardsResponse,
+  PaginatedEducationTipsResponse,
 } from "@/types/education";
 
 const emptyCardForm: CreateEducationCardPayload = {
@@ -35,9 +37,34 @@ const emptyTipForm: CreateEducationTipPayload = {
   ends_at: null,
 };
 
+const educationPageSize = 10;
+type EducationStatusFilter = "all" | "active" | "inactive";
+
 export function EducationPanel() {
   const [cards, setCards] = useState<EducationCard[]>([]);
   const [tips, setTips] = useState<EducationTip[]>([]);
+  const [cardsPage, setCardsPage] = useState(1);
+  const [tipsPage, setTipsPage] = useState(1);
+  const [cardsMeta, setCardsMeta] = useState({
+    page: 1,
+    limit: educationPageSize,
+    total: 0,
+    total_pages: 1,
+  });
+  const [tipsMeta, setTipsMeta] = useState({
+    page: 1,
+    limit: educationPageSize,
+    total: 0,
+    total_pages: 1,
+  });
+  const [cardsSearchTerm, setCardsSearchTerm] = useState("");
+  const [cardsSegmentFilter, setCardsSegmentFilter] = useState("");
+  const [cardsStatusFilter, setCardsStatusFilter] =
+    useState<EducationStatusFilter>("all");
+  const [tipsSearchTerm, setTipsSearchTerm] = useState("");
+  const [tipsSegmentFilter, setTipsSegmentFilter] = useState("");
+  const [tipsStatusFilter, setTipsStatusFilter] =
+    useState<EducationStatusFilter>("all");
   const [cardForm, setCardForm] =
     useState<CreateEducationCardPayload>(emptyCardForm);
   const [tipForm, setTipForm] =
@@ -49,37 +76,105 @@ export function EducationPanel() {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  useEffect(() => {
-    const loadEducationData = async () => {
-      try {
-        const supabaseClient = createSupabaseBrowserClient();
-        const { data } = await supabaseClient.auth.getSession();
+  const loadEducationData = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const supabaseClient = createSupabaseBrowserClient();
+      const { data } = await supabaseClient.auth.getSession();
 
-        if (!data.session) {
-          setErrorMessage("No se encontró una sesión activa.");
-          return;
-        }
-
-        const [adminCards, adminTips] = await Promise.all([
-          adminApiClient<EducationCard[]>("/api/education-cards/admin", {
-            accessToken: data.session.access_token,
-          }),
-          adminApiClient<EducationTip[]>("/api/education-tips/admin", {
-            accessToken: data.session.access_token,
-          }),
-        ]);
-
-        setCards(adminCards);
-        setTips(adminTips);
-      } catch {
-        setErrorMessage("No se pudo cargar la información educativa.");
-      } finally {
-        setIsLoading(false);
+      if (!data.session) {
+        setErrorMessage("No se encontró una sesión activa.");
+        return;
       }
-    };
 
-    void loadEducationData();
-  }, []);
+      const cardsParams = new URLSearchParams({
+        page: String(cardsPage),
+        limit: String(educationPageSize),
+      });
+
+      if (cardsSearchTerm.trim()) {
+        cardsParams.set("search", cardsSearchTerm.trim());
+      }
+
+      if (cardsSegmentFilter.trim()) {
+        cardsParams.set("segment_key", cardsSegmentFilter.trim());
+      }
+
+      if (cardsStatusFilter === "active") {
+        cardsParams.set("is_active", "true");
+      }
+
+      if (cardsStatusFilter === "inactive") {
+        cardsParams.set("is_active", "false");
+      }
+
+      const tipsParams = new URLSearchParams({
+        page: String(tipsPage),
+        limit: String(educationPageSize),
+      });
+
+      if (tipsSearchTerm.trim()) {
+        tipsParams.set("search", tipsSearchTerm.trim());
+      }
+
+      if (tipsSegmentFilter.trim()) {
+        tipsParams.set("segment_key", tipsSegmentFilter.trim());
+      }
+
+      if (tipsStatusFilter === "active") {
+        tipsParams.set("is_active", "true");
+      }
+
+      if (tipsStatusFilter === "inactive") {
+        tipsParams.set("is_active", "false");
+      }
+
+      const [adminCards, adminTips] = await Promise.all([
+        adminApiClient<PaginatedEducationCardsResponse>(
+          `/api/education-cards/admin?${cardsParams.toString()}`,
+          {
+            accessToken: data.session.access_token,
+          },
+        ),
+        adminApiClient<PaginatedEducationTipsResponse>(
+          `/api/education-tips/admin?${tipsParams.toString()}`,
+          {
+            accessToken: data.session.access_token,
+          },
+        ),
+      ]);
+
+      setCards(adminCards.items);
+      setCardsMeta(adminCards.meta);
+      setTips(adminTips.items);
+      setTipsMeta(adminTips.meta);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "No se pudo cargar la información educativa.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, [
+    cardsPage,
+    cardsSearchTerm,
+    cardsSegmentFilter,
+    cardsStatusFilter,
+    tipsPage,
+    tipsSearchTerm,
+    tipsSegmentFilter,
+    tipsStatusFilter,
+  ]);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      void loadEducationData();
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [loadEducationData]);
 
   const toggleCardStatus = async (card: EducationCard) => {
     try {
@@ -108,6 +203,8 @@ export function EducationPanel() {
           currentCard.id === card.id ? updatedCard : currentCard,
         ),
       );
+
+      void loadEducationData();
 
       setSuccessMessage(
         updatedCard.is_active
@@ -149,6 +246,8 @@ export function EducationPanel() {
         ),
       );
 
+      void loadEducationData();
+
       setSuccessMessage(
         updatedTip.is_active
           ? "El tip educativo fue activado."
@@ -187,21 +286,21 @@ export function EducationPanel() {
         return;
       }
 
-      const createdCard = await adminApiPostClient<
-        EducationCard,
-        CreateEducationCardPayload
-      >("/api/education-cards/admin", {
-        accessToken: data.session.access_token,
-        body: {
-          ...cardForm,
-          segment_key: cardForm.segment_key.trim(),
-          title: cardForm.title.trim(),
-          description: cardForm.description.trim(),
-          icon_name: cardForm.icon_name.trim(),
+      await adminApiPostClient<EducationCard, CreateEducationCardPayload>(
+        "/api/education-cards/admin",
+        {
+          accessToken: data.session.access_token,
+          body: {
+            ...cardForm,
+            segment_key: cardForm.segment_key.trim(),
+            title: cardForm.title.trim(),
+            description: cardForm.description.trim(),
+            icon_name: cardForm.icon_name.trim(),
+          },
         },
-      });
+      );
 
-      setCards((currentCards) => [...currentCards, createdCard]);
+      void loadEducationData();
       setCardForm(emptyCardForm);
       setSuccessMessage("La card educativa fue creada correctamente.");
     } catch {
@@ -234,23 +333,23 @@ export function EducationPanel() {
         return;
       }
 
-      const createdTip = await adminApiPostClient<
-        EducationTip,
-        CreateEducationTipPayload
-      >("/api/education-tips/admin", {
-        accessToken: data.session.access_token,
-        body: {
-          ...tipForm,
-          segment_key: tipForm.segment_key.trim(),
-          title: tipForm.title.trim(),
-          content: tipForm.content.trim(),
-          resource_url: tipForm.resource_url?.trim() || null,
-          starts_at: tipForm.starts_at || null,
-          ends_at: tipForm.ends_at || null,
+      await adminApiPostClient<EducationTip, CreateEducationTipPayload>(
+        "/api/education-tips/admin",
+        {
+          accessToken: data.session.access_token,
+          body: {
+            ...tipForm,
+            segment_key: tipForm.segment_key.trim(),
+            title: tipForm.title.trim(),
+            content: tipForm.content.trim(),
+            resource_url: tipForm.resource_url?.trim() || null,
+            starts_at: tipForm.starts_at || null,
+            ends_at: tipForm.ends_at || null,
+          },
         },
-      });
+      );
 
-      setTips((currentTips) => [createdTip, ...currentTips]);
+      void loadEducationData();
       setTipForm(emptyTipForm);
       setSuccessMessage("El tip educativo fue creado correctamente.");
     } catch {
@@ -288,7 +387,10 @@ export function EducationPanel() {
             Cards educativas
           </p>
           <p className="mt-1 text-3xl font-bold text-[#071a2f]">
-            {cards.length}
+            {cardsMeta.total}
+          </p>
+          <p className="mt-1 text-sm text-[#52708a]">
+            Mostrando {cards.length} resultados en esta página.
           </p>
         </div>
 
@@ -297,7 +399,10 @@ export function EducationPanel() {
             Tips educativos
           </p>
           <p className="mt-1 text-3xl font-bold text-[#071a2f]">
-            {tips.length}
+            {tipsMeta.total}
+          </p>
+          <p className="mt-1 text-sm text-[#52708a]">
+            Mostrando {tips.length} resultados en esta página.
           </p>
         </div>
       </div>
@@ -551,6 +656,53 @@ export function EducationPanel() {
 
       <section className="space-y-4">
         <h3 className="text-xl font-bold text-[#071a2f]">Cards educativas</h3>
+        <div className="rounded-lg border border-[#dcebea] bg-white p-5">
+          <div className="grid gap-4 md:grid-cols-3">
+            <label className="block">
+              <span className="text-sm font-bold text-[#52708a]">Buscar</span>
+              <input
+                value={cardsSearchTerm}
+                onChange={(event) => {
+                  setCardsSearchTerm(event.target.value);
+                  setCardsPage(1);
+                }}
+                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                placeholder="Título o descripción"
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-sm font-bold text-[#52708a]">Segmento</span>
+              <input
+                value={cardsSegmentFilter}
+                onChange={(event) => {
+                  setCardsSegmentFilter(event.target.value);
+                  setCardsPage(1);
+                }}
+                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                placeholder="ia-aplicada"
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-sm font-bold text-[#52708a]">Estado</span>
+              <select
+                value={cardsStatusFilter}
+                onChange={(event) => {
+                  setCardsStatusFilter(
+                    event.target.value as EducationStatusFilter,
+                  );
+                  setCardsPage(1);
+                }}
+                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+              >
+                <option value="all">Todas</option>
+                <option value="active">Activas</option>
+                <option value="inactive">Inactivas</option>
+              </select>
+            </label>
+          </div>
+        </div>
 
         {cards.length === 0 ? (
           <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
@@ -606,10 +758,88 @@ export function EducationPanel() {
             </div>
           </article>
         ))}
+        {cardsMeta.total_pages > 1 ? (
+          <div className="flex items-center justify-between rounded-lg border border-[#dcebea] bg-white p-4">
+            <button
+              type="button"
+              disabled={cardsPage <= 1}
+              onClick={() =>
+                setCardsPage((currentPage) => Math.max(1, currentPage - 1))
+              }
+              className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Anterior
+            </button>
+
+            <p className="text-sm font-semibold text-[#52708a]">
+              Página {cardsMeta.page} de {cardsMeta.total_pages}
+            </p>
+
+            <button
+              type="button"
+              disabled={cardsPage >= cardsMeta.total_pages}
+              onClick={() =>
+                setCardsPage((currentPage) =>
+                  Math.min(cardsMeta.total_pages, currentPage + 1),
+                )
+              }
+              className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Siguiente
+            </button>
+          </div>
+        ) : null}
       </section>
 
       <section className="space-y-4">
         <h3 className="text-xl font-bold text-[#071a2f]">Tips educativos</h3>
+        <div className="rounded-lg border border-[#dcebea] bg-white p-5">
+          <div className="grid gap-4 md:grid-cols-3">
+            <label className="block">
+              <span className="text-sm font-bold text-[#52708a]">Buscar</span>
+              <input
+                value={tipsSearchTerm}
+                onChange={(event) => {
+                  setTipsSearchTerm(event.target.value);
+                  setTipsPage(1);
+                }}
+                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                placeholder="Título o contenido"
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-sm font-bold text-[#52708a]">Segmento</span>
+              <input
+                value={tipsSegmentFilter}
+                onChange={(event) => {
+                  setTipsSegmentFilter(event.target.value);
+                  setTipsPage(1);
+                }}
+                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                placeholder="ia-aplicada"
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-sm font-bold text-[#52708a]">Estado</span>
+              <select
+                value={tipsStatusFilter}
+                onChange={(event) => {
+                  setTipsStatusFilter(
+                    event.target.value as EducationStatusFilter,
+                  );
+                  setTipsPage(1);
+                }}
+                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+              >
+                <option value="all">Todos</option>
+                <option value="active">Activos</option>
+                <option value="inactive">Inactivos</option>
+              </select>
+            </label>
+          </div>
+        </div>
 
         {tips.length === 0 ? (
           <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
@@ -665,6 +895,37 @@ export function EducationPanel() {
             </div>
           </article>
         ))}
+        {tipsMeta.total_pages > 1 ? (
+          <div className="flex items-center justify-between rounded-lg border border-[#dcebea] bg-white p-4">
+            <button
+              type="button"
+              disabled={tipsPage <= 1}
+              onClick={() =>
+                setTipsPage((currentPage) => Math.max(1, currentPage - 1))
+              }
+              className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Anterior
+            </button>
+
+            <p className="text-sm font-semibold text-[#52708a]">
+              Página {tipsMeta.page} de {tipsMeta.total_pages}
+            </p>
+
+            <button
+              type="button"
+              disabled={tipsPage >= tipsMeta.total_pages}
+              onClick={() =>
+                setTipsPage((currentPage) =>
+                  Math.min(tipsMeta.total_pages, currentPage + 1),
+                )
+              }
+              className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Siguiente
+            </button>
+          </div>
+        ) : null}
       </section>
     </div>
   );
