@@ -24,6 +24,8 @@ import { CreateFaqDto } from './dto/create-faq.dto';
 import { FaqResponseDto } from './dto/faq-response.dto';
 import { UpdateFaqDto } from './dto/update-faq.dto';
 import { FaqsService } from './faqs.service';
+import { ListFaqsAdminQueryDto } from './dto/list-faqs-admin-query.dto';
+import { PaginatedFaqsResponseDto } from './dto/paginated-faqs-response.dto';
 
 @ApiTags('FAQs')
 @Controller('faqs')
@@ -61,8 +63,7 @@ export class FaqsController {
   @ApiResponse({
     status: 200,
     description: 'Listado administrativo de preguntas frecuentes.',
-    type: FaqResponseDto,
-    isArray: true,
+    type: PaginatedFaqsResponseDto,
   })
   @ApiResponse({
     status: 401,
@@ -76,8 +77,8 @@ export class FaqsController {
   @UseGuards(AdminAuthGuard, AdminRolesGuard)
   @Roles('admin', 'editor')
   @Get('admin')
-  findAllAdmin() {
-    return this.faqsService.findAllAdmin();
+  findAllAdmin(@Query() query: ListFaqsAdminQueryDto) {
+    return this.faqsService.findAllAdmin(query);
   }
 
   @ApiBearerAuth()
