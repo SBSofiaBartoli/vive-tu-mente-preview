@@ -24,6 +24,8 @@ import { CreateEducationTipDto } from './dto/create-education-tip.dto';
 import { EducationTipResponseDto } from './dto/education-tip-response.dto';
 import { UpdateEducationTipDto } from './dto/update-education-tip.dto';
 import { EducationTipsService } from './education-tips.service';
+import { ListEducationTipsAdminQueryDto } from './dto/list-education-tips-admin-query.dto';
+import { PaginatedEducationTipsResponseDto } from './dto/paginated-education-tips-response.dto';
 
 @ApiTags('Education Tips')
 @Controller('education-tips')
@@ -61,7 +63,7 @@ export class EducationTipsController {
   @ApiResponse({
     status: 200,
     description: 'Listado administrativo de tips educativos.',
-    type: EducationTipResponseDto,
+    type: PaginatedEducationTipsResponseDto,
     isArray: true,
   })
   @ApiResponse({
@@ -76,8 +78,8 @@ export class EducationTipsController {
   @UseGuards(AdminAuthGuard, AdminRolesGuard)
   @Roles('admin', 'editor')
   @Get('admin')
-  findAllAdmin() {
-    return this.educationTipsService.findAllAdmin();
+  findAllAdmin(@Query() query: ListEducationTipsAdminQueryDto) {
+    return this.educationTipsService.findAllAdmin(query);
   }
 
   @ApiBearerAuth()

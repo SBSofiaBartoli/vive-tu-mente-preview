@@ -8,6 +8,8 @@ import type { CreateTestimonialDto } from './dto/create-testimonial.dto';
 import type { RejectTestimonialDto } from './dto/reject-testimonial.dto';
 import type { UpdateTestimonialFeaturedDto } from './dto/update-testimonial-featured.dto';
 import type { Testimonial } from './testimonial.types';
+import type { PaginatedResponse } from '../common/types/paginated-response.type';
+import type { ListTestimonialsAdminQueryDto } from './dto/list-testimonials-admin-query.dto';
 
 const ensureData = <T>(data: unknown): T => {
   if (!data) {
@@ -71,6 +73,62 @@ export class TestimonialsService {
     }
 
     return ensureData<Testimonial>(response.data);
+  }
+
+  async findAllAdmin(
+    filters: ListTestimonialsAdminQueryDto,
+  ): Promise<PaginatedResponse<Testimonial>> {
+    const page = filters.page ?? 1;
+    const limit = filters.limit ?? 10;
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+
+    let query = this.supabaseService
+      .getAdminClient()
+      .from('testimonials')
+      .select('*', { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .range(from, to);
+
+    if (filters.status) {
+      query = query.eq('status', filters.status);
+    }
+
+    if (filters.role) {
+      query = query.eq('role', filters.role);
+    }
+
+    if (filters.is_featured === 'true') {
+      query = query.eq('is_featured', true);
+    }
+
+    if (filters.is_featured === 'false') {
+      query = query.eq('is_featured', false);
+    }
+
+    if (filters.search) {
+      query = query.or(
+        `full_name.ilike.%${filters.search}%,workshop_name.ilike.%${filters.search}%,comment.ilike.%${filters.search}%`,
+      );
+    }
+
+    const response = await query;
+
+    if (response.error) {
+      throw new BadRequestException(response.error.message);
+    }
+
+    const total = response.count ?? 0;
+
+    return {
+      items: ensureData<Testimonial[]>(response.data),
+      meta: {
+        page,
+        limit,
+        total,
+        total_pages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async findPending(): Promise<Testimonial[]> {

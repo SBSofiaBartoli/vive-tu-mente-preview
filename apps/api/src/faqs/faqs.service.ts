@@ -7,6 +7,8 @@ import { SupabaseService } from '../supabase/supabase.service';
 import type { CreateFaqDto } from './dto/create-faq.dto';
 import type { UpdateFaqDto } from './dto/update-faq.dto';
 import type { Faq } from './faq.types';
+import type { PaginatedResponse } from '../common/types/paginated-response.type';
+import type { ListFaqsAdminQueryDto } from './dto/list-faqs-admin-query.dto';
 
 const ensureData = <T>(data: unknown): T => {
   if (!data) {
@@ -44,20 +46,58 @@ export class FaqsService {
     return ensureData<Faq[]>(response.data);
   }
 
-  async findAllAdmin(): Promise<Faq[]> {
-    const response = await this.supabaseService
+  async findAllAdmin(
+    filters: ListFaqsAdminQueryDto,
+  ): Promise<PaginatedResponse<Faq>> {
+    const page = filters.page ?? 1;
+    const limit = filters.limit ?? 10;
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+
+    let query = this.supabaseService
       .getAdminClient()
       .from('faqs')
-      .select('*')
+      .select('*', { count: 'exact' })
       .order('category', { ascending: true })
       .order('sort_order', { ascending: true })
-      .order('created_at', { ascending: true });
+      .order('created_at', { ascending: true })
+      .range(from, to);
+
+    if (filters.category) {
+      query = query.eq('category', filters.category);
+    }
+
+    if (filters.is_active === 'true') {
+      query = query.eq('is_active', true);
+    }
+
+    if (filters.is_active === 'false') {
+      query = query.eq('is_active', false);
+    }
+
+    if (filters.search) {
+      query = query.or(
+        `question.ilike.%${filters.search}%,answer.ilike.%${filters.search}%`,
+      );
+    }
+
+    const response = await query;
 
     if (response.error) {
       throw new BadRequestException(response.error.message);
     }
 
-    return ensureData<Faq[]>(response.data);
+    const total = response.count ?? 0;
+
+    return {
+      items: ensureData<Faq[]>(response.data),
+      meta: {
+        page,
+        limit,
+        total,
+        total_pages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async create(createFaqDto: CreateFaqDto): Promise<Faq> {

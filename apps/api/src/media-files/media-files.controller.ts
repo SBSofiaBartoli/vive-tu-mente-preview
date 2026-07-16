@@ -24,6 +24,8 @@ import { CreateMediaFileDto } from './dto/create-media-file.dto';
 import { MediaFileResponseDto } from './dto/media-file-response.dto';
 import { UpdateMediaFileStatusDto } from './dto/update-media-file-status.dto';
 import { MediaFilesService } from './media-files.service';
+import { ListMediaFilesAdminQueryDto } from './dto/list-media-files-admin-query.dto';
+import { PaginatedMediaFilesResponseDto } from './dto/paginated-media-files-response.dto';
 
 @ApiTags('Media Files')
 @Controller('media-files')
@@ -73,8 +75,7 @@ export class MediaFilesController {
   @ApiResponse({
     status: 200,
     description: 'Listado administrativo de archivos multimedia.',
-    type: MediaFileResponseDto,
-    isArray: true,
+    type: PaginatedMediaFilesResponseDto,
   })
   @ApiResponse({
     status: 401,
@@ -87,11 +88,8 @@ export class MediaFilesController {
   @UseGuards(AdminAuthGuard, AdminRolesGuard)
   @Roles('admin', 'editor', 'reviewer')
   @Get('admin')
-  findAllAdmin(
-    @Query('status') status?: string,
-    @Query('section') section?: string,
-  ) {
-    return this.mediaFilesService.findAllAdmin(status, section);
+  findAllAdmin(@Query() query: ListMediaFilesAdminQueryDto) {
+    return this.mediaFilesService.findAllAdmin(query);
   }
 
   @ApiOperation({

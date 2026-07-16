@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -23,6 +24,8 @@ import { RejectTestimonialDto } from './dto/reject-testimonial.dto';
 import { TestimonialResponseDto } from './dto/testimonial-response.dto';
 import { UpdateTestimonialFeaturedDto } from './dto/update-testimonial-featured.dto';
 import { TestimonialsService } from './testimonials.service';
+import { ListTestimonialsAdminQueryDto } from './dto/list-testimonials-admin-query.dto';
+import { PaginatedTestimonialsResponseDto } from './dto/paginated-testimonials-response.dto';
 
 @ApiTags('Testimonials')
 @Controller('testimonials')
@@ -79,6 +82,32 @@ export class TestimonialsController {
   @Post()
   create(@Body() createTestimonialDto: CreateTestimonialDto) {
     return this.testimonialsService.create(createTestimonialDto);
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Listar testimonios para administración',
+    description:
+      'Permite listar testimonios con paginación, búsqueda y filtros por estado, rol o destacado.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Listado administrativo paginado de testimonios.',
+    type: PaginatedTestimonialsResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Token ausente, inválido o expirado.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'El usuario no tiene permisos para revisar testimonios.',
+  })
+  @UseGuards(AdminAuthGuard, AdminRolesGuard)
+  @Roles('admin', 'reviewer')
+  @Get('admin')
+  findAllAdmin(@Query() query: ListTestimonialsAdminQueryDto) {
+    return this.testimonialsService.findAllAdmin(query);
   }
 
   @ApiBearerAuth()

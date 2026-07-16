@@ -7,6 +7,8 @@ import { SupabaseService } from '../supabase/supabase.service';
 import type { CreateEducationCardDto } from './dto/create-education-card.dto';
 import type { UpdateEducationCardDto } from './dto/update-education-card.dto';
 import type { EducationCard } from './education-card.types';
+import type { PaginatedResponse } from '../common/types/paginated-response.type';
+import type { ListEducationCardsAdminQueryDto } from './dto/list-education-cards-admin-query.dto';
 
 const ensureData = <T>(data: unknown): T => {
   if (!data) {
@@ -36,19 +38,57 @@ export class EducationCardsService {
     return ensureData<EducationCard[]>(response.data);
   }
 
-  async findAllAdmin(): Promise<EducationCard[]> {
-    const response = await this.supabaseService
+  async findAllAdmin(
+    filters: ListEducationCardsAdminQueryDto,
+  ): Promise<PaginatedResponse<EducationCard>> {
+    const page = filters.page ?? 1;
+    const limit = filters.limit ?? 10;
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+
+    let query = this.supabaseService
       .getAdminClient()
       .from('education_cards')
-      .select('*')
+      .select('*', { count: 'exact' })
       .order('sort_order', { ascending: true })
-      .order('created_at', { ascending: true });
+      .order('created_at', { ascending: true })
+      .range(from, to);
+
+    if (filters.segment_key) {
+      query = query.eq('segment_key', filters.segment_key);
+    }
+
+    if (filters.is_active === 'true') {
+      query = query.eq('is_active', true);
+    }
+
+    if (filters.is_active === 'false') {
+      query = query.eq('is_active', false);
+    }
+
+    if (filters.search) {
+      query = query.or(
+        `title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`,
+      );
+    }
+
+    const response = await query;
 
     if (response.error) {
       throw new BadRequestException(response.error.message);
     }
 
-    return ensureData<EducationCard[]>(response.data);
+    const total = response.count ?? 0;
+
+    return {
+      items: ensureData<EducationCard[]>(response.data),
+      meta: {
+        page,
+        limit,
+        total,
+        total_pages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async create(

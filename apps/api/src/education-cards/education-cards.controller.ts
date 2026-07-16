@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -22,6 +23,8 @@ import { CreateEducationCardDto } from './dto/create-education-card.dto';
 import { EducationCardResponseDto } from './dto/education-card-response.dto';
 import { UpdateEducationCardDto } from './dto/update-education-card.dto';
 import { EducationCardsService } from './education-cards.service';
+import { ListEducationCardsAdminQueryDto } from './dto/list-education-cards-admin-query.dto';
+import { PaginatedEducationCardsResponseDto } from './dto/paginated-education-cards-response.dto';
 
 @ApiTags('Education Cards')
 @Controller('education-cards')
@@ -53,8 +56,7 @@ export class EducationCardsController {
   @ApiResponse({
     status: 200,
     description: 'Listado administrativo de cards educativas.',
-    type: EducationCardResponseDto,
-    isArray: true,
+    type: PaginatedEducationCardsResponseDto,
   })
   @ApiResponse({
     status: 401,
@@ -68,8 +70,8 @@ export class EducationCardsController {
   @UseGuards(AdminAuthGuard, AdminRolesGuard)
   @Roles('admin', 'editor')
   @Get('admin')
-  findAllAdmin() {
-    return this.educationCardsService.findAllAdmin();
+  findAllAdmin(@Query() query: ListEducationCardsAdminQueryDto) {
+    return this.educationCardsService.findAllAdmin(query);
   }
 
   @ApiBearerAuth()

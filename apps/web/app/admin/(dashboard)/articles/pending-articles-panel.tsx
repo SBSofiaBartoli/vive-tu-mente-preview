@@ -1,9 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { adminApiClient, adminApiPatchClient } from "@/lib/api-client";
 import { createSupabaseBrowserClient } from "@/lib/supabase-client";
-import type { Article } from "@/types/article";
+import type {
+  Article,
+  ArticleStatus,
+  PaginatedArticlesResponse,
+} from "@/types/article";
 
 const formatDate = (date: string) =>
   new Intl.DateTimeFormat("es-CL", {
@@ -11,8 +15,32 @@ const formatDate = (date: string) =>
     timeStyle: "short",
   }).format(new Date(date));
 
+const articlesPageSize = 10;
+
+const statusLabels: Record<ArticleStatus, string> = {
+  draft: "Borrador",
+  pending_review: "Pendiente de revisión",
+  changes_requested: "Cambios solicitados",
+  published: "Publicado",
+  rejected: "Rechazado",
+  archived: "Archivado",
+};
+
+type ArticleStatusFilter = ArticleStatus | "all";
+
 export function PendingArticlesPanel() {
   const [articles, setArticles] = useState<Article[]>([]);
+  const [page, setPage] = useState(1);
+  const [paginationMeta, setPaginationMeta] = useState({
+    page: 1,
+    limit: articlesPageSize,
+    total: 0,
+    total_pages: 1,
+  });
+  const [statusFilter, setStatusFilter] =
+    useState<ArticleStatusFilter>("pending_review");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -24,34 +52,61 @@ export function PendingArticlesPanel() {
   >({});
   const [reviewNotes, setReviewNotes] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    const loadPendingArticles = async () => {
-      try {
-        const supabaseClient = createSupabaseBrowserClient();
-        const { data } = await supabaseClient.auth.getSession();
+  const loadArticles = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const supabaseClient = createSupabaseBrowserClient();
+      const { data } = await supabaseClient.auth.getSession();
 
-        if (!data.session) {
-          setErrorMessage("No se encontró una sesión activa.");
-          return;
-        }
-
-        const pendingArticles = await adminApiClient<Article[]>(
-          "/api/articles/admin/pending",
-          {
-            accessToken: data.session.access_token,
-          },
-        );
-
-        setArticles(pendingArticles);
-      } catch {
-        setErrorMessage("No se pudieron cargar las propuestas de artículos.");
-      } finally {
-        setIsLoading(false);
+      if (!data.session) {
+        setErrorMessage("No se encontró una sesión activa.");
+        return;
       }
-    };
 
-    void loadPendingArticles();
-  }, []);
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: String(articlesPageSize),
+      });
+
+      if (statusFilter !== "all") {
+        params.set("status", statusFilter);
+      }
+
+      if (categoryFilter.trim()) {
+        params.set("category", categoryFilter.trim());
+      }
+
+      if (searchTerm.trim()) {
+        params.set("search", searchTerm.trim());
+      }
+
+      const articlesResponse = await adminApiClient<PaginatedArticlesResponse>(
+        `/api/articles/admin?${params.toString()}`,
+        {
+          accessToken: data.session.access_token,
+        },
+      );
+
+      setArticles(articlesResponse.items);
+      setPaginationMeta(articlesResponse.meta);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "No se pudieron cargar las propuestas de artículos.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, [categoryFilter, page, searchTerm, statusFilter]);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      void loadArticles();
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [loadArticles]);
 
   const updateArticle = async (
     articleId: string,
@@ -101,9 +156,7 @@ export function PendingArticlesPanel() {
         },
       );
 
-      setArticles((currentArticles) =>
-        currentArticles.filter((article) => article.id !== articleId),
-      );
+      void loadArticles();
 
       setSuccessMessage(
         endpoint === "publish"
@@ -153,18 +206,69 @@ export function PendingArticlesPanel() {
         </div>
       ) : null}
 
+      <section className="rounded-lg border border-[#dcebea] bg-white p-5">
+        <div className="grid gap-4 md:grid-cols-3">
+          <label className="block">
+            <span className="text-sm font-bold text-[#52708a]">Buscar</span>
+            <input
+              value={searchTerm}
+              onChange={(event) => {
+                setSearchTerm(event.target.value);
+                setPage(1);
+              }}
+              className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+              placeholder="Título, bajada o contenido"
+            />
+          </label>
+
+          <label className="block">
+            <span className="text-sm font-bold text-[#52708a]">Estado</span>
+            <select
+              value={statusFilter}
+              onChange={(event) => {
+                setStatusFilter(event.target.value as ArticleStatusFilter);
+                setPage(1);
+              }}
+              className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+            >
+              <option value="all">Todos</option>
+              <option value="pending_review">Pendiente de revisión</option>
+              <option value="changes_requested">Cambios solicitados</option>
+              <option value="published">Publicado</option>
+              <option value="rejected">Rechazado</option>
+              <option value="archived">Archivado</option>
+              <option value="draft">Borrador</option>
+            </select>
+          </label>
+
+          <label className="block">
+            <span className="text-sm font-bold text-[#52708a]">Categoría</span>
+            <input
+              value={categoryFilter}
+              onChange={(event) => {
+                setCategoryFilter(event.target.value);
+                setPage(1);
+              }}
+              className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+              placeholder="bienestar, educación..."
+            />
+          </label>
+        </div>
+      </section>
+
       <div className="rounded-lg border border-[#dcebea] bg-white p-4">
-        <p className="text-sm font-semibold text-[#52708a]">
-          Propuestas pendientes
-        </p>
+        <p className="text-sm font-semibold text-[#52708a]">Artículos</p>
         <p className="mt-1 text-3xl font-bold text-[#071a2f]">
-          {articles.length}
+          {paginationMeta.total}
+        </p>
+        <p className="mt-1 text-sm text-[#52708a]">
+          Mostrando {articles.length} resultados en esta página.
         </p>
       </div>
 
       {articles.length === 0 ? (
         <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
-          No hay propuestas pendientes de revisión.
+          No hay artículos para los filtros seleccionados.
         </div>
       ) : null}
 
@@ -192,7 +296,7 @@ export function PendingArticlesPanel() {
                 </div>
 
                 <span className="rounded-full bg-[#e8f7f7] px-3 py-1 text-xs font-bold text-[#168c91]">
-                  Pendiente de revisión
+                  {statusLabels[article.status]}
                 </span>
               </div>
 
@@ -259,38 +363,78 @@ export function PendingArticlesPanel() {
                   />
                 </label>
 
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    disabled={updatingArticleId === article.id}
-                    onClick={() => updateArticle(article.id, "publish")}
-                    className="rounded-full bg-[#39b8bb] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:bg-[#5fd0d2] disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    Publicar
-                  </button>
+                {article.status === "pending_review" ||
+                article.status === "changes_requested" ? (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      disabled={updatingArticleId === article.id}
+                      onClick={() => updateArticle(article.id, "publish")}
+                      className="rounded-full bg-[#39b8bb] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:bg-[#5fd0d2] disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      Publicar
+                    </button>
 
-                  <button
-                    type="button"
-                    disabled={updatingArticleId === article.id}
-                    onClick={() => updateArticle(article.id, "request-changes")}
-                    className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] hover:text-[#168c91] disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    Solicitar cambios
-                  </button>
+                    <button
+                      type="button"
+                      disabled={updatingArticleId === article.id}
+                      onClick={() =>
+                        updateArticle(article.id, "request-changes")
+                      }
+                      className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] hover:text-[#168c91] disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      Solicitar cambios
+                    </button>
 
-                  <button
-                    type="button"
-                    disabled={updatingArticleId === article.id}
-                    onClick={() => updateArticle(article.id, "reject")}
-                    className="rounded-full border border-red-200 px-4 py-2 text-xs font-bold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    Rechazar
-                  </button>
-                </div>
+                    <button
+                      type="button"
+                      disabled={updatingArticleId === article.id}
+                      onClick={() => updateArticle(article.id, "reject")}
+                      className="rounded-full border border-red-200 px-4 py-2 text-xs font-bold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      Rechazar
+                    </button>
+                  </div>
+                ) : (
+                  <p className="mt-4 text-xs font-semibold text-[#52708a]">
+                    Este artículo no requiere acciones de revisión.
+                  </p>
+                )}
               </div>
             </article>
           ))
         : null}
+      {paginationMeta.total_pages > 1 ? (
+        <div className="flex items-center justify-between rounded-lg border border-[#dcebea] bg-white p-4">
+          <button
+            type="button"
+            disabled={page <= 1}
+            onClick={() =>
+              setPage((currentPage) => Math.max(1, currentPage - 1))
+            }
+            className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Anterior
+          </button>
+
+          <p className="text-sm font-semibold text-[#52708a]">
+            Página {paginationMeta.page} de {paginationMeta.total_pages}
+          </p>
+
+          <button
+            type="button"
+            disabled={page >= paginationMeta.total_pages}
+            onClick={() =>
+              setPage((currentPage) =>
+                Math.min(paginationMeta.total_pages, currentPage + 1),
+              )
+            }
+            className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Siguiente
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }

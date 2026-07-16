@@ -11,3 +11,15 @@ export type ParticipationMessage = {
   created_at: string;
   updated_at: string;
 };
+
+export type PaginationMeta = {
+  page: number;
+  limit: number;
+  total: number;
+  total_pages: number;
+};
+
+export type PaginatedParticipationMessagesResponse = {
+  items: ParticipationMessage[];
+  meta: PaginationMeta;
+};

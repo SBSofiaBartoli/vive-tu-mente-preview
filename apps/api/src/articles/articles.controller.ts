@@ -6,6 +6,7 @@ import {
   Post,
   Patch,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -22,6 +23,8 @@ import { Roles } from '../auth/roles.decorator';
 import { RejectArticleDto } from './dto/reject-article.dto';
 import { ArticleResponseDto } from './dto/article-response.dto';
 import { RequestArticleChangesDto } from './dto/request-article-changes.dto';
+import { ListArticlesAdminQueryDto } from './dto/list-articles-admin-query.dto';
+import { PaginatedArticlesResponseDto } from './dto/paginated-articles-response.dto';
 
 @ApiTags('Articles')
 @Controller('articles')
@@ -76,6 +79,32 @@ export class ArticlesController {
   @Post('proposals')
   createProposal(@Body() createArticleProposalDto: CreateArticleProposalDto) {
     return this.articlesService.createProposal(createArticleProposalDto);
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Listar artículos para administración',
+    description:
+      'Permite listar artículos del blog con paginación, búsqueda y filtros por estado o categoría.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Listado administrativo paginado de artículos.',
+    type: PaginatedArticlesResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Token ausente, inválido o expirado.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'El usuario no tiene permisos suficientes.',
+  })
+  @UseGuards(AdminAuthGuard, AdminRolesGuard)
+  @Roles('admin', 'reviewer')
+  @Get('admin')
+  findAllAdmin(@Query() query: ListArticlesAdminQueryDto) {
+    return this.articlesService.findAllAdmin(query);
   }
 
   @ApiBearerAuth()

@@ -21,3 +21,15 @@ export type Testimonial = {
   created_at: string;
   updated_at: string;
 };
+
+export type PaginationMeta = {
+  page: number;
+  limit: number;
+  total: number;
+  total_pages: number;
+};
+
+export type PaginatedTestimonialsResponse = {
+  items: Testimonial[];
+  meta: PaginationMeta;
+};
