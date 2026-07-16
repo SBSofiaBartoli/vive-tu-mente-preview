@@ -22,6 +22,8 @@ import { CreateParticipationMessageDto } from './dto/create-participation-messag
 import { UpdateParticipationMessageStatusDto } from './dto/update-participation-message-status.dto';
 import { ParticipationMessagesService } from './participation-messages.service';
 import { ParticipationMessageResponseDto } from './dto/participation-message-response.dto';
+import { ListParticipationMessagesAdminQueryDto } from './dto/list-participation-messages-admin-query.dto';
+import { PaginatedParticipationMessagesResponseDto } from './dto/paginated-participation-messages-response.dto';
 
 @ApiTags('Participation Messages')
 @Controller('participation/messages')
@@ -63,8 +65,7 @@ export class ParticipationMessagesController {
   @ApiResponse({
     status: 200,
     description: 'Listado de mensajes obtenido correctamente.',
-    type: ParticipationMessageResponseDto,
-    isArray: true,
+    type: PaginatedParticipationMessagesResponseDto,
   })
   @ApiResponse({
     status: 401,
@@ -77,16 +78,8 @@ export class ParticipationMessagesController {
   @UseGuards(AdminAuthGuard, AdminRolesGuard)
   @Roles('admin', 'reviewer')
   @Get('admin')
-  findAllForAdmin(
-    @Query('is_read') isRead?: string,
-    @Query('is_starred') isStarred?: string,
-    @Query('is_contacted') isContacted?: string,
-  ) {
-    return this.participationMessagesService.findAllForAdmin({
-      is_read: this.parseBooleanQuery(isRead),
-      is_starred: this.parseBooleanQuery(isStarred),
-      is_contacted: this.parseBooleanQuery(isContacted),
-    });
+  findAllForAdmin(@Query() query: ListParticipationMessagesAdminQueryDto) {
+    return this.participationMessagesService.findAllForAdmin(query);
   }
 
   @ApiBearerAuth()
@@ -116,17 +109,5 @@ export class ParticipationMessagesController {
     @Body() updateStatusDto: UpdateParticipationMessageStatusDto,
   ) {
     return this.participationMessagesService.updateStatus(id, updateStatusDto);
-  }
-
-  private parseBooleanQuery(value?: string): boolean | undefined {
-    if (value === 'true') {
-      return true;
-    }
-
-    if (value === 'false') {
-      return false;
-    }
-
-    return undefined;
   }
 }
