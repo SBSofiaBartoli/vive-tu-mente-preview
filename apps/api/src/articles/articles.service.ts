@@ -8,6 +8,8 @@ import { Article } from './article.types';
 import type { CreateArticleProposalDto } from './dto/create-article-proposal.dto';
 import type { RejectArticleDto } from './dto/reject-article.dto';
 import type { RequestArticleChangesDto } from './dto/request-article-changes.dto';
+import type { PaginatedResponse } from '../common/types/paginated-response.type';
+import type { ListArticlesAdminQueryDto } from './dto/list-articles-admin-query.dto';
 
 @Injectable()
 export class ArticlesService {
@@ -80,6 +82,53 @@ export class ArticlesService {
     }
 
     return data;
+  }
+
+  async findAllAdmin(
+    filters: ListArticlesAdminQueryDto,
+  ): Promise<PaginatedResponse<Article>> {
+    const supabase = this.supabaseService.getAdminClient();
+
+    const page = filters.page ?? 1;
+    const limit = filters.limit ?? 10;
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+
+    let query = supabase
+      .from('articles')
+      .select('*', { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .range(from, to);
+
+    if (filters.status) {
+      query = query.eq('status', filters.status);
+    }
+
+    if (filters.category) {
+      query = query.eq('category', filters.category);
+    }
+
+    if (filters.search) {
+      query = query.or(
+        `title.ilike.%${filters.search}%,excerpt.ilike.%${filters.search}%,content.ilike.%${filters.search}%`,
+      );
+    }
+
+    const { data, error, count } = await query.returns<Article[]>();
+
+    if (error) {
+      throw new InternalServerErrorException('Could not get admin articles');
+    }
+
+    return {
+      items: data,
+      meta: {
+        page,
+        limit,
+        total: count ?? 0,
+        total_pages: Math.ceil((count ?? 0) / limit),
+      },
+    };
   }
 
   async findPendingReview(): Promise<Article[]> {
