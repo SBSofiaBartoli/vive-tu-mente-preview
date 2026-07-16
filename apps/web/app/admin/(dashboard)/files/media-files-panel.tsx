@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import {
   adminApiClient,
   adminApiPatchClient,
-  adminApiPostClient,
+  apiPostClient,
   apiFormDataPostClient,
 } from "@/lib/api-client";
 import { createSupabaseBrowserClient } from "@/lib/supabase-client";
@@ -158,17 +158,14 @@ export function MediaFilesPanel() {
         formData,
       );
 
-      const registeredFile = await adminApiPostClient<
+      const registeredFile = await apiPostClient<
         MediaFile,
         CreateMediaFilePayload
       >("/api/media-files", {
-        accessToken: "",
-        body: {
-          ...uploadedFile,
-          section: uploadForm.section.trim() || "general",
-          uploaded_by_name: uploadForm.uploaded_by_name.trim() || null,
-          uploaded_by_email: uploadForm.uploaded_by_email.trim() || null,
-        },
+        ...uploadedFile,
+        section: uploadForm.section.trim() || "general",
+        uploaded_by_name: uploadForm.uploaded_by_name.trim() || null,
+        uploaded_by_email: uploadForm.uploaded_by_email.trim() || null,
       });
 
       setFiles((currentFiles) => [registeredFile, ...currentFiles]);
