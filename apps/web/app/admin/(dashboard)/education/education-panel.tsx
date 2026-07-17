@@ -75,6 +75,7 @@ export function EducationPanel() {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [isCardFormOpen, setIsCardFormOpen] = useState(false);
 
   const loadEducationData = useCallback(async () => {
     try {
@@ -302,6 +303,7 @@ export function EducationPanel() {
 
       void loadEducationData();
       setCardForm(emptyCardForm);
+      setIsCardFormOpen(false);
       setSuccessMessage("La card educativa fue creada correctamente.");
     } catch {
       setErrorMessage("No se pudo crear la card educativa.");
@@ -408,117 +410,137 @@ export function EducationPanel() {
       </div>
 
       <section className="rounded-lg border border-[#dcebea] bg-white p-5">
-        <h3 className="text-lg font-bold text-[#071a2f]">
-          Nueva card educativa
-        </h3>
-
-        <div className="mt-4 grid gap-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <label className="block">
-              <span className="text-sm font-bold text-[#52708a]">Segmento</span>
-              <input
-                value={cardForm.segment_key}
-                onChange={(event) =>
-                  setCardForm((currentForm) => ({
-                    ...currentForm,
-                    segment_key: event.target.value,
-                  }))
-                }
-                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
-                placeholder="ia-aplicada"
-              />
-            </label>
-
-            <label className="block">
-              <span className="text-sm font-bold text-[#52708a]">Ícono</span>
-              <input
-                value={cardForm.icon_name}
-                onChange={(event) =>
-                  setCardForm((currentForm) => ({
-                    ...currentForm,
-                    icon_name: event.target.value,
-                  }))
-                }
-                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
-                placeholder="book-open"
-              />
-            </label>
-          </div>
-
-          <label className="block">
-            <span className="text-sm font-bold text-[#52708a]">Título</span>
-            <input
-              value={cardForm.title}
-              onChange={(event) =>
-                setCardForm((currentForm) => ({
-                  ...currentForm,
-                  title: event.target.value,
-                }))
-              }
-              className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
-              placeholder="IA aplicada"
-            />
-          </label>
-
-          <label className="block">
-            <span className="text-sm font-bold text-[#52708a]">
-              Descripción
-            </span>
-            <textarea
-              value={cardForm.description}
-              onChange={(event) =>
-                setCardForm((currentForm) => ({
-                  ...currentForm,
-                  description: event.target.value,
-                }))
-              }
-              rows={4}
-              className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
-              placeholder="Describí brevemente el contenido de la card."
-            />
-          </label>
-
-          <div className="grid gap-4 md:grid-cols-[160px_1fr]">
-            <label className="block">
-              <span className="text-sm font-bold text-[#52708a]">Orden</span>
-              <input
-                type="number"
-                value={cardForm.sort_order}
-                onChange={(event) =>
-                  setCardForm((currentForm) => ({
-                    ...currentForm,
-                    sort_order: Number(event.target.value),
-                  }))
-                }
-                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
-              />
-            </label>
-
-            <label className="mt-7 flex items-center gap-2 text-sm font-semibold text-[#071a2f]">
-              <input
-                type="checkbox"
-                checked={cardForm.is_active}
-                onChange={(event) =>
-                  setCardForm((currentForm) => ({
-                    ...currentForm,
-                    is_active: event.target.checked,
-                  }))
-                }
-                className="h-4 w-4 accent-[#39b8bb]"
-              />
-              Publicar activa
-            </label>
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h3 className="text-lg font-bold text-[#071a2f]">
+              Cards educativas
+            </h3>
+            <p className="mt-1 text-sm text-[#52708a]">
+              Creá nuevos segmentos educativos para mostrar en la sección de
+              educación.
+            </p>
           </div>
 
           <button
             type="button"
-            disabled={isSavingCard}
-            onClick={createEducationCard}
-            className="w-fit rounded-full bg-[#39b8bb] px-5 py-2.5 text-sm font-bold text-[#071a2f] transition hover:bg-[#5fd0d2] disabled:cursor-not-allowed disabled:opacity-60"
+            onClick={() => setIsCardFormOpen((currentValue) => !currentValue)}
+            className="w-fit rounded-full bg-[#39b8bb] px-5 py-2.5 text-sm font-bold text-[#071a2f] transition hover:bg-[#5fd0d2]"
           >
-            Crear card
+            {isCardFormOpen ? "Cerrar formulario" : "Crear nueva card"}
           </button>
         </div>
+
+        {isCardFormOpen ? (
+          <div className="mt-5 grid gap-4 border-t border-[#dcebea] pt-5">
+            <div className="grid gap-4 md:grid-cols-2">
+              <label className="block">
+                <span className="text-sm font-bold text-[#52708a]">
+                  Segmento
+                </span>
+                <input
+                  value={cardForm.segment_key}
+                  onChange={(event) =>
+                    setCardForm((currentForm) => ({
+                      ...currentForm,
+                      segment_key: event.target.value,
+                    }))
+                  }
+                  className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                  placeholder="ia-aplicada"
+                />
+              </label>
+
+              <label className="block">
+                <span className="text-sm font-bold text-[#52708a]">Ícono</span>
+                <input
+                  value={cardForm.icon_name}
+                  onChange={(event) =>
+                    setCardForm((currentForm) => ({
+                      ...currentForm,
+                      icon_name: event.target.value,
+                    }))
+                  }
+                  className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                  placeholder="book-open"
+                />
+              </label>
+            </div>
+
+            <label className="block">
+              <span className="text-sm font-bold text-[#52708a]">Título</span>
+              <input
+                value={cardForm.title}
+                onChange={(event) =>
+                  setCardForm((currentForm) => ({
+                    ...currentForm,
+                    title: event.target.value,
+                  }))
+                }
+                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                placeholder="IA aplicada"
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-sm font-bold text-[#52708a]">
+                Descripción
+              </span>
+              <textarea
+                value={cardForm.description}
+                onChange={(event) =>
+                  setCardForm((currentForm) => ({
+                    ...currentForm,
+                    description: event.target.value,
+                  }))
+                }
+                rows={4}
+                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                placeholder="Describí brevemente el contenido de la card."
+              />
+            </label>
+
+            <div className="grid gap-4 md:grid-cols-[160px_1fr]">
+              <label className="block">
+                <span className="text-sm font-bold text-[#52708a]">Orden</span>
+                <input
+                  type="number"
+                  value={cardForm.sort_order}
+                  onChange={(event) =>
+                    setCardForm((currentForm) => ({
+                      ...currentForm,
+                      sort_order: Number(event.target.value),
+                    }))
+                  }
+                  className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                />
+              </label>
+
+              <label className="mt-7 flex items-center gap-2 text-sm font-semibold text-[#071a2f]">
+                <input
+                  type="checkbox"
+                  checked={cardForm.is_active}
+                  onChange={(event) =>
+                    setCardForm((currentForm) => ({
+                      ...currentForm,
+                      is_active: event.target.checked,
+                    }))
+                  }
+                  className="h-4 w-4 accent-[#39b8bb]"
+                />
+                Publicar activa
+              </label>
+            </div>
+
+            <button
+              type="button"
+              disabled={isSavingCard}
+              onClick={createEducationCard}
+              className="w-fit rounded-full bg-[#39b8bb] px-5 py-2.5 text-sm font-bold text-[#071a2f] transition hover:bg-[#5fd0d2] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Crear card
+            </button>
+          </div>
+        ) : null}
       </section>
 
       <section className="rounded-lg border border-[#dcebea] bg-white p-5">
