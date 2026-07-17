@@ -324,44 +324,48 @@ export function TestimonialsPanel() {
         ? testimonials.map((testimonial) => (
             <article
               key={testimonial.id}
-              className="rounded-lg border border-[#dcebea] bg-white p-5 shadow-sm"
+              className="rounded-lg border border-[#dcebea] bg-white p-4 shadow-sm"
             >
               <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                <div>
-                  <h3 className="text-lg font-bold text-[#071a2f]">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-full bg-[#e8f7f7] px-3 py-1 text-xs font-bold text-[#168c91]">
+                      {statusLabels[testimonial.status]}
+                    </span>
+
+                    <span className="text-xs font-semibold text-[#52708a]">
+                      Recibido el {formatDate(testimonial.created_at)}
+                    </span>
+                  </div>
+
+                  <h3 className="mt-2 truncate text-lg font-bold text-[#071a2f]">
                     {testimonial.full_name}
                   </h3>
 
                   <p className="mt-1 text-sm text-[#52708a]">
                     {roleLabels[testimonial.role]}
+                    {testimonial.workshop_name
+                      ? ` · Taller: ${testimonial.workshop_name}`
+                      : ""}
                   </p>
-
-                  {testimonial.workshop_name ? (
-                    <p className="mt-1 text-sm text-[#52708a]">
-                      Taller: {testimonial.workshop_name}
-                    </p>
-                  ) : null}
                 </div>
-
-                <span className="rounded-full bg-[#e8f7f7] px-3 py-1 text-xs font-bold text-[#168c91]">
-                  {statusLabels[testimonial.status]}
-                </span>
               </div>
 
-              <p className="mt-4 whitespace-pre-line text-sm leading-6 text-[#071a2f]">
-                {testimonial.comment}
-              </p>
-
-              <p className="mt-4 text-xs font-semibold text-[#52708a]">
-                Recibido el {formatDate(testimonial.created_at)}
-              </p>
-
-              <div className="mt-5 rounded-lg border border-[#dcebea] bg-[#f7fbfb] p-4">
-                <p className="text-sm font-bold text-[#071a2f]">
-                  Revisión administrativa
+              <details className="mt-4 rounded-lg border border-[#dcebea] bg-[#f7fbfb] p-4">
+                <summary className="cursor-pointer text-sm font-bold text-[#071a2f]">
+                  Ver comentario enviado
+                </summary>
+                <p className="mt-4 whitespace-pre-line text-sm leading-6 text-[#071a2f]">
+                  {testimonial.comment}
                 </p>
+              </details>
 
-                <label className="mt-3 block">
+              <details className="mt-4 rounded-lg border border-[#dcebea] bg-[#f7fbfb] p-4">
+                <summary className="cursor-pointer text-sm font-bold text-[#071a2f]">
+                  Revisión administrativa
+                </summary>
+
+                <label className="mt-4 block">
                   <span className="text-xs font-bold text-[#52708a]">
                     Motivo de rechazo
                   </span>
@@ -381,7 +385,7 @@ export function TestimonialsPanel() {
 
                 {testimonial.status === "pending" ? (
                   <div className="mt-4 rounded-lg border border-[#dcebea] bg-white p-3">
-                    <label className="mt-4 flex items-center gap-2 text-sm font-semibold text-[#071a2f]">
+                    <label className="flex items-center gap-2 text-sm font-semibold text-[#071a2f]">
                       <input
                         type="checkbox"
                         checked={featuredSelections[testimonial.id] ?? false}
@@ -431,7 +435,7 @@ export function TestimonialsPanel() {
                     Este testimonio no requiere acciones de revisión.
                   </p>
                 )}
-              </div>
+              </details>
             </article>
           ))
         : null}
