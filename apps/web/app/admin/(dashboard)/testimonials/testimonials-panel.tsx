@@ -35,7 +35,7 @@ const statusLabels: Record<TestimonialStatus, string> = {
 type TestimonialStatusFilter = TestimonialStatus | "all";
 type FeaturedFilter = "all" | "featured" | "not_featured";
 
-export function PendingTestimonialsPanel() {
+export function TestimonialsPanel() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [page, setPage] = useState(1);
   const [paginationMeta, setPaginationMeta] = useState({

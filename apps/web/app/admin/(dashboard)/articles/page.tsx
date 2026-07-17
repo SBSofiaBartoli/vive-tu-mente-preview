@@ -1,4 +1,4 @@
-import { PendingArticlesPanel } from "./pending-articles-panel";
+import { ArticlesPanel } from "./articles-panel";
 
 export default function AdminArticlesPage() {
   return (
@@ -9,7 +9,7 @@ export default function AdminArticlesPage() {
           Revisión, publicación y administración de propuestas para el blog.
         </p>
       </div>
-      <PendingArticlesPanel />
+      <ArticlesPanel />
     </section>
   );
 }

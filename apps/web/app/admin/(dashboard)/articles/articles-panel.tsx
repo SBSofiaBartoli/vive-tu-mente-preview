@@ -28,7 +28,7 @@ const statusLabels: Record<ArticleStatus, string> = {
 
 type ArticleStatusFilter = ArticleStatus | "all";
 
-export function PendingArticlesPanel() {
+export function ArticlesPanel() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [page, setPage] = useState(1);
   const [paginationMeta, setPaginationMeta] = useState({
