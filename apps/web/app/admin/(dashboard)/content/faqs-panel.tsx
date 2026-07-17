@@ -46,6 +46,7 @@ export function FaqsPanel() {
   >({});
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
 
   const loadFaqs = useCallback(async () => {
     try {
@@ -138,6 +139,7 @@ export function FaqsPanel() {
 
       void loadFaqs();
       setForm(emptyForm);
+      setIsCreateFormOpen(false);
       setSuccessMessage("La pregunta frecuente fue creada correctamente.");
     } catch (error) {
       setErrorMessage(
@@ -266,100 +268,120 @@ export function FaqsPanel() {
       ) : null}
 
       <section className="rounded-lg border border-[#dcebea] bg-white p-5">
-        <h3 className="text-lg font-bold text-[#071a2f]">
-          Nueva pregunta frecuente
-        </h3>
-
-        <div className="mt-4 grid gap-4">
-          <label className="block">
-            <span className="text-sm font-bold text-[#52708a]">Pregunta</span>
-            <input
-              value={form.question}
-              onChange={(event) =>
-                setForm((currentForm) => ({
-                  ...currentForm,
-                  question: event.target.value,
-                }))
-              }
-              className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
-              placeholder="Ej: ¿Cómo puedo participar?"
-            />
-          </label>
-
-          <label className="block">
-            <span className="text-sm font-bold text-[#52708a]">Respuesta</span>
-            <textarea
-              value={form.answer}
-              onChange={(event) =>
-                setForm((currentForm) => ({
-                  ...currentForm,
-                  answer: event.target.value,
-                }))
-              }
-              rows={4}
-              className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
-              placeholder="Escribí la respuesta que se mostrará en el sitio."
-            />
-          </label>
-
-          <div className="grid gap-4 md:grid-cols-[1fr_160px]">
-            <label className="block">
-              <span className="text-sm font-bold text-[#52708a]">
-                Categoría
-              </span>
-              <input
-                value={form.category}
-                onChange={(event) =>
-                  setForm((currentForm) => ({
-                    ...currentForm,
-                    category: event.target.value,
-                  }))
-                }
-                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
-                placeholder="general"
-              />
-            </label>
-
-            <label className="block">
-              <span className="text-sm font-bold text-[#52708a]">Orden</span>
-              <input
-                type="number"
-                value={form.sort_order}
-                onChange={(event) =>
-                  setForm((currentForm) => ({
-                    ...currentForm,
-                    sort_order: Number(event.target.value),
-                  }))
-                }
-                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
-              />
-            </label>
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h3 className="text-lg font-bold text-[#071a2f]">
+              Preguntas frecuentes
+            </h3>
+            <p className="mt-1 text-sm text-[#52708a]">
+              Creá y administrá preguntas desplegables para las secciones del
+              sitio.
+            </p>
           </div>
-
-          <label className="flex items-center gap-2 text-sm font-semibold text-[#071a2f]">
-            <input
-              type="checkbox"
-              checked={form.is_active}
-              onChange={(event) =>
-                setForm((currentForm) => ({
-                  ...currentForm,
-                  is_active: event.target.checked,
-                }))
-              }
-              className="h-4 w-4 accent-[#39b8bb]"
-            />
-            Publicar activa
-          </label>
 
           <button
             type="button"
-            disabled={isSaving}
-            onClick={createFaq}
-            className="w-fit rounded-full bg-[#39b8bb] px-5 py-2.5 text-sm font-bold text-[#071a2f] transition hover:bg-[#5fd0d2] disabled:cursor-not-allowed disabled:opacity-60"
+            onClick={() => setIsCreateFormOpen((currentValue) => !currentValue)}
+            className="w-fit rounded-full bg-[#39b8bb] px-5 py-2.5 text-sm font-bold text-[#071a2f] transition hover:bg-[#5fd0d2]"
           >
-            Crear pregunta
+            {isCreateFormOpen ? "Cerrar formulario" : "Crear nueva pregunta"}
           </button>
         </div>
+
+        {isCreateFormOpen ? (
+          <div className="mt-5 grid gap-4 border-t border-[#dcebea] pt-5">
+            <label className="block">
+              <span className="text-sm font-bold text-[#52708a]">Pregunta</span>
+              <input
+                value={form.question}
+                onChange={(event) =>
+                  setForm((currentForm) => ({
+                    ...currentForm,
+                    question: event.target.value,
+                  }))
+                }
+                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                placeholder="Ej: ¿Cómo puedo participar?"
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-sm font-bold text-[#52708a]">
+                Respuesta
+              </span>
+              <textarea
+                value={form.answer}
+                onChange={(event) =>
+                  setForm((currentForm) => ({
+                    ...currentForm,
+                    answer: event.target.value,
+                  }))
+                }
+                rows={4}
+                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                placeholder="Escribí la respuesta que se mostrará en el sitio."
+              />
+            </label>
+
+            <div className="grid gap-4 md:grid-cols-[1fr_160px]">
+              <label className="block">
+                <span className="text-sm font-bold text-[#52708a]">
+                  Categoría
+                </span>
+                <input
+                  value={form.category}
+                  onChange={(event) =>
+                    setForm((currentForm) => ({
+                      ...currentForm,
+                      category: event.target.value,
+                    }))
+                  }
+                  className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                  placeholder="general"
+                />
+              </label>
+
+              <label className="block">
+                <span className="text-sm font-bold text-[#52708a]">Orden</span>
+                <input
+                  type="number"
+                  value={form.sort_order}
+                  onChange={(event) =>
+                    setForm((currentForm) => ({
+                      ...currentForm,
+                      sort_order: Number(event.target.value),
+                    }))
+                  }
+                  className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                />
+              </label>
+            </div>
+
+            <label className="flex items-center gap-2 text-sm font-semibold text-[#071a2f]">
+              <input
+                type="checkbox"
+                checked={form.is_active}
+                onChange={(event) =>
+                  setForm((currentForm) => ({
+                    ...currentForm,
+                    is_active: event.target.checked,
+                  }))
+                }
+                className="h-4 w-4 accent-[#39b8bb]"
+              />
+              Publicar activa
+            </label>
+
+            <button
+              type="button"
+              disabled={isSaving}
+              onClick={createFaq}
+              className="w-fit rounded-full bg-[#39b8bb] px-5 py-2.5 text-sm font-bold text-[#071a2f] transition hover:bg-[#5fd0d2] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Crear pregunta
+            </button>
+          </div>
+        ) : null}
       </section>
 
       <section className="space-y-4">
