@@ -282,28 +282,31 @@ export function ArticlesPanel() {
         ? articles.map((article) => (
             <article
               key={article.id}
-              className="rounded-lg border border-[#dcebea] bg-white p-5 shadow-sm"
+              className="rounded-lg border border-[#dcebea] bg-white p-4 shadow-sm"
             >
               <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                <div>
-                  <h3 className="text-lg font-bold text-[#071a2f]">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-full bg-[#e8f7f7] px-3 py-1 text-xs font-bold text-[#168c91]">
+                      {statusLabels[article.status]}
+                    </span>
+
+                    <span className="text-xs font-semibold text-[#52708a]">
+                      Recibido el {formatDate(article.created_at)}
+                    </span>
+                  </div>
+
+                  <h3 className="mt-2 truncate text-lg font-bold text-[#071a2f]">
                     {article.title}
                   </h3>
 
                   <p className="mt-1 text-sm text-[#52708a]">
                     Enviado por {article.submitted_by_name ?? "Sin nombre"}
+                    {article.submitted_by_email
+                      ? ` · ${article.submitted_by_email}`
+                      : ""}
                   </p>
-
-                  {article.submitted_by_email ? (
-                    <p className="mt-1 text-sm text-[#52708a]">
-                      {article.submitted_by_email}
-                    </p>
-                  ) : null}
                 </div>
-
-                <span className="rounded-full bg-[#e8f7f7] px-3 py-1 text-xs font-bold text-[#168c91]">
-                  {statusLabels[article.status]}
-                </span>
               </div>
 
               {article.excerpt ? (
@@ -316,23 +319,21 @@ export function ArticlesPanel() {
                 <summary className="cursor-pointer text-sm font-bold text-[#071a2f]">
                   Ver contenido enviado
                 </summary>
-                <p className="mt-4 line-clamp-4 whitespace-pre-line text-sm leading-6 text-[#52708a]">
+                <p className="mt-4 whitespace-pre-line text-sm leading-6 text-[#52708a]">
                   {article.content}
                 </p>
               </details>
 
-              <p className="mt-4 text-xs font-semibold text-[#52708a]">
-                Recibido el {formatDate(article.created_at)}
-              </p>
-
-              <div className="mt-5 rounded-lg border border-[#dcebea] bg-[#f7fbfb] p-4">
-                <p className="text-sm font-bold text-[#071a2f]">
+              <details className="mt-4 rounded-lg border border-[#dcebea] bg-[#f7fbfb] p-4">
+                <summary className="cursor-pointer text-sm font-bold text-[#071a2f]">
                   Revisión administrativa
-                </p>
-                <p className="mt-1 text-xs font-semibold text-[#52708a]">
+                </summary>
+
+                <p className="mt-4 text-xs font-semibold text-[#52708a]">
                   Contacto para devolución:{" "}
                   {article.submitted_by_email ?? "No informado"}
                 </p>
+
                 <label className="mt-3 block">
                   <span className="text-xs font-bold text-[#52708a]">
                     Motivo de rechazo
@@ -406,7 +407,7 @@ export function ArticlesPanel() {
                     Este artículo no requiere acciones de revisión.
                   </p>
                 )}
-              </div>
+              </details>
             </article>
           ))
         : null}
