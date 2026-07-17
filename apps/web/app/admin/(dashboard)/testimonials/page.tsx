@@ -1,4 +1,4 @@
-import { PendingTestimonialsPanel } from "./pending-testimonials-panel";
+import { TestimonialsPanel } from "./testimonials-panel";
 
 export default function AdminTestimonialsPage() {
   return (
@@ -9,7 +9,7 @@ export default function AdminTestimonialsPage() {
           Revisión y administración de testimonios enviados por participantes.
         </p>
       </div>
-      <PendingTestimonialsPanel />
+      <TestimonialsPanel />
     </section>
   );
 }
