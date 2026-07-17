@@ -424,52 +424,56 @@ export function MediaFilesPanel() {
       {files.map((file) => (
         <article
           key={file.id}
-          className="rounded-lg border border-[#dcebea] bg-white p-5 shadow-sm"
+          className="rounded-lg border border-[#dcebea] bg-white p-4 shadow-sm"
         >
-          <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-            <div>
-              <p className="text-xs font-bold uppercase text-[#39b8bb]">
-                {file.section}
-              </p>
-              <h3 className="mt-1 text-lg font-bold text-[#071a2f]">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="text-xs font-bold uppercase text-[#39b8bb]">
+                  {file.section}
+                </p>
+
+                <span
+                  className={
+                    file.status === "approved"
+                      ? "rounded-full bg-[#e8f7f7] px-3 py-1 text-xs font-bold text-[#168c91]"
+                      : "rounded-full bg-[#f1f5f9] px-3 py-1 text-xs font-bold text-[#52708a]"
+                  }
+                >
+                  {statusLabels[file.status]}
+                </span>
+              </div>
+
+              <h3 className="mt-2 truncate text-base font-bold text-[#071a2f]">
                 {file.original_name}
               </h3>
+
               <p className="mt-1 text-sm text-[#52708a]">
-                {file.mime_type} · {formatFileSize(file.file_size)}
-              </p>
-              <p className="mt-1 text-sm text-[#52708a]">
-                Subido por {file.uploaded_by_name ?? "Sin nombre"}
+                {file.mime_type} · {formatFileSize(file.file_size)} · Subido por{" "}
+                {file.uploaded_by_name ?? "Sin nombre"}
               </p>
             </div>
 
-            <span
-              className={
-                file.status === "approved"
-                  ? "rounded-full bg-[#e8f7f7] px-3 py-1 text-xs font-bold text-[#168c91]"
-                  : "rounded-full bg-[#f1f5f9] px-3 py-1 text-xs font-bold text-[#52708a]"
-              }
-            >
-              {statusLabels[file.status]}
-            </span>
+            <div className="flex flex-wrap gap-2">
+              {file.public_url ? (
+                <a
+                  href={file.public_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] hover:text-[#168c91]"
+                >
+                  Ver archivo
+                </a>
+              ) : null}
+            </div>
           </div>
 
-          {file.public_url ? (
-            <a
-              href={file.public_url}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-4 inline-flex rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] hover:text-[#168c91]"
-            >
-              Ver archivo
-            </a>
-          ) : null}
-
-          <div className="mt-5 rounded-lg border border-[#dcebea] bg-[#f7fbfb] p-4">
-            <p className="text-sm font-bold text-[#071a2f]">
+          <details className="mt-4 rounded-lg border border-[#dcebea] bg-[#f7fbfb] p-4">
+            <summary className="cursor-pointer text-sm font-bold text-[#071a2f]">
               Revisión administrativa
-            </p>
+            </summary>
 
-            <label className="mt-3 block">
+            <label className="mt-4 block">
               <span className="text-xs font-bold text-[#52708a]">
                 Observaciones para cambios
               </span>
@@ -558,7 +562,7 @@ export function MediaFilesPanel() {
                 </p>
               ) : null}
             </div>
-          </div>
+          </details>
         </article>
       ))}
       {paginationMeta.total_pages > 1 ? (
