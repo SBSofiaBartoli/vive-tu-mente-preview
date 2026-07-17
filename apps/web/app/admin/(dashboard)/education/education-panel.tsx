@@ -76,6 +76,7 @@ export function EducationPanel() {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isCardFormOpen, setIsCardFormOpen] = useState(false);
+  const [isTipFormOpen, setIsTipFormOpen] = useState(false);
 
   const loadEducationData = useCallback(async () => {
     try {
@@ -353,6 +354,7 @@ export function EducationPanel() {
 
       void loadEducationData();
       setTipForm(emptyTipForm);
+      setIsTipFormOpen(false);
       setSuccessMessage("El tip educativo fue creado correctamente.");
     } catch {
       setErrorMessage("No se pudo crear el tip educativo.");
@@ -544,136 +546,158 @@ export function EducationPanel() {
       </section>
 
       <section className="rounded-lg border border-[#dcebea] bg-white p-5">
-        <h3 className="text-lg font-bold text-[#071a2f]">
-          Nuevo tip educativo
-        </h3>
-
-        <div className="mt-4 grid gap-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <label className="block">
-              <span className="text-sm font-bold text-[#52708a]">Segmento</span>
-              <input
-                value={tipForm.segment_key}
-                onChange={(event) =>
-                  setTipForm((currentForm) => ({
-                    ...currentForm,
-                    segment_key: event.target.value,
-                  }))
-                }
-                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
-                placeholder="ia-aplicada"
-              />
-            </label>
-
-            <label className="block">
-              <span className="text-sm font-bold text-[#52708a]">Título</span>
-              <input
-                value={tipForm.title}
-                onChange={(event) =>
-                  setTipForm((currentForm) => ({
-                    ...currentForm,
-                    title: event.target.value,
-                  }))
-                }
-                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
-                placeholder="Prompt para organizar tu agenda semanal"
-              />
-            </label>
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h3 className="text-lg font-bold text-[#071a2f]">
+              Tips educativos
+            </h3>
+            <p className="mt-1 text-sm text-[#52708a]">
+              Creá tips rápidos, recursos o contenidos breves para cada segmento
+              educativo.
+            </p>
           </div>
-
-          <label className="block">
-            <span className="text-sm font-bold text-[#52708a]">Contenido</span>
-            <textarea
-              value={tipForm.content}
-              onChange={(event) =>
-                setTipForm((currentForm) => ({
-                  ...currentForm,
-                  content: event.target.value,
-                }))
-              }
-              rows={4}
-              className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
-              placeholder="Escribí el contenido del tip educativo."
-            />
-          </label>
-
-          <label className="block">
-            <span className="text-sm font-bold text-[#52708a]">
-              URL de recurso
-            </span>
-            <input
-              value={tipForm.resource_url ?? ""}
-              onChange={(event) =>
-                setTipForm((currentForm) => ({
-                  ...currentForm,
-                  resource_url: event.target.value,
-                }))
-              }
-              className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
-              placeholder="https://..."
-            />
-          </label>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <label className="block">
-              <span className="text-sm font-bold text-[#52708a]">
-                Visible desde
-              </span>
-              <input
-                type="date"
-                value={tipForm.starts_at ?? ""}
-                onChange={(event) =>
-                  setTipForm((currentForm) => ({
-                    ...currentForm,
-                    starts_at: event.target.value || null,
-                  }))
-                }
-                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
-              />
-            </label>
-
-            <label className="block">
-              <span className="text-sm font-bold text-[#52708a]">
-                Visible hasta
-              </span>
-              <input
-                type="date"
-                value={tipForm.ends_at ?? ""}
-                onChange={(event) =>
-                  setTipForm((currentForm) => ({
-                    ...currentForm,
-                    ends_at: event.target.value || null,
-                  }))
-                }
-                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
-              />
-            </label>
-          </div>
-
-          <label className="flex items-center gap-2 text-sm font-semibold text-[#071a2f]">
-            <input
-              type="checkbox"
-              checked={tipForm.is_active}
-              onChange={(event) =>
-                setTipForm((currentForm) => ({
-                  ...currentForm,
-                  is_active: event.target.checked,
-                }))
-              }
-              className="h-4 w-4 accent-[#39b8bb]"
-            />
-            Publicar activo
-          </label>
 
           <button
             type="button"
-            disabled={isSavingTip}
-            onClick={createEducationTip}
-            className="w-fit rounded-full bg-[#39b8bb] px-5 py-2.5 text-sm font-bold text-[#071a2f] transition hover:bg-[#5fd0d2] disabled:cursor-not-allowed disabled:opacity-60"
+            onClick={() => setIsTipFormOpen((currentValue) => !currentValue)}
+            className="w-fit rounded-full bg-[#39b8bb] px-5 py-2.5 text-sm font-bold text-[#071a2f] transition hover:bg-[#5fd0d2]"
           >
-            Crear tip
+            {isTipFormOpen ? "Cerrar formulario" : "Crear nuevo tip"}
           </button>
         </div>
+
+        {isTipFormOpen ? (
+          <div className="mt-5 grid gap-4 border-t border-[#dcebea] pt-5">
+            <div className="grid gap-4 md:grid-cols-2">
+              <label className="block">
+                <span className="text-sm font-bold text-[#52708a]">
+                  Segmento
+                </span>
+                <input
+                  value={tipForm.segment_key}
+                  onChange={(event) =>
+                    setTipForm((currentForm) => ({
+                      ...currentForm,
+                      segment_key: event.target.value,
+                    }))
+                  }
+                  className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                  placeholder="ia-aplicada"
+                />
+              </label>
+
+              <label className="block">
+                <span className="text-sm font-bold text-[#52708a]">Título</span>
+                <input
+                  value={tipForm.title}
+                  onChange={(event) =>
+                    setTipForm((currentForm) => ({
+                      ...currentForm,
+                      title: event.target.value,
+                    }))
+                  }
+                  className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                  placeholder="Prompt para organizar tu agenda semanal"
+                />
+              </label>
+            </div>
+
+            <label className="block">
+              <span className="text-sm font-bold text-[#52708a]">
+                Contenido
+              </span>
+              <textarea
+                value={tipForm.content}
+                onChange={(event) =>
+                  setTipForm((currentForm) => ({
+                    ...currentForm,
+                    content: event.target.value,
+                  }))
+                }
+                rows={4}
+                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                placeholder="Escribí el contenido del tip educativo."
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-sm font-bold text-[#52708a]">
+                URL de recurso
+              </span>
+              <input
+                value={tipForm.resource_url ?? ""}
+                onChange={(event) =>
+                  setTipForm((currentForm) => ({
+                    ...currentForm,
+                    resource_url: event.target.value,
+                  }))
+                }
+                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                placeholder="https://..."
+              />
+            </label>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <label className="block">
+                <span className="text-sm font-bold text-[#52708a]">
+                  Visible desde
+                </span>
+                <input
+                  type="date"
+                  value={tipForm.starts_at ?? ""}
+                  onChange={(event) =>
+                    setTipForm((currentForm) => ({
+                      ...currentForm,
+                      starts_at: event.target.value || null,
+                    }))
+                  }
+                  className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                />
+              </label>
+
+              <label className="block">
+                <span className="text-sm font-bold text-[#52708a]">
+                  Visible hasta
+                </span>
+                <input
+                  type="date"
+                  value={tipForm.ends_at ?? ""}
+                  onChange={(event) =>
+                    setTipForm((currentForm) => ({
+                      ...currentForm,
+                      ends_at: event.target.value || null,
+                    }))
+                  }
+                  className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                />
+              </label>
+            </div>
+
+            <label className="flex items-center gap-2 text-sm font-semibold text-[#071a2f]">
+              <input
+                type="checkbox"
+                checked={tipForm.is_active}
+                onChange={(event) =>
+                  setTipForm((currentForm) => ({
+                    ...currentForm,
+                    is_active: event.target.checked,
+                  }))
+                }
+                className="h-4 w-4 accent-[#39b8bb]"
+              />
+              Publicar activo
+            </label>
+
+            <button
+              type="button"
+              disabled={isSavingTip}
+              onClick={createEducationTip}
+              className="w-fit rounded-full bg-[#39b8bb] px-5 py-2.5 text-sm font-bold text-[#071a2f] transition hover:bg-[#5fd0d2] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Crear tip
+            </button>
+          </div>
+        ) : null}
       </section>
 
       <section className="space-y-4">
