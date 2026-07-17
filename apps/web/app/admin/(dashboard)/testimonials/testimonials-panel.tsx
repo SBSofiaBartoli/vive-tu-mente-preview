@@ -63,6 +63,11 @@ export function TestimonialsPanel() {
   const [featuredSelections, setFeaturedSelections] = useState<
     Record<string, boolean>
   >({});
+  const hasActiveFilters =
+    statusFilter !== "all" ||
+    roleFilter !== "all" ||
+    featuredFilter !== "all" ||
+    searchTerm.trim() !== "";
 
   const loadTestimonials = useCallback(async () => {
     try {
@@ -309,7 +314,9 @@ export function TestimonialsPanel() {
 
       {testimonials.length === 0 ? (
         <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
-          No hay testimonios pendientes de revisión.
+          {hasActiveFilters
+            ? "No hay testimonios para los filtros seleccionados."
+            : "Todavía no hay testimonios cargados."}
         </div>
       ) : null}
 

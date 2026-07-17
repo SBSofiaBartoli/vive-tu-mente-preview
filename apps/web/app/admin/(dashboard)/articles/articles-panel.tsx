@@ -51,6 +51,10 @@ export function ArticlesPanel() {
     Record<string, string>
   >({});
   const [reviewNotes, setReviewNotes] = useState<Record<string, string>>({});
+  const hasActiveFilters =
+    statusFilter !== "all" ||
+    categoryFilter.trim() !== "" ||
+    searchTerm.trim() !== "";
 
   const loadArticles = useCallback(async () => {
     try {
@@ -268,7 +272,9 @@ export function ArticlesPanel() {
 
       {articles.length === 0 ? (
         <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
-          No hay artículos para los filtros seleccionados.
+          {hasActiveFilters
+            ? "No hay artículos para los filtros seleccionados."
+            : "Todavía no hay artículos cargados."}
         </div>
       ) : null}
 

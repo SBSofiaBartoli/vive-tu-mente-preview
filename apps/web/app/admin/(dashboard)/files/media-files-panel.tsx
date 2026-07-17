@@ -67,6 +67,10 @@ export function MediaFilesPanel() {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isUploadFormOpen, setIsUploadFormOpen] = useState(false);
+  const hasActiveFilters =
+    statusFilter !== "all" ||
+    sectionFilter.trim() !== "" ||
+    searchTerm.trim() !== "";
 
   const loadFiles = useCallback(async () => {
     try {
@@ -411,7 +415,9 @@ export function MediaFilesPanel() {
 
       {files.length === 0 ? (
         <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
-          Todavía no hay archivos cargados.
+          {hasActiveFilters
+            ? "No hay archivos para los filtros seleccionados."
+            : "Todavía no hay archivos cargados."}
         </div>
       ) : null}
 

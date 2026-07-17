@@ -47,6 +47,10 @@ export function FaqsPanel() {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
+  const hasActiveFilters =
+    searchTerm.trim() !== "" ||
+    categoryFilter.trim() !== "" ||
+    statusFilter !== "all";
 
   const loadFaqs = useCallback(async () => {
     try {
@@ -446,7 +450,9 @@ export function FaqsPanel() {
 
         {faqs.length === 0 ? (
           <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
-            Todavía no hay preguntas frecuentes cargadas.
+            {hasActiveFilters
+              ? "No hay preguntas frecuentes para los filtros seleccionados."
+              : "Todavía no hay preguntas frecuentes cargadas."}
           </div>
         ) : null}
 

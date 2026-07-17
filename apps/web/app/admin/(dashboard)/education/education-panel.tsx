@@ -77,6 +77,14 @@ export function EducationPanel() {
   const [successMessage, setSuccessMessage] = useState("");
   const [isCardFormOpen, setIsCardFormOpen] = useState(false);
   const [isTipFormOpen, setIsTipFormOpen] = useState(false);
+  const hasActiveCardFilters =
+    cardsSearchTerm.trim() !== "" ||
+    cardsSegmentFilter.trim() !== "" ||
+    cardsStatusFilter !== "all";
+  const hasActiveTipFilters =
+    tipsSearchTerm.trim() !== "" ||
+    tipsSegmentFilter.trim() !== "" ||
+    tipsStatusFilter !== "all";
 
   const loadEducationData = useCallback(async () => {
     try {
@@ -752,7 +760,9 @@ export function EducationPanel() {
 
         {cards.length === 0 ? (
           <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
-            Todavía no hay cards educativas cargadas.
+            {hasActiveCardFilters
+              ? "No hay cards educativas para los filtros seleccionados."
+              : "Todavía no hay cards educativas cargadas."}
           </div>
         ) : null}
 
@@ -889,7 +899,9 @@ export function EducationPanel() {
 
         {tips.length === 0 ? (
           <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
-            Todavía no hay tips educativos cargados.
+            {hasActiveTipFilters
+              ? "No hay tips educativos para los filtros seleccionados."
+              : "Todavía no hay tips educativos cargados."}
           </div>
         ) : null}
 
