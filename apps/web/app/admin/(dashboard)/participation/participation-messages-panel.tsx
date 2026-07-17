@@ -45,6 +45,10 @@ export function ParticipationMessagesPanel() {
     null,
   );
   const [activeFilter, setActiveFilter] = useState<ParticipationFilter>("all");
+  const hasActiveFilters =
+    activeFilter !== "all" ||
+    interestAreaFilter.trim() !== "" ||
+    searchTerm.trim() !== "";
 
   const loadMessages = useCallback(async () => {
     try {
@@ -232,7 +236,9 @@ export function ParticipationMessagesPanel() {
 
       {messages.length === 0 ? (
         <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
-          No hay mensajes para este filtro.
+          {hasActiveFilters
+            ? "No hay mensajes para los filtros seleccionados."
+            : "Todavía no hay mensajes de participación cargados."}
         </div>
       ) : null}
 
