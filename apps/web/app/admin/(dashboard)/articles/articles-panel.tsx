@@ -261,14 +261,6 @@ export function ArticlesPanel() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
-        Cargando propuestas...
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
@@ -350,17 +342,22 @@ export function ArticlesPanel() {
         </div>
       </section>
 
-      <div className="rounded-lg border border-[#dcebea] bg-white p-4">
-        <p className="text-sm font-semibold text-[#52708a]">Artículos</p>
-        <p className="mt-1 text-3xl font-bold text-[#071a2f]">
-          {paginationMeta.total}
-        </p>
-        <p className="mt-1 text-sm text-[#52708a]">
-          Mostrando {articles.length} resultados en esta página.
+      <div className="flex flex-col gap-2 rounded-lg border border-[#dcebea] bg-white p-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex items-baseline gap-3">
+          <p className="text-sm font-semibold text-[#52708a]">Artículos</p>
+          <p className="text-2xl font-bold text-[#071a2f]">
+            {paginationMeta.total}
+          </p>
+        </div>
+
+        <p className="text-sm text-[#52708a]">
+          {isLoading
+            ? "Actualizando resultados..."
+            : `Mostrando ${articles.length} resultados en esta página.`}
         </p>
       </div>
 
-      {articles.length === 0 ? (
+      {!isLoading && articles.length === 0 ? (
         <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
           {hasActiveFilters
             ? "No hay artículos para los filtros seleccionados."
