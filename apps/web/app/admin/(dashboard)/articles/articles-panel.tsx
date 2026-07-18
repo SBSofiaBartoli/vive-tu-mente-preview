@@ -54,8 +54,7 @@ export function ArticlesPanel() {
     total: 0,
     total_pages: 1,
   });
-  const [statusFilter, setStatusFilter] =
-    useState<ArticleStatusFilter>("pending_review");
+  const [statusFilter, setStatusFilter] = useState<ArticleStatusFilter>("all");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
