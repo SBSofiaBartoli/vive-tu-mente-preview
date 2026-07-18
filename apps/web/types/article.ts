@@ -38,3 +38,15 @@ export type PaginatedArticlesResponse = {
   items: Article[];
   meta: PaginationMeta;
 };
+
+export type CreateAdminArticlePayload = {
+  title: string;
+  excerpt: string | null;
+  content: string;
+  cover_image_url: string | null;
+  cover_image_alt: string | null;
+  author_name: string | null;
+  category: string | null;
+  status: "draft" | "published";
+  is_featured: boolean;
+};
