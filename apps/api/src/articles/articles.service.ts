@@ -10,6 +10,7 @@ import type { RejectArticleDto } from './dto/reject-article.dto';
 import type { RequestArticleChangesDto } from './dto/request-article-changes.dto';
 import type { PaginatedResponse } from '../common/types/paginated-response.type';
 import type { ListArticlesAdminQueryDto } from './dto/list-articles-admin-query.dto';
+import type { CreateAdminArticleDto } from './dto/create-admin-article.dto';
 
 @Injectable()
 export class ArticlesService {
@@ -79,6 +80,44 @@ export class ArticlesService {
       throw new InternalServerErrorException(
         'Could not create article proposal',
       );
+    }
+
+    return data;
+  }
+
+  async createAdminArticle(
+    createAdminArticleDto: CreateAdminArticleDto,
+  ): Promise<Article> {
+    const supabase = this.supabaseService.getAdminClient();
+
+    const slug = this.createProposalSlug(createAdminArticleDto.title);
+    const isPublished = createAdminArticleDto.status === 'published';
+
+    const { data, error } = await supabase
+      .from('articles')
+      .insert({
+        title: createAdminArticleDto.title,
+        slug,
+        excerpt: createAdminArticleDto.excerpt ?? null,
+        content: createAdminArticleDto.content,
+        cover_image_url: createAdminArticleDto.cover_image_url ?? null,
+        cover_image_alt: createAdminArticleDto.cover_image_alt ?? null,
+        author_name: createAdminArticleDto.author_name ?? null,
+        category: createAdminArticleDto.category ?? null,
+        submitted_by_name: null,
+        submitted_by_email: null,
+        status: createAdminArticleDto.status,
+        is_featured: createAdminArticleDto.is_featured ?? false,
+        published_at: isPublished ? new Date().toISOString() : null,
+        rejection_reason: null,
+        review_notes: null,
+      })
+      .select('*')
+      .returns<Article>()
+      .single();
+
+    if (error) {
+      throw new InternalServerErrorException('Could not create admin article');
     }
 
     return data;

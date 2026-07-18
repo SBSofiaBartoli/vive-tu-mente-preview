@@ -3,12 +3,15 @@
 import { useEffect, useState } from "react";
 import { adminApiClient } from "@/lib/api-client";
 import { createSupabaseBrowserClient } from "@/lib/supabase-client";
-import type { Article } from "@/types/article";
-import type { EducationCard, EducationTip } from "@/types/education";
-import type { Faq } from "@/types/faq";
-import type { MediaFile } from "@/types/media-file";
-import type { ParticipationMessage } from "@/types/participation-message";
-import type { Testimonial } from "@/types/testimonial";
+import type { PaginatedArticlesResponse } from "@/types/article";
+import type {
+  PaginatedEducationCardsResponse,
+  PaginatedEducationTipsResponse,
+} from "@/types/education";
+import type { PaginatedFaqsResponse } from "@/types/faq";
+import type { PaginatedMediaFilesResponse } from "@/types/media-file";
+import type { PaginatedParticipationMessagesResponse } from "@/types/participation-message";
+import type { PaginatedTestimonialsResponse } from "@/types/testimonial";
 
 type SummaryCard = {
   label: string;
@@ -36,65 +39,90 @@ export function AdminSummaryPanel() {
 
         const [
           participationMessages,
+          unreadParticipationMessages,
           pendingArticles,
           pendingTestimonials,
           faqs,
+          activeFaqs,
           educationCards,
           educationTips,
           mediaFiles,
+          pendingMediaFiles,
         ] = await Promise.all([
-          adminApiClient<ParticipationMessage[]>(
-            "/api/participation/messages/admin",
+          adminApiClient<PaginatedParticipationMessagesResponse>(
+            "/api/participation/messages/admin?page=1&limit=1",
             { accessToken },
           ),
-          adminApiClient<Article[]>("/api/articles/admin/pending", {
-            accessToken,
-          }),
-          adminApiClient<Testimonial[]>("/api/testimonials/admin/pending", {
-            accessToken,
-          }),
-          adminApiClient<Faq[]>("/api/faqs/admin", { accessToken }),
-          adminApiClient<EducationCard[]>("/api/education-cards/admin", {
-            accessToken,
-          }),
-          adminApiClient<EducationTip[]>("/api/education-tips/admin", {
-            accessToken,
-          }),
-          adminApiClient<MediaFile[]>("/api/media-files/admin", {
-            accessToken,
-          }),
+          adminApiClient<PaginatedParticipationMessagesResponse>(
+            "/api/participation/messages/admin?page=1&limit=1&is_read=false",
+            { accessToken },
+          ),
+          adminApiClient<PaginatedArticlesResponse>(
+            "/api/articles/admin?page=1&limit=1&status=pending_review",
+            { accessToken },
+          ),
+          adminApiClient<PaginatedTestimonialsResponse>(
+            "/api/testimonials/admin?page=1&limit=1&status=pending",
+            { accessToken },
+          ),
+          adminApiClient<PaginatedFaqsResponse>(
+            "/api/faqs/admin?page=1&limit=1",
+            {
+              accessToken,
+            },
+          ),
+          adminApiClient<PaginatedFaqsResponse>(
+            "/api/faqs/admin?page=1&limit=1&is_active=true",
+            { accessToken },
+          ),
+          adminApiClient<PaginatedEducationCardsResponse>(
+            "/api/education-cards/admin?page=1&limit=1",
+            { accessToken },
+          ),
+          adminApiClient<PaginatedEducationTipsResponse>(
+            "/api/education-tips/admin?page=1&limit=1",
+            { accessToken },
+          ),
+          adminApiClient<PaginatedMediaFilesResponse>(
+            "/api/media-files/admin?page=1&limit=1",
+            { accessToken },
+          ),
+          adminApiClient<PaginatedMediaFilesResponse>(
+            "/api/media-files/admin?page=1&limit=1&status=pending",
+            { accessToken },
+          ),
         ]);
 
         setSummaryCards([
           {
             label: "Mensajes",
-            value: participationMessages.length,
-            detail: `${participationMessages.filter((message) => !message.is_read).length} sin leer`,
+            value: participationMessages.meta.total,
+            detail: `${unreadParticipationMessages.meta.total} sin leer`,
           },
           {
             label: "Artículos pendientes",
-            value: pendingArticles.length,
+            value: pendingArticles.meta.total,
             detail: "Propuestas esperando revisión",
           },
           {
             label: "Testimonios pendientes",
-            value: pendingTestimonials.length,
+            value: pendingTestimonials.meta.total,
             detail: "Comentarios esperando aprobación",
           },
           {
             label: "FAQs",
-            value: faqs.length,
-            detail: `${faqs.filter((faq) => faq.is_active).length} activas`,
+            value: faqs.meta.total,
+            detail: `${activeFaqs.meta.total} activas`,
           },
           {
             label: "Educación",
-            value: educationCards.length + educationTips.length,
-            detail: `${educationCards.length} cards y ${educationTips.length} tips`,
+            value: educationCards.meta.total + educationTips.meta.total,
+            detail: `${educationCards.meta.total} cards y ${educationTips.meta.total} tips`,
           },
           {
             label: "Archivos",
-            value: mediaFiles.length,
-            detail: `${mediaFiles.filter((file) => file.status === "pending").length} pendientes`,
+            value: mediaFiles.meta.total,
+            detail: `${pendingMediaFiles.meta.total} pendientes`,
           },
         ]);
       } catch {

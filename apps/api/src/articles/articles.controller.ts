@@ -25,6 +25,7 @@ import { ArticleResponseDto } from './dto/article-response.dto';
 import { RequestArticleChangesDto } from './dto/request-article-changes.dto';
 import { ListArticlesAdminQueryDto } from './dto/list-articles-admin-query.dto';
 import { PaginatedArticlesResponseDto } from './dto/paginated-articles-response.dto';
+import { CreateAdminArticleDto } from './dto/create-admin-article.dto';
 
 @ApiTags('Articles')
 @Controller('articles')
@@ -105,6 +106,36 @@ export class ArticlesController {
   @Get('admin')
   findAllAdmin(@Query() query: ListArticlesAdminQueryDto) {
     return this.articlesService.findAllAdmin(query);
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Crear artículo desde administración',
+    description:
+      'Permite crear un artículo desde el dashboard administrativo como borrador o publicado.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Artículo creado correctamente desde administración.',
+    type: ArticleResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Datos inválidos para crear el artículo.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Token ausente, inválido o expirado.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'El usuario no tiene permisos suficientes.',
+  })
+  @UseGuards(AdminAuthGuard, AdminRolesGuard)
+  @Roles('admin', 'reviewer')
+  @Post('admin')
+  createAdminArticle(@Body() createAdminArticleDto: CreateAdminArticleDto) {
+    return this.articlesService.createAdminArticle(createAdminArticleDto);
   }
 
   @ApiBearerAuth()

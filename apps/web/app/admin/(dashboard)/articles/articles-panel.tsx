@@ -1,11 +1,16 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { adminApiClient, adminApiPatchClient } from "@/lib/api-client";
+import {
+  adminApiClient,
+  adminApiPatchClient,
+  adminApiPostClient,
+} from "@/lib/api-client";
 import { createSupabaseBrowserClient } from "@/lib/supabase-client";
 import type {
   Article,
   ArticleStatus,
+  CreateAdminArticlePayload,
   PaginatedArticlesResponse,
 } from "@/types/article";
 
@@ -27,6 +32,18 @@ const statusLabels: Record<ArticleStatus, string> = {
 };
 
 type ArticleStatusFilter = ArticleStatus | "all";
+
+const emptyArticleForm: CreateAdminArticlePayload = {
+  title: "",
+  excerpt: null,
+  content: "",
+  cover_image_url: null,
+  cover_image_alt: null,
+  author_name: null,
+  category: null,
+  status: "draft",
+  is_featured: false,
+};
 
 export function ArticlesPanel() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -51,6 +68,10 @@ export function ArticlesPanel() {
     Record<string, string>
   >({});
   const [reviewNotes, setReviewNotes] = useState<Record<string, string>>({});
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isCreatingArticle, setIsCreatingArticle] = useState(false);
+  const [articleForm, setArticleForm] =
+    useState<CreateAdminArticlePayload>(emptyArticleForm);
   const hasActiveFilters =
     statusFilter !== "all" ||
     categoryFilter.trim() !== "" ||
@@ -188,6 +209,59 @@ export function ArticlesPanel() {
     }
   };
 
+  const createAdminArticle = async () => {
+    try {
+      setIsCreatingArticle(true);
+      setErrorMessage("");
+      setSuccessMessage("");
+
+      if (!articleForm.title.trim() || !articleForm.content.trim()) {
+        setErrorMessage("El título y el contenido son obligatorios.");
+        return;
+      }
+
+      const supabaseClient = createSupabaseBrowserClient();
+      const { data } = await supabaseClient.auth.getSession();
+
+      if (!data.session) {
+        setErrorMessage("No se encontró una sesión activa.");
+        return;
+      }
+
+      await adminApiPostClient<Article, CreateAdminArticlePayload>(
+        "/api/articles/admin",
+        {
+          accessToken: data.session.access_token,
+          body: {
+            ...articleForm,
+            title: articleForm.title.trim(),
+            excerpt: articleForm.excerpt?.trim() || null,
+            content: articleForm.content.trim(),
+            cover_image_url: articleForm.cover_image_url?.trim() || null,
+            cover_image_alt: articleForm.cover_image_alt?.trim() || null,
+            author_name: articleForm.author_name?.trim() || null,
+            category: articleForm.category?.trim() || null,
+          },
+        },
+      );
+
+      setArticleForm(emptyArticleForm);
+      setIsCreateModalOpen(false);
+      setStatusFilter("all");
+      setPage(1);
+      void loadArticles();
+      setSuccessMessage("El artículo fue creado correctamente.");
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "No se pudo crear el artículo.",
+      );
+    } finally {
+      setIsCreatingArticle(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
@@ -209,6 +283,25 @@ export function ArticlesPanel() {
           {successMessage}
         </div>
       ) : null}
+
+      <section className="rounded-lg border border-[#dcebea] bg-white p-5">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h3 className="text-lg font-bold text-[#071a2f]">Artículos</h3>
+            <p className="mt-1 text-sm text-[#52708a]">
+              Creá artículos desde administración o revisá propuestas enviadas.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsCreateModalOpen(true)}
+            className="w-fit rounded-full bg-[#39b8bb] px-5 py-2.5 text-sm font-bold text-[#071a2f] transition hover:bg-[#5fd0d2]"
+          >
+            Crear artículo
+          </button>
+        </div>
+      </section>
 
       <section className="rounded-lg border border-[#dcebea] bg-white p-5">
         <div className="grid gap-4 md:grid-cols-3">
@@ -440,6 +533,212 @@ export function ArticlesPanel() {
           >
             Siguiente
           </button>
+        </div>
+      ) : null}
+
+      {isCreateModalOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#071a2f]/40 p-4">
+          <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg bg-white p-6 shadow-xl">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h3 className="text-xl font-bold text-[#071a2f]">
+                  Crear artículo
+                </h3>
+                <p className="mt-1 text-sm text-[#52708a]">
+                  Cargá un artículo desde el dashboard y definí si queda como
+                  borrador o publicado.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsCreateModalOpen(false)}
+                className="rounded-full border border-[#dcebea] px-3 py-1.5 text-xs font-bold text-[#52708a] transition hover:border-[#39b8bb] hover:text-[#168c91]"
+              >
+                Cerrar
+              </button>
+            </div>
+
+            <div className="mt-5 grid gap-4">
+              <label className="block">
+                <span className="text-sm font-bold text-[#52708a]">Título</span>
+                <input
+                  value={articleForm.title}
+                  onChange={(event) =>
+                    setArticleForm((currentForm) => ({
+                      ...currentForm,
+                      title: event.target.value,
+                    }))
+                  }
+                  className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                  placeholder="Herramientas para manejar la ansiedad académica"
+                />
+              </label>
+
+              <label className="block">
+                <span className="text-sm font-bold text-[#52708a]">
+                  Resumen
+                </span>
+                <textarea
+                  value={articleForm.excerpt ?? ""}
+                  onChange={(event) =>
+                    setArticleForm((currentForm) => ({
+                      ...currentForm,
+                      excerpt: event.target.value,
+                    }))
+                  }
+                  rows={2}
+                  className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                  placeholder="Resumen breve que aparecerá en el blog."
+                />
+              </label>
+
+              <label className="block">
+                <span className="text-sm font-bold text-[#52708a]">
+                  Contenido
+                </span>
+                <textarea
+                  value={articleForm.content}
+                  onChange={(event) =>
+                    setArticleForm((currentForm) => ({
+                      ...currentForm,
+                      content: event.target.value,
+                    }))
+                  }
+                  rows={8}
+                  className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                  placeholder="Escribí el contenido completo del artículo."
+                />
+              </label>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="block">
+                  <span className="text-sm font-bold text-[#52708a]">
+                    Autor
+                  </span>
+                  <input
+                    value={articleForm.author_name ?? ""}
+                    onChange={(event) =>
+                      setArticleForm((currentForm) => ({
+                        ...currentForm,
+                        author_name: event.target.value,
+                      }))
+                    }
+                    className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                    placeholder="Equipo Vive Tu Mente"
+                  />
+                </label>
+
+                <label className="block">
+                  <span className="text-sm font-bold text-[#52708a]">
+                    Categoría
+                  </span>
+                  <input
+                    value={articleForm.category ?? ""}
+                    onChange={(event) =>
+                      setArticleForm((currentForm) => ({
+                        ...currentForm,
+                        category: event.target.value,
+                      }))
+                    }
+                    className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                    placeholder="bienestar"
+                  />
+                </label>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="block">
+                  <span className="text-sm font-bold text-[#52708a]">
+                    URL de imagen
+                  </span>
+                  <input
+                    value={articleForm.cover_image_url ?? ""}
+                    onChange={(event) =>
+                      setArticleForm((currentForm) => ({
+                        ...currentForm,
+                        cover_image_url: event.target.value,
+                      }))
+                    }
+                    className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                    placeholder="https://..."
+                  />
+                </label>
+
+                <label className="block">
+                  <span className="text-sm font-bold text-[#52708a]">
+                    Texto alternativo
+                  </span>
+                  <input
+                    value={articleForm.cover_image_alt ?? ""}
+                    onChange={(event) =>
+                      setArticleForm((currentForm) => ({
+                        ...currentForm,
+                        cover_image_alt: event.target.value,
+                      }))
+                    }
+                    className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                    placeholder="Descripción breve de la imagen."
+                  />
+                </label>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="block">
+                  <span className="text-sm font-bold text-[#52708a]">
+                    Estado
+                  </span>
+                  <select
+                    value={articleForm.status}
+                    onChange={(event) =>
+                      setArticleForm((currentForm) => ({
+                        ...currentForm,
+                        status: event.target.value as "draft" | "published",
+                      }))
+                    }
+                    className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                  >
+                    <option value="draft">Guardar como borrador</option>
+                    <option value="published">Publicar ahora</option>
+                  </select>
+                </label>
+
+                <label className="mt-7 flex items-center gap-2 text-sm font-semibold text-[#071a2f]">
+                  <input
+                    type="checkbox"
+                    checked={articleForm.is_featured}
+                    onChange={(event) =>
+                      setArticleForm((currentForm) => ({
+                        ...currentForm,
+                        is_featured: event.target.checked,
+                      }))
+                    }
+                    className="h-4 w-4 accent-[#39b8bb]"
+                  />
+                  Marcar como destacado
+                </label>
+              </div>
+
+              <div className="flex flex-wrap gap-2 pt-2">
+                <button
+                  type="button"
+                  disabled={isCreatingArticle}
+                  onClick={createAdminArticle}
+                  className="rounded-full bg-[#39b8bb] px-5 py-2.5 text-sm font-bold text-[#071a2f] transition hover:bg-[#5fd0d2] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  Crear artículo
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsCreateModalOpen(false)}
+                  className="rounded-full border border-[#dcebea] px-5 py-2.5 text-sm font-bold text-[#52708a] transition hover:border-[#39b8bb] hover:text-[#168c91]"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       ) : null}
     </div>
