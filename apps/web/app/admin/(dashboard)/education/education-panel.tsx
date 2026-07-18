@@ -505,52 +505,56 @@ export function EducationPanel() {
         ) : null}
 
         {cards.map((card) => (
-          <article
+          <details
             key={card.id}
-            className="rounded-lg border border-[#dcebea] bg-white p-5 shadow-sm"
+            className="rounded-lg border border-[#dcebea] bg-white shadow-sm"
           >
-            <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+            <summary className="flex cursor-pointer list-none flex-col gap-3 p-4 md:flex-row md:items-center md:justify-between">
               <div>
                 <p className="text-xs font-bold uppercase text-[#39b8bb]">
                   {card.segment_key}
                 </p>
-                <h4 className="mt-1 text-lg font-bold text-[#071a2f]">
+                <h4 className="mt-1 text-base font-bold text-[#071a2f]">
                   {card.title}
                 </h4>
-                <p className="mt-2 text-sm leading-6 text-[#52708a]">
-                  {card.description}
-                </p>
               </div>
 
-              <span
-                className={
-                  card.is_active
-                    ? "rounded-full bg-[#e8f7f7] px-3 py-1 text-xs font-bold text-[#168c91]"
-                    : "rounded-full bg-[#f1f5f9] px-3 py-1 text-xs font-bold text-[#52708a]"
-                }
-              >
-                {card.is_active ? "Activa" : "Inactiva"}
-              </span>
-            </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-semibold text-[#52708a]">
+                  Ícono: {card.icon_name}
+                </span>
+                <span className="text-xs font-semibold text-[#52708a]">
+                  Orden: {card.sort_order}
+                </span>
+                <span
+                  className={
+                    card.is_active
+                      ? "rounded-full bg-[#e8f7f7] px-3 py-1 text-xs font-bold text-[#168c91]"
+                      : "rounded-full bg-[#f1f5f9] px-3 py-1 text-xs font-bold text-[#52708a]"
+                  }
+                >
+                  {card.is_active ? "Activa" : "Inactiva"}
+                </span>
+              </div>
+            </summary>
 
-            <div className="mt-4 flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold text-[#52708a]">
-                Ícono: {card.icon_name}
-              </span>
-              <span className="text-xs font-semibold text-[#52708a]">
-                Orden: {card.sort_order}
-              </span>
+            <div className="border-t border-[#dcebea] p-4">
+              <p className="whitespace-pre-line text-sm leading-6 text-[#52708a]">
+                {card.description}
+              </p>
 
-              <button
-                type="button"
-                disabled={updatingId === card.id}
-                onClick={() => toggleCardStatus(card)}
-                className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] hover:text-[#168c91] disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {card.is_active ? "Desactivar" : "Activar"}
-              </button>
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  disabled={updatingId === card.id}
+                  onClick={() => toggleCardStatus(card)}
+                  className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] hover:text-[#168c91] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {card.is_active ? "Desactivar" : "Activar"}
+                </button>
+              </div>
             </div>
-          </article>
+          </details>
         ))}
         {cardsMeta.total_pages > 1 ? (
           <div className="flex items-center justify-between rounded-lg border border-[#dcebea] bg-white p-4">
@@ -644,16 +648,16 @@ export function EducationPanel() {
         ) : null}
 
         {tips.map((tip) => (
-          <article
+          <details
             key={tip.id}
-            className="rounded-lg border border-[#dcebea] bg-white p-5 shadow-sm"
+            className="rounded-lg border border-[#dcebea] bg-white shadow-sm"
           >
-            <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+            <summary className="flex cursor-pointer list-none flex-col gap-3 p-4 md:flex-row md:items-center md:justify-between">
               <div>
                 <p className="text-xs font-bold uppercase text-[#39b8bb]">
                   {tip.segment_key}
                 </p>
-                <h4 className="mt-1 text-lg font-bold text-[#071a2f]">
+                <h4 className="mt-1 text-base font-bold text-[#071a2f]">
                   {tip.title}
                 </h4>
               </div>
@@ -667,29 +671,31 @@ export function EducationPanel() {
               >
                 {tip.is_active ? "Activo" : "Inactivo"}
               </span>
-            </div>
+            </summary>
 
-            <p className="mt-4 whitespace-pre-line text-sm leading-6 text-[#52708a]">
-              {tip.content}
-            </p>
-
-            {tip.resource_url ? (
-              <p className="mt-3 text-xs font-semibold text-[#52708a]">
-                Recurso: {tip.resource_url}
+            <div className="border-t border-[#dcebea] p-4">
+              <p className="whitespace-pre-line text-sm leading-6 text-[#52708a]">
+                {tip.content}
               </p>
-            ) : null}
 
-            <div className="mt-4 flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                disabled={updatingId === tip.id}
-                onClick={() => toggleTipStatus(tip)}
-                className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] hover:text-[#168c91] disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {tip.is_active ? "Desactivar" : "Activar"}
-              </button>
+              {tip.resource_url ? (
+                <p className="mt-3 text-xs font-semibold text-[#52708a]">
+                  Recurso: {tip.resource_url}
+                </p>
+              ) : null}
+
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  disabled={updatingId === tip.id}
+                  onClick={() => toggleTipStatus(tip)}
+                  className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] hover:text-[#168c91] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {tip.is_active ? "Desactivar" : "Activar"}
+                </button>
+              </div>
             </div>
-          </article>
+          </details>
         ))}
         {tipsMeta.total_pages > 1 ? (
           <div className="flex items-center justify-between rounded-lg border border-[#dcebea] bg-white p-4">
