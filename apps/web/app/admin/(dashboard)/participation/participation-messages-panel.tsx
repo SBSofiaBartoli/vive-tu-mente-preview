@@ -17,6 +17,7 @@ const formatDate = (date: string) =>
 const participationMessagesPageSize = 10;
 
 type ParticipationFilter = "all" | "unread" | "starred" | "contacted";
+type ParticipationFilterCounts = Record<ParticipationFilter, number>;
 
 const filterOptions: Array<{
   label: string;
@@ -45,6 +46,12 @@ export function ParticipationMessagesPanel() {
     null,
   );
   const [activeFilter, setActiveFilter] = useState<ParticipationFilter>("all");
+  const [filterCounts, setFilterCounts] = useState<ParticipationFilterCounts>({
+    all: 0,
+    unread: 0,
+    starred: 0,
+    contacted: 0,
+  });
   const hasActiveFilters =
     activeFilter !== "all" ||
     interestAreaFilter.trim() !== "" ||
@@ -60,6 +67,8 @@ export function ParticipationMessagesPanel() {
         setErrorMessage("No se encontró una sesión activa.");
         return;
       }
+
+      const accessToken = data.session.access_token;
 
       const params = new URLSearchParams({
         page: String(page),
@@ -90,12 +99,38 @@ export function ParticipationMessagesPanel() {
         await adminApiClient<PaginatedParticipationMessagesResponse>(
           `/api/participation/messages/admin?${params.toString()}`,
           {
-            accessToken: data.session.access_token,
+            accessToken,
           },
         );
 
       setMessages(participationMessagesResponse.items);
       setPaginationMeta(participationMessagesResponse.meta);
+      const [allMessages, unreadMessages, starredMessages, contactedMessages] =
+        await Promise.all([
+          adminApiClient<PaginatedParticipationMessagesResponse>(
+            "/api/participation/messages/admin?page=1&limit=1",
+            { accessToken },
+          ),
+          adminApiClient<PaginatedParticipationMessagesResponse>(
+            "/api/participation/messages/admin?page=1&limit=1&is_read=false",
+            { accessToken },
+          ),
+          adminApiClient<PaginatedParticipationMessagesResponse>(
+            "/api/participation/messages/admin?page=1&limit=1&is_starred=true",
+            { accessToken },
+          ),
+          adminApiClient<PaginatedParticipationMessagesResponse>(
+            "/api/participation/messages/admin?page=1&limit=1&is_contacted=true",
+            { accessToken },
+          ),
+        ]);
+
+      setFilterCounts({
+        all: allMessages.meta.total,
+        unread: unreadMessages.meta.total,
+        starred: starredMessages.meta.total,
+        contacted: contactedMessages.meta.total,
+      });
     } catch (error) {
       setErrorMessage(
         error instanceof Error
@@ -191,7 +226,7 @@ export function ParticipationMessagesPanel() {
             >
               {option.label}
               <span className="ml-2 rounded-full bg-white/70 px-2 py-0.5 text-xs">
-                {activeFilter === option.value ? paginationMeta.total : ""}
+                {filterCounts[option.value]}
               </span>
             </button>
           );
