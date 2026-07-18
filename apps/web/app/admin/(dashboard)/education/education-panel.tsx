@@ -71,7 +71,8 @@ export function EducationPanel() {
     useState<CreateEducationTipPayload>(emptyTipForm);
   const [isSavingTip, setIsSavingTip] = useState(false);
   const [isSavingCard, setIsSavingCard] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingCards, setIsLoadingCards] = useState(true);
+  const [isLoadingTips, setIsLoadingTips] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -86,9 +87,9 @@ export function EducationPanel() {
     tipsSegmentFilter.trim() !== "" ||
     tipsStatusFilter !== "all";
 
-  const loadEducationData = useCallback(async () => {
+  const loadEducationCards = useCallback(async () => {
     try {
-      setIsLoading(true);
+      setIsLoadingCards(true);
       const supabaseClient = createSupabaseBrowserClient();
       const { data } = await supabaseClient.auth.getSession();
 
@@ -118,6 +119,37 @@ export function EducationPanel() {
         cardsParams.set("is_active", "false");
       }
 
+      const adminCards = await adminApiClient<PaginatedEducationCardsResponse>(
+        `/api/education-cards/admin?${cardsParams.toString()}`,
+        {
+          accessToken: data.session.access_token,
+        },
+      );
+
+      setCards(adminCards.items);
+      setCardsMeta(adminCards.meta);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "No se pudieron cargar las cards educativas.",
+      );
+    } finally {
+      setIsLoadingCards(false);
+    }
+  }, [cardsPage, cardsSearchTerm, cardsSegmentFilter, cardsStatusFilter]);
+
+  const loadEducationTips = useCallback(async () => {
+    try {
+      setIsLoadingTips(true);
+      const supabaseClient = createSupabaseBrowserClient();
+      const { data } = await supabaseClient.auth.getSession();
+
+      if (!data.session) {
+        setErrorMessage("No se encontró una sesión activa.");
+        return;
+      }
+
       const tipsParams = new URLSearchParams({
         page: String(tipsPage),
         limit: String(educationPageSize),
@@ -139,52 +171,41 @@ export function EducationPanel() {
         tipsParams.set("is_active", "false");
       }
 
-      const [adminCards, adminTips] = await Promise.all([
-        adminApiClient<PaginatedEducationCardsResponse>(
-          `/api/education-cards/admin?${cardsParams.toString()}`,
-          {
-            accessToken: data.session.access_token,
-          },
-        ),
-        adminApiClient<PaginatedEducationTipsResponse>(
-          `/api/education-tips/admin?${tipsParams.toString()}`,
-          {
-            accessToken: data.session.access_token,
-          },
-        ),
-      ]);
+      const adminTips = await adminApiClient<PaginatedEducationTipsResponse>(
+        `/api/education-tips/admin?${tipsParams.toString()}`,
+        {
+          accessToken: data.session.access_token,
+        },
+      );
 
-      setCards(adminCards.items);
-      setCardsMeta(adminCards.meta);
       setTips(adminTips.items);
       setTipsMeta(adminTips.meta);
     } catch (error) {
       setErrorMessage(
         error instanceof Error
           ? error.message
-          : "No se pudo cargar la información educativa.",
+          : "No se pudieron cargar los tips educativos.",
       );
     } finally {
-      setIsLoading(false);
+      setIsLoadingTips(false);
     }
-  }, [
-    cardsPage,
-    cardsSearchTerm,
-    cardsSegmentFilter,
-    cardsStatusFilter,
-    tipsPage,
-    tipsSearchTerm,
-    tipsSegmentFilter,
-    tipsStatusFilter,
-  ]);
+  }, [tipsPage, tipsSearchTerm, tipsSegmentFilter, tipsStatusFilter]);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
-      void loadEducationData();
+      void loadEducationCards();
     }, 0);
 
     return () => window.clearTimeout(timeoutId);
-  }, [loadEducationData]);
+  }, [loadEducationCards]);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      void loadEducationTips();
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [loadEducationTips]);
 
   const toggleCardStatus = async (card: EducationCard) => {
     try {
@@ -214,7 +235,7 @@ export function EducationPanel() {
         ),
       );
 
-      void loadEducationData();
+      void loadEducationCards();
 
       setSuccessMessage(
         updatedCard.is_active
@@ -256,7 +277,7 @@ export function EducationPanel() {
         ),
       );
 
-      void loadEducationData();
+      void loadEducationTips();
 
       setSuccessMessage(
         updatedTip.is_active
@@ -310,7 +331,7 @@ export function EducationPanel() {
         },
       );
 
-      void loadEducationData();
+      void loadEducationCards();
       setCardForm(emptyCardForm);
       setIsCardFormOpen(false);
       setSuccessMessage("La card educativa fue creada correctamente.");
@@ -360,7 +381,7 @@ export function EducationPanel() {
         },
       );
 
-      void loadEducationData();
+      void loadEducationTips();
       setTipForm(emptyTipForm);
       setIsTipFormOpen(false);
       setSuccessMessage("El tip educativo fue creado correctamente.");
@@ -370,14 +391,6 @@ export function EducationPanel() {
       setIsSavingTip(false);
     }
   };
-
-  if (isLoading) {
-    return (
-      <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
-        Cargando educación...
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -421,27 +434,37 @@ export function EducationPanel() {
       ) : null}
 
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="rounded-lg border border-[#dcebea] bg-white p-4">
-          <p className="text-sm font-semibold text-[#52708a]">
-            Cards educativas
-          </p>
-          <p className="mt-1 text-3xl font-bold text-[#071a2f]">
-            {cardsMeta.total}
-          </p>
-          <p className="mt-1 text-sm text-[#52708a]">
-            Mostrando {cards.length} resultados en esta página.
+        <div className="flex flex-col gap-2 rounded-lg border border-[#dcebea] bg-white p-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-baseline gap-3">
+            <p className="text-sm font-semibold text-[#52708a]">
+              Cards educativas
+            </p>
+            <p className="text-2xl font-bold text-[#071a2f]">
+              {cardsMeta.total}
+            </p>
+          </div>
+
+          <p className="text-sm text-[#52708a]">
+            {isLoadingCards
+              ? "Actualizando resultados..."
+              : `Mostrando ${cards.length} resultados en esta página.`}
           </p>
         </div>
 
-        <div className="rounded-lg border border-[#dcebea] bg-white p-4">
-          <p className="text-sm font-semibold text-[#52708a]">
-            Tips educativos
-          </p>
-          <p className="mt-1 text-3xl font-bold text-[#071a2f]">
-            {tipsMeta.total}
-          </p>
-          <p className="mt-1 text-sm text-[#52708a]">
-            Mostrando {tips.length} resultados en esta página.
+        <div className="flex flex-col gap-2 rounded-lg border border-[#dcebea] bg-white p-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-baseline gap-3">
+            <p className="text-sm font-semibold text-[#52708a]">
+              Tips educativos
+            </p>
+            <p className="text-2xl font-bold text-[#071a2f]">
+              {tipsMeta.total}
+            </p>
+          </div>
+
+          <p className="text-sm text-[#52708a]">
+            {isLoadingTips
+              ? "Actualizando resultados..."
+              : `Mostrando ${tips.length} resultados en esta página.`}
           </p>
         </div>
       </div>
@@ -496,7 +519,7 @@ export function EducationPanel() {
           </div>
         </div>
 
-        {cards.length === 0 ? (
+        {!isLoadingCards && cards.length === 0 ? (
           <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
             {hasActiveCardFilters
               ? "No hay cards educativas para los filtros seleccionados."
@@ -639,7 +662,7 @@ export function EducationPanel() {
           </div>
         </div>
 
-        {tips.length === 0 ? (
+        {!isLoadingTips && tips.length === 0 ? (
           <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
             {hasActiveTipFilters
               ? "No hay tips educativos para los filtros seleccionados."
