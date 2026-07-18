@@ -244,6 +244,23 @@ export function MediaFilesPanel() {
 
   return (
     <div className="space-y-5">
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div>
+          <h2 className="text-3xl font-bold text-[#071a2f]">Archivos</h2>
+          <p className="mt-2 max-w-2xl text-[#52708a]">
+            Revisión y administración de archivos cargados para el sitio.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setIsUploadFormOpen(true)}
+          className="w-fit rounded-full bg-[#39b8bb] px-5 py-2.5 text-sm font-bold text-[#071a2f] transition hover:bg-[#5fd0d2] md:ml-auto"
+        >
+          Subir nuevo archivo
+        </button>
+      </div>
+
       {errorMessage ? (
         <div className="rounded-lg border border-red-100 bg-red-50 p-4 text-sm font-semibold text-red-700">
           {errorMessage}
@@ -255,102 +272,6 @@ export function MediaFilesPanel() {
           {successMessage}
         </div>
       ) : null}
-
-      <section className="rounded-lg border border-[#dcebea] bg-white p-5">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h3 className="text-lg font-bold text-[#071a2f]">Archivos</h3>
-            <p className="mt-1 text-sm text-[#52708a]">
-              Subí documentos, imágenes o recursos para revisión administrativa.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setIsUploadFormOpen((currentValue) => !currentValue)}
-            className="w-fit rounded-full bg-[#39b8bb] px-5 py-2.5 text-sm font-bold text-[#071a2f] transition hover:bg-[#5fd0d2]"
-          >
-            {isUploadFormOpen ? "Cerrar formulario" : "Subir nuevo archivo"}
-          </button>
-        </div>
-
-        {isUploadFormOpen ? (
-          <div className="mt-5 grid gap-4 border-t border-[#dcebea] pt-5">
-            <label className="block">
-              <span className="text-sm font-bold text-[#52708a]">Archivo</span>
-              <input
-                type="file"
-                onChange={(event) =>
-                  setSelectedFile(event.target.files?.[0] ?? null)
-                }
-                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm"
-              />
-            </label>
-
-            <div className="grid gap-4 md:grid-cols-3">
-              <label className="block">
-                <span className="text-sm font-bold text-[#52708a]">
-                  Sección
-                </span>
-                <input
-                  value={uploadForm.section}
-                  onChange={(event) =>
-                    setUploadForm((currentForm) => ({
-                      ...currentForm,
-                      section: event.target.value,
-                    }))
-                  }
-                  className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
-                  placeholder="blog"
-                />
-              </label>
-
-              <label className="block">
-                <span className="text-sm font-bold text-[#52708a]">
-                  Nombre de quien sube
-                </span>
-                <input
-                  value={uploadForm.uploaded_by_name}
-                  onChange={(event) =>
-                    setUploadForm((currentForm) => ({
-                      ...currentForm,
-                      uploaded_by_name: event.target.value,
-                    }))
-                  }
-                  className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
-                  placeholder="Sofía Bartoli"
-                />
-              </label>
-
-              <label className="block">
-                <span className="text-sm font-bold text-[#52708a]">
-                  Email de contacto
-                </span>
-                <input
-                  value={uploadForm.uploaded_by_email}
-                  onChange={(event) =>
-                    setUploadForm((currentForm) => ({
-                      ...currentForm,
-                      uploaded_by_email: event.target.value,
-                    }))
-                  }
-                  className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
-                  placeholder="correo@ejemplo.com"
-                />
-              </label>
-            </div>
-
-            <button
-              type="button"
-              disabled={isUploading}
-              onClick={uploadAndRegisterFile}
-              className="w-fit rounded-full bg-[#39b8bb] px-5 py-2.5 text-sm font-bold text-[#071a2f] transition hover:bg-[#5fd0d2] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              Subir archivo
-            </button>
-          </div>
-        ) : null}
-      </section>
 
       <section className="rounded-lg border border-[#dcebea] bg-white p-5">
         <div className="grid gap-4 md:grid-cols-3">
@@ -594,6 +515,119 @@ export function MediaFilesPanel() {
           >
             Siguiente
           </button>
+        </div>
+      ) : null}
+
+      {isUploadFormOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#071a2f]/40 p-4">
+          <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg bg-white p-6 shadow-xl">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h3 className="text-xl font-bold text-[#071a2f]">
+                  Subir archivo
+                </h3>
+                <p className="mt-1 text-sm text-[#52708a]">
+                  Subí documentos, imágenes o recursos para revisión
+                  administrativa.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsUploadFormOpen(false)}
+                className="rounded-full border border-[#dcebea] px-3 py-1.5 text-xs font-bold text-[#52708a] transition hover:border-[#39b8bb] hover:text-[#168c91]"
+              >
+                Cerrar
+              </button>
+            </div>
+
+            <div className="mt-5 grid gap-4">
+              <label className="block">
+                <span className="text-sm font-bold text-[#52708a]">
+                  Archivo
+                </span>
+                <input
+                  type="file"
+                  onChange={(event) =>
+                    setSelectedFile(event.target.files?.[0] ?? null)
+                  }
+                  className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm"
+                />
+              </label>
+
+              <div className="grid gap-4 md:grid-cols-3">
+                <label className="block">
+                  <span className="text-sm font-bold text-[#52708a]">
+                    Sección
+                  </span>
+                  <input
+                    value={uploadForm.section}
+                    onChange={(event) =>
+                      setUploadForm((currentForm) => ({
+                        ...currentForm,
+                        section: event.target.value,
+                      }))
+                    }
+                    className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                    placeholder="blog"
+                  />
+                </label>
+
+                <label className="block">
+                  <span className="text-sm font-bold text-[#52708a]">
+                    Nombre de quien sube
+                  </span>
+                  <input
+                    value={uploadForm.uploaded_by_name}
+                    onChange={(event) =>
+                      setUploadForm((currentForm) => ({
+                        ...currentForm,
+                        uploaded_by_name: event.target.value,
+                      }))
+                    }
+                    className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                    placeholder="Sofía Bartoli"
+                  />
+                </label>
+
+                <label className="block">
+                  <span className="text-sm font-bold text-[#52708a]">
+                    Email de contacto
+                  </span>
+                  <input
+                    value={uploadForm.uploaded_by_email}
+                    onChange={(event) =>
+                      setUploadForm((currentForm) => ({
+                        ...currentForm,
+                        uploaded_by_email: event.target.value,
+                      }))
+                    }
+                    className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                    placeholder="correo@ejemplo.com"
+                  />
+                </label>
+              </div>
+
+              <div className="flex flex-wrap gap-2 pt-2">
+                <button
+                  type="button"
+                  disabled={isUploading}
+                  onClick={uploadAndRegisterFile}
+                  className="rounded-full bg-[#39b8bb] px-5 py-2.5 text-sm font-bold text-[#071a2f] transition hover:bg-[#5fd0d2] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  Subir archivo
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsUploadFormOpen(false)}
+                  className="rounded-full border border-[#dcebea] px-5 py-2.5 text-sm font-bold text-[#52708a] transition hover:border-[#39b8bb] hover:text-[#168c91]"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       ) : null}
     </div>
