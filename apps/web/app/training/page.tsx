@@ -53,7 +53,7 @@ export default function TrainingPage() {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
 
   return (
-    <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-background text-slate-900">
+    <div className="relative flex min-h-screen flex-col bg-background text-slate-900">
       <header className="sticky top-0 z-50 border-b border-primary/10 bg-background/80 backdrop-blur-md">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-20 items-center justify-between">
