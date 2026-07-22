@@ -61,7 +61,7 @@ export default function ParticipatePage() {
 
             <Link
               href="/donations"
-              className="rounded-lg bg-primary px-7 py-3 text-sm font-bold text-background-dark transition-colors hover:bg-primary/90"
+              className="rounded-lg bg-primary px-6 py-2 text-sm font-bold text-background-dark transition-all hover:shadow-lg hover:shadow-primary/20"
             >
               Donación
             </Link>
@@ -72,7 +72,7 @@ export default function ParticipatePage() {
       <main className="flex-1">
         <section className="relative h-64 w-full overflow-hidden md:h-80">
           <Image
-            src="/images/about-hero-community.png"
+            src="/images/participate-hero-community.png"
             alt="Grupo diverso de personas sonriendo"
             fill
             className="object-cover"
@@ -279,15 +279,21 @@ export default function ParticipatePage() {
 
         <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 md:pb-24 lg:px-8">
           <div className="relative overflow-hidden rounded-2xl bg-background-dark p-8 text-white shadow-xl md:p-12 lg:p-14">
-            <div className="pointer-events-none absolute right-0 top-0 opacity-10">
-              <span className="material-symbols-outlined text-[220px]">
+            <div className="pointer-events-none absolute right-6 top-4 opacity-10">
+              <span
+                className="material-symbols-outlined"
+                style={{ fontSize: "220px", lineHeight: 1 }}
+              >
                 handshake
               </span>
             </div>
 
             <div className="relative z-10">
               <div className="mb-4 flex items-center gap-3">
-                <span className="material-symbols-outlined text-3xl text-primary">
+                <span
+                  className="material-symbols-outlined text-primary"
+                  style={{ fontSize: "30px", lineHeight: 1 }}
+                >
                   business_center
                 </span>
                 <span className="text-sm font-bold uppercase tracking-wider text-primary">
@@ -296,7 +302,7 @@ export default function ParticipatePage() {
               </div>
 
               <div className="max-w-3xl">
-                <h2 className="mb-4 text-3xl font-bold md:text-4xl">
+                <h2 className="mb-4 text-3xl font-bold leading-[1.16] tracking-[-0.03em] md:text-4xl">
                   Tu organización también puede impulsar bienestar
                 </h2>
 
