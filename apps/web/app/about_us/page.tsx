@@ -183,6 +183,78 @@ export default function AboutUsPage() {
                 />
               </div>
             </section>
+
+            <section className="my-8 rounded-2xl bg-primary/10 p-8 md:p-12">
+              <div className="grid grid-cols-1 gap-12 md:grid-cols-2">
+                <div className="space-y-4">
+                  <span
+                    className="material-symbols-outlined text-primary"
+                    style={{ fontSize: "40px" }}
+                  >
+                    visibility
+                  </span>
+                  <h3 className="brand-title text-2xl font-bold">
+                    Nuestra Visión
+                  </h3>
+                  <p className="leading-relaxed text-slate-600">
+                    Un mundo donde más personas puedan acceder a herramientas de
+                    bienestar, formación y acompañamiento para construir
+                    proyectos de vida con mayor confianza y autonomía. Donde
+                    nadie enfrente desafíos de salud mental solo sin importar su
+                    origen.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <span
+                    className="material-symbols-outlined text-primary"
+                    style={{ fontSize: "40px" }}
+                  >
+                    rocket_launch
+                  </span>
+                  <h3 className="brand-title text-2xl font-bold">
+                    Nuestro Propósito
+                  </h3>
+                  <p className="leading-relaxed text-slate-600">
+                    Desmantelar el estigma que rodea la salud mental y acompañar
+                    procesos de crecimiento personal y comunitario,
+                    proporcionando herramientas de apoyo emocional accesibles y
+                    basadas en la ciencia a comunidades marginadas a nivel
+                    global. Brindando oportunidades a través de programas,
+                    talleres y alianzas.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <section className="py-12">
+              <div className="mx-auto mb-8 max-w-2xl text-center">
+                <h2 className="brand-title mb-3 text-3xl font-bold text-slate-900">
+                  Conocenos en acción
+                </h2>
+                <p className="text-slate-600">
+                  Mirá cómo trabajamos y el impacto que generamos en cada
+                  comunidad.
+                </p>
+              </div>
+
+              <div className="relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-2xl bg-background-dark shadow-2xl">
+                <div className="space-y-3 p-8 text-center text-white">
+                  <span
+                    className="material-symbols-outlined text-primary"
+                    style={{ fontSize: "84px" }}
+                  >
+                    play_circle
+                  </span>
+                  <p className="brand-title text-2xl font-bold">
+                    Video institucional próximamente
+                  </p>
+                  <p className="text-sm text-slate-400">
+                    Este espacio está reservado para el video de la fundación.
+                  </p>
+                </div>
+              </div>
+            </section>
           </div>
         </section>
       </main>
