@@ -1,6 +1,51 @@
 import Image from "next/image";
 import Link from "next/link";
 
+const trainingCards = [
+  {
+    icon: "smart_toy",
+    title: "Inteligencia Artificial Aplicada",
+    description:
+      "Domina herramientas prácticas de IA para mejorar la productividad y resolver problemas complejos en escenarios del mundo real.",
+    tip: "Probá pedirle a una IA: “Organizá mi semana en bloques de estudio, descanso y tareas importantes”.",
+  },
+  {
+    icon: "lightbulb",
+    title: "Emprendimiento",
+    description:
+      "Desde la ideación hasta la ejecución, aprende los marcos necesarios para construir y escalar tu propio emprendimiento sostenible.",
+    tip: "Escribí tu idea en una frase: qué problema resuelve, para quién y por qué es diferente.",
+  },
+  {
+    icon: "show_chart",
+    title: "Pitching",
+    description:
+      "Perfecciona tu narrativa y la presentación de tu propuesta de negocio para captar la atención de inversores y socios.",
+    tip: "Practicá explicar tu idea en 30 segundos: problema, solución, impacto y próximo paso.",
+  },
+  {
+    icon: "payments",
+    title: "Educación Financiera",
+    description:
+      "Toma el control de tu futuro financiero con una formación integral en gestión de patrimonio e inversión.",
+    tip: "Usá la regla 50/30/20 como punto de partida: necesidades, gustos y ahorro.",
+  },
+  {
+    icon: "self_improvement",
+    title: "Desarrollo Personal",
+    description:
+      "Cultiva una mentalidad de crecimiento y la inteligencia emocional para desbloquear tu máximo potencial en todos los aspectos de la vida.",
+    tip: "Hacé una pausa de 2 minutos: inhalá profundo, nombrá lo que sentís y elegí una acción pequeña para continuar.",
+  },
+  {
+    icon: "terminal",
+    title: "Tecnología Productiva",
+    description:
+      "Aprende a optimizar tu entorno digital y aprovechar los flujos de trabajo modernos para lograr más con menos esfuerzo.",
+    tip: "Revisá tus herramientas digitales y eliminá una notificación que interrumpa tu concentración.",
+  },
+];
+
 export default function TrainingPage() {
   return (
     <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-background text-slate-900">
@@ -131,6 +176,52 @@ export default function TrainingPage() {
                 evolución del mundo moderno. Explora nuestras áreas de enseñanza
                 principales.
               </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="px-6 pb-24 lg:px-20">
+          <div className="mx-auto max-w-7xl">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {trainingCards.map((card) => (
+                <article
+                  key={card.title}
+                  className="group relative flex flex-col rounded-xl border border-slate-200 bg-white p-8 transition-all hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5"
+                >
+                  <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-background-dark">
+                    <span className="material-symbols-outlined text-3xl">
+                      {card.icon}
+                    </span>
+                  </div>
+
+                  <details className="absolute right-6 top-6 z-20 group/tip">
+                    <summary
+                      className="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-full border border-primary bg-primary text-background-dark shadow-sm transition-all hover:bg-primary/10 hover:text-primary [&::-webkit-details-marker]:hidden"
+                      aria-label="Ver tip rápido"
+                    >
+                      <span className="material-symbols-outlined transition-transform group-open/tip:rotate-45">
+                        add
+                      </span>
+                    </summary>
+
+                    <div className="absolute right-0 top-12 w-64 rounded-xl border border-primary/20 bg-white p-4 shadow-xl">
+                      <p className="mb-2 text-xs font-bold uppercase tracking-wider text-primary">
+                        Tip rápido
+                      </p>
+                      <p className="text-sm leading-relaxed text-slate-600">
+                        {card.tip}
+                      </p>
+                    </div>
+                  </details>
+
+                  <h3 className="text-xl font-bold text-slate-900">
+                    {card.title}
+                  </h3>
+                  <p className="mt-4 leading-relaxed text-slate-600">
+                    {card.description}
+                  </p>
+                </article>
+              ))}
             </div>
           </div>
         </section>
