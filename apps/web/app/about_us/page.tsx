@@ -119,24 +119,30 @@ export default function AboutUsPage() {
       </header>
 
       <main className="flex-1">
-        <section className="px-4 py-8 md:px-20 md:py-12 lg:px-40">
+        <section className="px-4 py-8 md:px-16 md:py-12 lg:px-28">
           <div className="mx-auto flex max-w-[1200px] flex-1 flex-col">
             <div className="py-3">
-              <div className="relative flex min-h-[400px] flex-col justify-end overflow-hidden rounded-xl bg-cover bg-center">
+              <div className="relative flex min-h-[400px] flex-col justify-end overflow-hidden rounded-xl">
                 <Image
-                  src="/images/about-hero-community.jpg"
+                  src="/images/about-hero-community.png"
                   alt="Personas compartiendo y colaborando en una actividad comunitaria"
                   fill
                   className="object-cover"
                   priority
-                  sizes="(min-width: 1024px) 1200px, 100vw"
+                  sizes="(min-width: 1024px) 1120px, 100vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background-dark/80 to-transparent" />
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      "linear-gradient(0deg, rgba(17, 33, 22, 0.78) 0%, rgba(17, 33, 22, 0.42) 30%, rgba(17, 33, 22, 0) 60%)",
+                  }}
+                />
                 <div className="relative z-10 flex flex-col gap-2 p-8">
-                  <h1 className="max-w-3xl text-4xl font-extrabold leading-tight tracking-[-0.04em] text-white md:text-5xl">
+                  <h1 className="max-w-5xl text-3xl font-extrabold leading-tight tracking-[-0.07em] text-white md:text-5xl">
                     Empoderando mentes, transformando vidas
                   </h1>
-                  <p className="mt-2 max-w-2xl text-lg leading-snug text-slate-200">
+                  <p className="mt-2 max-w-2xl text-lg leading-[-0.04em] text-slate-200">
                     Un viaje desde una pequeña iniciativa comunitaria hasta una
                     fundación que impulsa bienestar emocional, educación y
                     oportunidades a través de talleres, programas y alianzas con
@@ -179,7 +185,7 @@ export default function AboutUsPage() {
 
               <div className="overflow-hidden rounded-xl shadow-2xl">
                 <Image
-                  src="/images/about-history-workspace.jpg"
+                  src="/images/about-history-workspace.png"
                   alt="Personas colaborando en un espacio de trabajo comunitario"
                   width={900}
                   height={900}
@@ -193,7 +199,7 @@ export default function AboutUsPage() {
                 <div className="space-y-4">
                   <span
                     className="material-symbols-outlined text-primary"
-                    style={{ fontSize: "40px" }}
+                    style={{ fontSize: "36px" }}
                   >
                     visibility
                   </span>
@@ -212,7 +218,7 @@ export default function AboutUsPage() {
                 <div className="space-y-4">
                   <span
                     className="material-symbols-outlined text-primary"
-                    style={{ fontSize: "40px" }}
+                    style={{ fontSize: "36px" }}
                   >
                     rocket_launch
                   </span>
@@ -263,7 +269,7 @@ export default function AboutUsPage() {
             <section className="py-16">
               <div className="mx-auto mb-12 max-w-2xl text-center">
                 <div className="mb-12">
-                  <h2 className="mb-3 text-3xl font-bold text-slate-900">
+                  <h2 className="mb-3 text-3xl font-bold tracking-[-0.02em] text-slate-900">
                     Nuestro Equipo Fundador
                   </h2>
                   <p className="text-slate-600">
@@ -291,7 +297,7 @@ export default function AboutUsPage() {
               />
 
               <div className="relative z-10 mx-auto max-w-2xl">
-                <h2 className="mb-6 text-3xl font-bold text-white md:text-4xl">
+                <h2 className="mb-6 text-3xl font-bold text-white tracking-[-0.03em] md:text-4xl">
                   Únete al movimiento
                 </h2>
                 <p className="mb-8 text-lg leading-relaxed text-slate-300">
