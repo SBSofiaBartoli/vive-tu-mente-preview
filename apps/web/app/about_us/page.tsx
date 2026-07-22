@@ -255,6 +255,64 @@ export default function AboutUsPage() {
                 </div>
               </div>
             </section>
+
+            <section className="py-16">
+              <div className="mx-auto mb-12 max-w-2xl text-center">
+                <div className="mb-12">
+                  <h2 className="mb-3 text-3xl font-bold text-slate-900">
+                    Nuestro Equipo Fundador
+                  </h2>
+                  <p className="text-slate-600">
+                    Líderes apasionados y comprometidos con el impacto social.
+                  </p>
+                </div>
+
+                <p className="text-slate-600">
+                  Nuestro equipo reúne experiencia en educación, tecnología,
+                  emprendimiento y trabajo social. Unidos por la convicción de
+                  que el desarrollo personal transforma las comunidades,
+                  trabajamos a diario para ampliar el alcance y la profundidad
+                  de nuestros programas.
+                </p>
+              </div>
+            </section>
+
+            <section className="relative my-16 overflow-hidden rounded-2xl bg-background-dark p-8 text-center md:p-16">
+              <div
+                className="pointer-events-none absolute inset-0 opacity-20"
+                style={{
+                  backgroundImage:
+                    "radial-gradient(circle at 50% 50%, #40b2b2 0%, transparent 70%)",
+                }}
+              />
+
+              <div className="relative z-10 mx-auto max-w-2xl">
+                <h2 className="mb-6 text-3xl font-bold text-white md:text-4xl">
+                  Únete al movimiento
+                </h2>
+                <p className="mb-8 text-lg leading-relaxed text-slate-300">
+                  Podés participar, colaborar o construir una alianza para
+                  acercar más herramientas de bienestar, educación y
+                  oportunidades a quienes las necesitan y, marcar la diferencia
+                  en la vida de muchas personas.
+                </p>
+
+                <div className="flex flex-col justify-center gap-4 sm:flex-row">
+                  <Link
+                    className="rounded-lg bg-primary px-8 py-3 font-bold text-slate-900 transition-all hover:shadow-lg hover:shadow-primary/20"
+                    href="/participate#formulario"
+                  >
+                    Participá con nosotros
+                  </Link>
+                  <Link
+                    className="rounded-lg border-2 border-white/20 bg-transparent px-8 py-3 font-bold text-white transition-all hover:bg-white/10"
+                    href="/donations"
+                  >
+                    Apoyá nuestro trabajo
+                  </Link>
+                </div>
+              </div>
+            </section>
           </div>
         </section>
       </main>
