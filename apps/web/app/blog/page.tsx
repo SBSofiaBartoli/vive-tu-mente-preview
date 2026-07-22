@@ -153,7 +153,7 @@ export default function BlogPage() {
                 Blog de bienestar
               </span>
 
-              <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-slate-900 lg:text-6xl">
+              <h1 className="mt-6 text-4xl font-bold tracking-[-0.07em] text-slate-900 lg:text-6xl">
                 Ideas prácticas para cuidar tu{" "}
                 <span className="text-primary">mente</span> y construir
                 oportunidades
@@ -206,7 +206,7 @@ export default function BlogPage() {
           <div className="mx-auto max-w-7xl rounded-2xl bg-primary p-8 text-background-dark md:p-12">
             <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
               <div className="max-w-2xl">
-                <h2 className="mb-3 text-3xl font-black tracking-[-0.02em]">
+                <h2 className="mb-3 text-3xl font-extrabold tracking-[-0.03em]">
                   ¿Querés participar o proponer un tema?
                 </h2>
                 <p className="text-background-dark/80">
