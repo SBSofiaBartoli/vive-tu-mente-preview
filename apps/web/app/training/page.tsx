@@ -225,6 +225,35 @@ export default function TrainingPage() {
             </div>
           </div>
         </section>
+
+        <section className="px-6 pb-24 lg:px-20">
+          <div className="mx-auto max-w-7xl rounded-2xl border border-primary/20 bg-primary/10 p-8 md:p-10">
+            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+              <div className="max-w-2xl">
+                <span className="text-sm font-bold uppercase tracking-wider text-primary">
+                  Recursos para seguir aprendiendo
+                </span>
+                <h2 className="mt-3 text-3xl font-bold text-slate-900">
+                  Explorá artículos prácticos en nuestro Blog
+                </h2>
+                <p className="mt-3 text-slate-600">
+                  Encontrá ideas breves sobre bienestar, productividad,
+                  propósito y herramientas para aplicar en tu vida diaria.
+                </p>
+              </div>
+
+              <Link
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 font-bold text-background-dark transition-colors hover:bg-primary/90"
+                href="/blog"
+              >
+                Ir al Blog
+                <span className="material-symbols-outlined text-lg">
+                  arrow_forward
+                </span>
+              </Link>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   );
