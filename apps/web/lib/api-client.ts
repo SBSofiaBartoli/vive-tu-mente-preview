@@ -16,6 +16,26 @@ type ApiClientMutationOptions<TBody> = ApiClientOptions & {
   body: TBody;
 };
 
+export const apiGetClient = async <T>(path: string): Promise<T> => {
+  const response = await fetch(`${getApiUrl()}${path}`, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    const errorBody = (await response.json().catch(() => null)) as {
+      message?: string | string[];
+    } | null;
+
+    const errorMessage = Array.isArray(errorBody?.message)
+      ? errorBody.message.join(" ")
+      : errorBody?.message;
+
+    throw new Error(errorMessage ?? "API request failed");
+  }
+
+  return response.json() as Promise<T>;
+};
+
 export const adminApiClient = async <T>(
   path: string,
   { accessToken }: ApiClientOptions,
