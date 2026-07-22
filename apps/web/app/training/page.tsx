@@ -171,11 +171,11 @@ export default function TrainingPage() {
               <span className="inline-block rounded-full bg-primary/20 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-primary">
                 Programas Educacionales
               </span>
-              <h1 className="mt-6 text-4xl font-bold tracking-[-0.03em] text-slate-900 lg:text-6xl">
+              <h1 className="mt-6 text-4xl font-bold tracking-[-0.07em] text-slate-900 lg:text-6xl">
                 Empoderándote con las{" "}
                 <span className="text-primary">habilidades del futuro.</span>
               </h1>
-              <p className="mt-6 text-lg leading-snug text-slate-600">
+              <p className="mt-6 text-lg leading-[1.6] text-slate-600">
                 Nuestro plan de estudios está diseñado para cerrar la brecha
                 entre la educación tradicional y las demandas en rápida
                 evolución del mundo moderno. Explora nuestras áreas de enseñanza
@@ -194,7 +194,10 @@ export default function TrainingPage() {
                   className="group relative flex flex-col rounded-xl border border-slate-200 bg-white p-8 transition-all hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5"
                 >
                   <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-background-dark">
-                    <span className="material-symbols-outlined text-3xl">
+                    <span
+                      className="material-symbols-outlined"
+                      style={{ fontSize: "30px" }}
+                    >
                       {card.icon}
                     </span>
                   </div>
@@ -238,7 +241,7 @@ export default function TrainingPage() {
                 <span className="text-sm font-bold uppercase tracking-wider text-primary">
                   Recursos para seguir aprendiendo
                 </span>
-                <h2 className="mt-3 text-3xl font-bold text-slate-900">
+                <h2 className="mt-3 text-3xl font-bold tracking-[-0.03em] text-slate-900">
                   Explorá artículos prácticos en nuestro Blog
                 </h2>
                 <p className="mt-3 text-slate-600">
