@@ -126,7 +126,7 @@ export default function DonationsPage() {
                 Apoya nuestra misión
               </span>
 
-              <h1 className="mb-6 text-4xl font-black leading-tight tracking-tight text-slate-900 sm:text-6xl">
+              <h1 className="mb-6 text-4xl font-bold leading-[1em] tracking-[-0.07em] text-slate-900 sm:text-6xl">
                 Transformando vidas a través del{" "}
                 <span className="text-primary">bienestar mental.</span>
               </h1>
@@ -221,7 +221,10 @@ export default function DonationsPage() {
 
                 <div className="mt-8 rounded-lg border border-primary/20 bg-primary/10 p-4">
                   <p className="flex gap-3 text-xs text-slate-600">
-                    <span className="material-symbols-outlined shrink-0 text-[20px] text-primary">
+                    <span
+                      className="material-symbols-outlined shrink-0 text-primary"
+                      style={{ fontSize: "20px", lineHeight: 1 }}
+                    >
                       verified_user
                     </span>
                     Utilice &quot;FVTM-DONATION&quot; seguido de su apellido
@@ -241,8 +244,8 @@ export default function DonationsPage() {
               </div>
             </div>
 
-            <div className="lg:col-span-6">
-              <div className="rounded-2xl border border-primary/10 bg-white p-8 shadow-sm">
+            <div className="flex lg:col-span-6">
+              <div className="flex w-full flex-col rounded-2xl border border-primary/10 bg-white p-8 shadow-sm">
                 <h2 className="mb-2 text-xl font-bold">Informar tu donación</h2>
                 <p className="mb-8 text-sm text-slate-500">
                   Una vez que haya completado la transferencia bancaria,
@@ -250,90 +253,95 @@ export default function DonationsPage() {
                   donación y enviarle su recibo.
                 </p>
 
-                <form className="space-y-6">
-                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                    <div className="space-y-2">
-                      <label
-                        className="text-sm font-semibold"
-                        htmlFor="donor-name"
-                      >
-                        Nombre Completo
-                      </label>
-                      <input
-                        id="donor-name"
-                        name="donor_name"
-                        type="text"
-                        required
-                        placeholder="María González"
-                        className="w-full rounded-lg border border-primary/10 bg-background px-4 py-3 outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary/20"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <label
-                        className="text-sm font-semibold"
-                        htmlFor="donor-email"
-                      >
-                        Correo Electrónico
-                      </label>
-                      <input
-                        id="donor-email"
-                        name="donor_email"
-                        type="email"
-                        required
-                        placeholder="nombre@correo.com"
-                        className="w-full rounded-lg border border-primary/10 bg-background px-4 py-3 outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary/20"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label
-                      className="text-sm font-semibold"
-                      htmlFor="donation-amount"
-                    >
-                      Monto de la donación ($)
-                    </label>
-                    <input
-                      id="donation-amount"
-                      name="donation_amount"
-                      type="number"
-                      min="0"
-                      placeholder="0.000"
-                      className="w-full rounded-lg border border-primary/10 bg-background px-4 py-3 outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary/20"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label
-                      className="text-sm font-semibold"
-                      htmlFor="donation-receipt"
-                    >
-                      Subir Comprobante de Transferencia
-                    </label>
-
-                    <div className="group relative cursor-pointer">
-                      <input
-                        id="donation-receipt"
-                        name="donation_receipt"
-                        type="file"
-                        aria-describedby="donation-receipt-help"
-                        className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
-                      />
-
-                      <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-primary/20 bg-primary/5 py-10 transition-colors group-hover:border-primary/40">
-                        <span className="material-symbols-outlined mb-2 text-4xl text-primary">
-                          cloud_upload
-                        </span>
-                        <p className="text-sm font-medium">
-                          Clic para subir o arrastrar y soltar
-                        </p>
-                        <p
-                          className="mt-1 text-xs text-slate-400"
-                          id="donation-receipt-help"
+                <form className="flex flex-1 flex-col justify-between">
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                      <div className="space-y-3">
+                        <label
+                          className="text-sm font-semibold"
+                          htmlFor="donor-name"
                         >
-                          PDF, JPG, o PNG (Máx 5MB)
-                        </p>
+                          Nombre Completo
+                        </label>
+                        <input
+                          id="donor-name"
+                          name="donor_name"
+                          type="text"
+                          required
+                          placeholder="María González"
+                          className="mt-3 w-full rounded-lg border border-primary/10 bg-background px-4 py-3 outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary/20"
+                        />
+                      </div>
+
+                      <div className="space-y-3">
+                        <label
+                          className="text-sm font-semibold"
+                          htmlFor="donor-email"
+                        >
+                          Correo Electrónico
+                        </label>
+                        <input
+                          id="donor-email"
+                          name="donor_email"
+                          type="email"
+                          required
+                          placeholder="nombre@correo.com"
+                          className="mt-3 w-full rounded-lg border border-primary/10 bg-background px-4 py-3 outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary/20"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <label
+                        className="text-sm font-semibold"
+                        htmlFor="donation-amount"
+                      >
+                        Monto de la donación ($)
+                      </label>
+                      <input
+                        id="donation-amount"
+                        name="donation_amount"
+                        type="number"
+                        min="0"
+                        placeholder="0.000"
+                        className="mt-3 w-full rounded-lg border border-primary/10 bg-background px-4 py-3 outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary/20"
+                      />
+                    </div>
+
+                    <div className="space-y-3">
+                      <label
+                        className="text-sm font-semibold"
+                        htmlFor="donation-receipt"
+                      >
+                        Subir Comprobante de Transferencia
+                      </label>
+
+                      <div className="group relative cursor-pointer mt-2">
+                        <input
+                          id="donation-receipt"
+                          name="donation_receipt"
+                          type="file"
+                          aria-describedby="donation-receipt-help"
+                          className="mt-3 absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
+                        />
+
+                        <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-primary/20 bg-primary/5 py-10 transition-colors group-hover:border-primary/40">
+                          <span
+                            className="material-symbols-outlined shrink-0 text-primary mb-2"
+                            style={{ fontSize: "36px", lineHeight: 1 }}
+                          >
+                            cloud_upload
+                          </span>
+                          <p className="text-sm font-medium">
+                            Clic para subir o arrastrar y soltar
+                          </p>
+                          <p
+                            className="mt-1 text-xs text-slate-400"
+                            id="donation-receipt-help"
+                          >
+                            PDF, JPG, o PNG (Máx 5MB)
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
