@@ -274,6 +274,78 @@ export default function ParticipatePage() {
             </div>
           </div>
         </section>
+
+        <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 md:pb-24 lg:px-8">
+          <div className="relative overflow-hidden rounded-2xl bg-background-dark p-8 text-white shadow-xl md:p-12 lg:p-14">
+            <div className="pointer-events-none absolute right-0 top-0 opacity-10">
+              <span className="material-symbols-outlined text-[220px]">
+                handshake
+              </span>
+            </div>
+
+            <div className="relative z-10">
+              <div className="mb-4 flex items-center gap-3">
+                <span className="material-symbols-outlined text-3xl text-primary">
+                  business_center
+                </span>
+                <span className="text-sm font-bold uppercase tracking-wider text-primary">
+                  Empresas y alianzas
+                </span>
+              </div>
+
+              <div className="max-w-3xl">
+                <h2 className="mb-4 text-3xl font-bold md:text-4xl">
+                  Tu organización también puede impulsar bienestar
+                </h2>
+
+                <p className="mb-8 text-lg leading-relaxed text-slate-300">
+                  Las empresas, instituciones y organizaciones pueden colaborar
+                  contratando talleres, impulsando alianzas o apoyando programas
+                  que acerquen bienestar emocional, educación y oportunidades a
+                  más personas.
+                </p>
+              </div>
+
+              <div className="mb-8 grid gap-4 md:grid-cols-3">
+                <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                  <h3 className="mb-2 font-bold">Talleres</h3>
+                  <p className="text-sm text-slate-300">
+                    Actividades para equipos, comunidades educativas u
+                    organizaciones.
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                  <h3 className="mb-2 font-bold">Alianzas</h3>
+                  <p className="text-sm text-slate-300">
+                    Proyectos colaborativos para ampliar el alcance de la
+                    fundación.
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                  <h3 className="mb-2 font-bold">Impacto social</h3>
+                  <p className="text-sm text-slate-300">
+                    Iniciativas que ayudan a financiar programas para más
+                    personas.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex justify-stretch md:justify-end">
+                <a
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 font-bold text-background-dark transition-colors hover:bg-primary/90 md:w-auto"
+                  href="#formulario"
+                >
+                  Quiero conversar
+                  <span className="material-symbols-outlined text-lg">
+                    arrow_forward
+                  </span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   );
