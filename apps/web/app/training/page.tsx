@@ -4,28 +4,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { apiGetClient } from "@/lib/api-client";
-import type { EducationCard } from "@/types/education";
-
-const trainingTipsBySegment: Record<string, string> = {
-  "ia-aplicada":
-    "Probá pedirle a una IA: “Organizá mi semana en bloques de estudio, descanso y tareas importantes”.",
-  emprendimiento:
-    "Escribí tu idea en una frase: qué problema resuelve, para quién y por qué es diferente.",
-  pitching:
-    "Practicá explicar tu idea en 30 segundos: problema, solución, impacto y próximo paso.",
-  "educacion-financiera":
-    "Usá la regla 50/30/20 como punto de partida: necesidades, gustos y ahorro.",
-  "desarrollo-personal":
-    "Hacé una pausa de 2 minutos: inhalá profundo, nombrá lo que sentís y elegí una acción pequeña para continuar.",
-  "tecnologia-productiva":
-    "Revisá tus herramientas digitales y eliminá una notificación que interrumpa tu concentración.",
-};
+import type { EducationCard, EducationTip } from "@/types/education";
 
 export default function TrainingPage() {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [educationCards, setEducationCards] = useState<EducationCard[]>([]);
   const [isLoadingCards, setIsLoadingCards] = useState(true);
   const [cardsError, setCardsError] = useState<string | null>(null);
+  const [educationTips, setEducationTips] = useState<EducationTip[]>([]);
+  const [tipsError, setTipsError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadEducationCards = async () => {
@@ -44,6 +31,23 @@ export default function TrainingPage() {
     };
 
     void loadEducationCards();
+  }, []);
+
+  useEffect(() => {
+    const loadEducationTips = async () => {
+      try {
+        const tipsResponse = await apiGetClient<EducationTip[]>(
+          "/api/education-tips",
+        );
+
+        setEducationTips(tipsResponse);
+        setTipsError(null);
+      } catch {
+        setTipsError("No se pudieron cargar los tips educativos.");
+      }
+    };
+
+    void loadEducationTips();
   }, []);
 
   return (
@@ -195,49 +199,56 @@ export default function TrainingPage() {
                   Todavía no hay recursos educativos publicados.
                 </div>
               ) : (
-                educationCards.map((card) => (
-                  <article
-                    key={card.id}
-                    className="group relative flex flex-col rounded-xl border border-slate-200 bg-white p-8 transition-all hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5"
-                  >
-                    <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-background-dark">
-                      <span
-                        className="material-symbols-outlined"
-                        style={{ fontSize: "30px" }}
-                      >
-                        {card.icon_name}
-                      </span>
-                    </div>
+                educationCards.map((card) => {
+                  const cardTip = educationTips.find(
+                    (tip) => tip.segment_key === card.segment_key,
+                  );
 
-                    <details className="absolute right-6 top-6 z-20 group/tip">
-                      <summary
-                        className="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-full border border-primary bg-primary text-background-dark shadow-sm transition-all hover:bg-primary/10 hover:text-primary [&::-webkit-details-marker]:hidden"
-                        aria-label="Ver tip rápido"
-                      >
-                        <span className="material-symbols-outlined transition-transform group-open/tip:rotate-45">
-                          add
+                  return (
+                    <article
+                      key={card.id}
+                      className="group relative flex flex-col rounded-xl border border-slate-200 bg-white p-8 transition-all hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5"
+                    >
+                      <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-background-dark">
+                        <span
+                          className="material-symbols-outlined"
+                          style={{ fontSize: "30px" }}
+                        >
+                          {card.icon_name}
                         </span>
-                      </summary>
-
-                      <div className="absolute right-0 top-12 w-64 rounded-xl border border-primary/20 bg-white p-4 shadow-xl">
-                        <p className="mb-2 text-xs font-bold uppercase tracking-wider text-primary">
-                          Tip rápido
-                        </p>
-                        <p className="text-sm leading-relaxed text-slate-600">
-                          {trainingTipsBySegment[card.segment_key] ??
-                            "Próximamente habrá un tip disponible para este recurso."}
-                        </p>
                       </div>
-                    </details>
 
-                    <h3 className="text-xl font-bold text-slate-900">
-                      {card.title}
-                    </h3>
-                    <p className="mt-4 leading-relaxed text-slate-600">
-                      {card.description}
-                    </p>
-                  </article>
-                ))
+                      <details className="absolute right-6 top-6 z-20 group/tip">
+                        <summary
+                          className="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-full border border-primary bg-primary text-background-dark shadow-sm transition-all hover:bg-primary/10 hover:text-primary [&::-webkit-details-marker]:hidden"
+                          aria-label="Ver tip rápido"
+                        >
+                          <span className="material-symbols-outlined transition-transform group-open/tip:rotate-45">
+                            add
+                          </span>
+                        </summary>
+
+                        <div className="absolute right-0 top-12 w-64 rounded-xl border border-primary/20 bg-white p-4 shadow-xl">
+                          <p className="mb-2 text-xs font-bold uppercase tracking-wider text-primary">
+                            Tip rápido
+                          </p>
+                          <p className="text-sm leading-relaxed text-slate-600">
+                            {tipsError ??
+                              cardTip?.content ??
+                              "Próximamente habrá un tip disponible para este recurso."}
+                          </p>
+                        </div>
+                      </details>
+
+                      <h3 className="text-xl font-bold text-slate-900">
+                        {card.title}
+                      </h3>
+                      <p className="mt-4 leading-relaxed text-slate-600">
+                        {card.description}
+                      </p>
+                    </article>
+                  );
+                })
               )}
             </div>
           </div>
