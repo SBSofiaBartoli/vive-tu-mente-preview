@@ -51,11 +51,24 @@ const initialTestimonialForm: TestimonialForm = {
   comment: "",
 };
 
+const getTestimonialsVisibleCount = () => {
+  if (typeof window === "undefined") return 3;
+
+  if (window.innerWidth >= 1024) return 3;
+  if (window.innerWidth >= 768) return 2;
+
+  return 1;
+};
+
 export default function ProgramsPage() {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [featuredTestimonials, setFeaturedTestimonials] = useState<
     Testimonial[]
   >([]);
+  const [testimonialSlideIndex, setTestimonialSlideIndex] = useState(0);
+  const [testimonialVisibleCount, setTestimonialVisibleCount] = useState(3);
+  const [isTestimonialCarouselPaused, setIsTestimonialCarouselPaused] =
+    useState(false);
   const [isLoadingTestimonials, setIsLoadingTestimonials] = useState(true);
   const [testimonialsError, setTestimonialsError] = useState<string | null>(
     null,
@@ -63,6 +76,7 @@ export default function ProgramsPage() {
   const [programFaqs, setProgramFaqs] = useState<Faq[]>([]);
   const [isLoadingFaqs, setIsLoadingFaqs] = useState(true);
   const [faqsError, setFaqsError] = useState<string | null>(null);
+  const [openFaqId, setOpenFaqId] = useState<string | null>(null);
   const [isTestimonialModalOpen, setIsTestimonialModalOpen] = useState(false);
   const [testimonialForm, setTestimonialForm] = useState<TestimonialForm>(
     initialTestimonialForm,
@@ -93,6 +107,61 @@ export default function ProgramsPage() {
 
     void loadTestimonials();
   }, []);
+
+  useEffect(() => {
+    const updateVisibleTestimonials = () => {
+      window.requestAnimationFrame(() => {
+        setTestimonialVisibleCount(getTestimonialsVisibleCount());
+      });
+    };
+
+    updateVisibleTestimonials();
+    window.addEventListener("resize", updateVisibleTestimonials);
+
+    return () => {
+      window.removeEventListener("resize", updateVisibleTestimonials);
+    };
+  }, []);
+
+  useEffect(() => {
+    const frameId = window.requestAnimationFrame(() => {
+      const maxSlideIndex = Math.max(
+        featuredTestimonials.length - testimonialVisibleCount,
+        0,
+      );
+
+      setTestimonialSlideIndex((currentIndex) =>
+        currentIndex > maxSlideIndex ? maxSlideIndex : currentIndex,
+      );
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+    };
+  }, [featuredTestimonials.length, testimonialVisibleCount]);
+
+  useEffect(() => {
+    const maxSlideIndex = Math.max(
+      featuredTestimonials.length - testimonialVisibleCount,
+      0,
+    );
+
+    if (maxSlideIndex === 0 || isTestimonialCarouselPaused) return;
+
+    const intervalId = window.setInterval(() => {
+      setTestimonialSlideIndex((currentIndex) =>
+        currentIndex >= maxSlideIndex ? 0 : currentIndex + 1,
+      );
+    }, 3000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [
+    featuredTestimonials.length,
+    isTestimonialCarouselPaused,
+    testimonialVisibleCount,
+  ]);
 
   useEffect(() => {
     const loadFaqs = async () => {
@@ -399,48 +468,120 @@ export default function ProgramsPage() {
               </button>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div
+              className="relative"
+              onMouseEnter={() => setIsTestimonialCarouselPaused(true)}
+              onMouseLeave={() => setIsTestimonialCarouselPaused(false)}
+              onFocus={() => setIsTestimonialCarouselPaused(true)}
+              onBlur={() => setIsTestimonialCarouselPaused(false)}
+            >
               {isLoadingTestimonials ? (
-                <div className="rounded-2xl border border-slate-100 bg-white p-8 text-slate-600 shadow-sm md:col-span-2 lg:col-span-3">
+                <div className="rounded-2xl border border-slate-100 bg-white p-8 text-slate-600 shadow-sm">
                   Cargando testimonios...
                 </div>
               ) : testimonialsError ? (
-                <div className="rounded-2xl border border-red-200 bg-red-50 p-8 font-semibold text-red-700 md:col-span-2 lg:col-span-3">
+                <div className="rounded-2xl border border-red-200 bg-red-50 p-8 font-semibold text-red-700">
                   {testimonialsError}
                 </div>
               ) : featuredTestimonials.length === 0 ? (
-                <div className="rounded-2xl border border-slate-100 bg-white p-8 text-slate-600 shadow-sm md:col-span-2 lg:col-span-3">
+                <div className="rounded-2xl border border-slate-100 bg-white p-8 text-slate-600 shadow-sm">
                   Todavía no hay testimonios destacados.
                 </div>
               ) : (
-                featuredTestimonials.map((testimonial) => (
-                  <article
-                    className="rounded-2xl border border-slate-100 bg-white p-8 shadow-sm"
-                    key={testimonial.id}
-                  >
-                    <div className="flex h-full flex-col gap-6">
-                      <p className="leading-relaxed text-slate-600 italic">
-                        “{testimonial.comment}”
-                      </p>
-                      <div className="mt-auto flex items-center gap-4">
-                        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary/20">
-                          <span className="material-symbols-outlined text-primary">
-                            person
-                          </span>
-                        </div>
-                        <div>
-                          <p className="font-bold text-slate-900">
-                            {testimonial.full_name}
-                          </p>
-                          <p className="text-sm text-slate-500">
-                            {testimonial.workshop_name ??
-                              "Participante Vive Tu Mente"}
-                          </p>
-                        </div>
-                      </div>
+                <>
+                  <div className="overflow-hidden">
+                    <div
+                      className="flex transition-transform duration-700 ease-out"
+                      style={{
+                        transform: `translateX(-${
+                          testimonialSlideIndex *
+                          (100 / testimonialVisibleCount)
+                        }%)`,
+                      }}
+                    >
+                      {featuredTestimonials.map((testimonial) => (
+                        <article
+                          className="w-full shrink-0 px-3 md:w-1/2 lg:w-1/3"
+                          key={testimonial.id}
+                        >
+                          <div className="flex h-full flex-col gap-6 rounded-2xl border border-slate-100 bg-white p-8 shadow-sm">
+                            <p className="leading-relaxed text-slate-600 italic">
+                              “{testimonial.comment}”
+                            </p>
+
+                            <div className="mt-auto flex items-center gap-4">
+                              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/20">
+                                <span className="material-symbols-outlined text-primary">
+                                  person
+                                </span>
+                              </div>
+
+                              <div>
+                                <p className="font-bold text-slate-900">
+                                  {testimonial.full_name}
+                                </p>
+                                <p className="text-sm text-slate-500">
+                                  {testimonial.workshop_name ??
+                                    "Participante Vive Tu Mente"}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </article>
+                      ))}
                     </div>
-                  </article>
-                ))
+                  </div>
+
+                  {featuredTestimonials.length > testimonialVisibleCount ? (
+                    <div className="mt-8 flex items-center justify-center gap-4">
+                      <button
+                        type="button"
+                        aria-label="Ver testimonio anterior"
+                        className="flex h-11 w-11 items-center justify-center rounded-full border border-primary/30 text-primary transition-colors hover:bg-primary hover:text-background-dark"
+                        onClick={() => {
+                          const maxSlideIndex = Math.max(
+                            featuredTestimonials.length -
+                              testimonialVisibleCount,
+                            0,
+                          );
+
+                          setTestimonialSlideIndex((currentIndex) =>
+                            currentIndex === 0
+                              ? maxSlideIndex
+                              : currentIndex - 1,
+                          );
+                        }}
+                      >
+                        <span className="material-symbols-outlined">
+                          arrow_back
+                        </span>
+                      </button>
+
+                      <button
+                        type="button"
+                        aria-label="Ver testimonio siguiente"
+                        className="flex h-11 w-11 items-center justify-center rounded-full border border-primary/30 text-primary transition-colors hover:bg-primary hover:text-background-dark"
+                        onClick={() => {
+                          const maxSlideIndex = Math.max(
+                            featuredTestimonials.length -
+                              testimonialVisibleCount,
+                            0,
+                          );
+
+                          setTestimonialSlideIndex((currentIndex) =>
+                            currentIndex >= maxSlideIndex
+                              ? 0
+                              : currentIndex + 1,
+                          );
+                        }}
+                      >
+                        <span className="material-symbols-outlined">
+                          arrow_forward
+                        </span>
+                      </button>
+                    </div>
+                  ) : null}
+                </>
               )}
             </div>
           </div>
@@ -474,13 +615,42 @@ export default function ProgramsPage() {
               ) : (
                 programFaqs.map((faq) => (
                   <article
-                    className="rounded-xl border border-slate-100 bg-white p-6"
+                    className="overflow-hidden rounded-xl border border-slate-100 bg-white"
                     key={faq.id}
                   >
-                    <h3 className="mb-2 text-lg font-bold">{faq.question}</h3>
-                    <p className="leading-relaxed text-slate-600">
-                      {faq.answer}
-                    </p>
+                    <button
+                      type="button"
+                      className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
+                      onClick={() =>
+                        setOpenFaqId((currentFaqId) =>
+                          currentFaqId === faq.id ? null : faq.id,
+                        )
+                      }
+                    >
+                      <span className="text-lg font-bold text-slate-900">
+                        {faq.question}
+                      </span>
+                      <span
+                        className="material-symbols-outlined shrink-0 text-primary transition-transform"
+                        style={{
+                          fontSize: "24px",
+                          transform:
+                            openFaqId === faq.id
+                              ? "rotate(180deg)"
+                              : "rotate(0deg)",
+                        }}
+                      >
+                        expand_more
+                      </span>
+                    </button>
+
+                    {openFaqId === faq.id ? (
+                      <div className="border-t border-slate-100 px-6 pb-6 pt-4">
+                        <p className="leading-relaxed text-slate-600">
+                          {faq.answer}
+                        </p>
+                      </div>
+                    ) : null}
                   </article>
                 ))
               )}
