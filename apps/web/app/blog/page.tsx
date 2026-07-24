@@ -190,9 +190,10 @@ export default function BlogPage() {
                 </div>
               ) : (
                 publishedArticles.map((article) => (
-                  <article
+                  <Link
                     key={article.id}
-                    className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5"
+                    href={`/blog/${article.slug}`}
+                    className="block overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5"
                   >
                     <Image
                       className="h-48 w-full object-cover"
@@ -218,7 +219,7 @@ export default function BlogPage() {
                         {getArticleDescription(article)}
                       </p>
                     </div>
-                  </article>
+                  </Link>
                 ))
               )}
             </div>
