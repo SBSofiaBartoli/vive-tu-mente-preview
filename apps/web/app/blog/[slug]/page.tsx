@@ -216,7 +216,7 @@ export default function BlogArticlePage({ params }: BlogArticlePageProps) {
                   priority
                 />
 
-                <div className="prose prose-slate max-w-none text-lg leading-relaxed prose-p:text-slate-600">
+                <div className="space-y-5 text-lg leading-relaxed text-slate-600">
                   {article.content
                     .split("\n")
                     .map((paragraph) =>
