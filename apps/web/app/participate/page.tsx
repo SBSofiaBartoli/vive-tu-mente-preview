@@ -3,9 +3,78 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { apiPostClient } from "@/lib/api-client";
+import type { ParticipationMessage } from "@/types/participation-message";
+
+type ParticipationFormStatus = "idle" | "success" | "error";
+
+type ParticipationFormState = {
+  full_name: string;
+  email: string;
+  phone: string;
+  interest_area: string;
+  message: string;
+};
 
 export default function ParticipatePage() {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [formData, setFormData] = useState<ParticipationFormState>({
+    full_name: "",
+    email: "",
+    phone: "",
+    interest_area: "",
+    message: "",
+  });
+  const [formStatus, setFormStatus] = useState<ParticipationFormStatus>("idle");
+  const [formMessage, setFormMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const updateFormField = (
+    field: keyof ParticipationFormState,
+    value: string,
+  ) => {
+    setFormData((currentData) => ({
+      ...currentData,
+      [field]: value,
+    }));
+  };
+
+  const handleParticipationSubmit = async (
+    event: React.FormEvent<HTMLFormElement>,
+  ) => {
+    event.preventDefault();
+
+    setIsSubmitting(true);
+    setFormStatus("idle");
+    setFormMessage("");
+
+    try {
+      await apiPostClient<ParticipationMessage, ParticipationFormState>(
+        "/api/participation/messages",
+        formData,
+      );
+
+      setFormData({
+        full_name: "",
+        email: "",
+        phone: "",
+        interest_area: "",
+        message: "",
+      });
+      setFormStatus("success");
+      setFormMessage(
+        "Recibimos tu solicitud. Pronto nos contactaremos para conversar.",
+      );
+    } catch {
+      setFormStatus("error");
+      setFormMessage(
+        "No se pudo enviar la solicitud. Revisá los datos e intentá nuevamente.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="relative flex min-h-screen flex-col bg-background text-slate-900">
       <header className="sticky top-0 z-50 border-b border-primary/10 bg-background/80 backdrop-blur-md">
@@ -153,7 +222,7 @@ export default function ParticipatePage() {
 
           <div className="w-full md:w-2/3" id="formulario">
             <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-              <form className="space-y-6">
+              <form className="space-y-6" onSubmit={handleParticipationSubmit}>
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div className="flex flex-col gap-2">
                     <label
@@ -164,7 +233,11 @@ export default function ParticipatePage() {
                     </label>
                     <input
                       id="name"
-                      name="name"
+                      name="full_name"
+                      value={formData.full_name}
+                      onChange={(event) =>
+                        updateFormField("full_name", event.target.value)
+                      }
                       type="text"
                       required
                       placeholder="María González"
@@ -182,6 +255,10 @@ export default function ParticipatePage() {
                     <input
                       id="email"
                       name="email"
+                      value={formData.email}
+                      onChange={(event) =>
+                        updateFormField("email", event.target.value)
+                      }
                       type="email"
                       required
                       placeholder="nombre@correo.com"
@@ -201,6 +278,10 @@ export default function ParticipatePage() {
                     <input
                       id="phone"
                       name="phone"
+                      value={formData.phone}
+                      onChange={(event) =>
+                        updateFormField("phone", event.target.value)
+                      }
                       type="tel"
                       placeholder="+56 9 0000 0000"
                       className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary"
@@ -218,7 +299,10 @@ export default function ParticipatePage() {
                       id="interest"
                       name="interest"
                       required
-                      defaultValue=""
+                      value={formData.interest_area}
+                      onChange={(event) =>
+                        updateFormField("interest_area", event.target.value)
+                      }
                       className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary"
                     >
                       <option value="" disabled>
@@ -251,17 +335,37 @@ export default function ParticipatePage() {
                   <textarea
                     id="message"
                     name="message"
+                    required
+                    value={formData.message}
+                    onChange={(event) =>
+                      updateFormField("message", event.target.value)
+                    }
                     rows={5}
                     placeholder="Contanos cómo te gustaría participar o colaborar..."
                     className="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary"
                   />
                 </div>
 
+                {formMessage ? (
+                  <p
+                    className={`rounded-lg border px-4 py-3 text-sm font-semibold ${
+                      formStatus === "success"
+                        ? "border-primary/30 bg-primary/10 text-slate-800"
+                        : "border-red-200 bg-red-50 text-red-700"
+                    }`}
+                  >
+                    {formMessage}
+                  </p>
+                ) : null}
+
                 <button
                   type="submit"
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 font-bold text-slate-900 shadow-lg shadow-primary/20 transition-all hover:bg-primary/90"
+                  disabled={isSubmitting}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 font-bold text-slate-900 shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
                 >
-                  <span>Enviar Solicitud</span>
+                  <span>
+                    {isSubmitting ? "Enviando..." : "Enviar Solicitud"}
+                  </span>
                   <span className="material-symbols-outlined text-lg">
                     send
                   </span>
