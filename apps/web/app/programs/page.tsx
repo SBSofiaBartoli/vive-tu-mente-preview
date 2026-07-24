@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { apiGetClient } from "@/lib/api-client";
+import { useEffect, useState, type FormEvent } from "react";
+import { apiGetClient, apiPostClient } from "@/lib/api-client";
 import type { Faq } from "@/types/faq";
 import type { Testimonial } from "@/types/testimonial";
 
@@ -28,6 +28,29 @@ const challengeCards = [
   },
 ];
 
+const testimonialRoleOptions = [
+  { value: "participant", label: "Participante" },
+  { value: "professional", label: "Profesional" },
+  { value: "alliance", label: "Alianza" },
+  { value: "company", label: "Empresa" },
+  { value: "institution", label: "Institución" },
+  { value: "organization", label: "Organización" },
+] as const;
+
+type TestimonialForm = {
+  full_name: string;
+  role: Testimonial["role"];
+  workshop_name: string;
+  comment: string;
+};
+
+const initialTestimonialForm: TestimonialForm = {
+  full_name: "",
+  role: "participant",
+  workshop_name: "",
+  comment: "",
+};
+
 export default function ProgramsPage() {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [featuredTestimonials, setFeaturedTestimonials] = useState<
@@ -40,6 +63,17 @@ export default function ProgramsPage() {
   const [programFaqs, setProgramFaqs] = useState<Faq[]>([]);
   const [isLoadingFaqs, setIsLoadingFaqs] = useState(true);
   const [faqsError, setFaqsError] = useState<string | null>(null);
+  const [isTestimonialModalOpen, setIsTestimonialModalOpen] = useState(false);
+  const [testimonialForm, setTestimonialForm] = useState<TestimonialForm>(
+    initialTestimonialForm,
+  );
+  const [isSubmittingTestimonial, setIsSubmittingTestimonial] = useState(false);
+  const [testimonialSuccess, setTestimonialSuccess] = useState<string | null>(
+    null,
+  );
+  const [testimonialSubmitError, setTestimonialSubmitError] = useState<
+    string | null
+  >(null);
 
   useEffect(() => {
     const loadTestimonials = async () => {
@@ -78,6 +112,31 @@ export default function ProgramsPage() {
 
     void loadFaqs();
   }, []);
+
+  const handleSubmitTestimonial = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsSubmittingTestimonial(true);
+
+    try {
+      await apiPostClient<Testimonial, TestimonialForm>(
+        "/api/testimonials",
+        testimonialForm,
+      );
+
+      setTestimonialForm(initialTestimonialForm);
+      setTestimonialSubmitError(null);
+      setTestimonialSuccess(
+        "Gracias por compartir tu experiencia. El testimonio quedó pendiente de revisión.",
+      );
+    } catch {
+      setTestimonialSuccess(null);
+      setTestimonialSubmitError(
+        "No se pudo enviar el testimonio. Revisá los datos e intentá nuevamente.",
+      );
+    } finally {
+      setIsSubmittingTestimonial(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -321,6 +380,23 @@ export default function ProgramsPage() {
                 Historias reales de personas que transformaron su vida con Vive
                 Tu Mente.
               </p>
+              <button
+                type="button"
+                className="mt-6 inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-bold text-background-dark shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 hover:shadow-xl"
+                onClick={() => {
+                  setIsTestimonialModalOpen(true);
+                  setTestimonialSuccess(null);
+                  setTestimonialSubmitError(null);
+                }}
+              >
+                Dejar testimonio
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: "18px" }}
+                >
+                  rate_review
+                </span>
+              </button>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -552,6 +628,148 @@ export default function ProgramsPage() {
           </div>
         </div>
       </footer>
+
+      {isTestimonialModalOpen ? (
+        <div className="fixed inset-0 z-[9998] flex items-center justify-center bg-background-dark/60 px-4 py-8">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border-t-4 border-primary bg-white p-6 shadow-2xl">
+            <div className="mb-6 flex items-start justify-between gap-4">
+              <div>
+                <h3 className="text-2xl font-bold tracking-[-0.03em] text-slate-900">
+                  Dejá tu testimonio
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                  Tu experiencia será revisada por el equipo antes de mostrarse
+                  en el sitio.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                aria-label="Cerrar formulario"
+                className="text-2xl leading-none text-slate-400 hover:text-primary"
+                onClick={() => setIsTestimonialModalOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            {testimonialSuccess ? (
+              <div className="mb-5 rounded-xl border border-primary/20 bg-primary/10 px-4 py-3 text-sm font-semibold text-primary">
+                {testimonialSuccess}
+              </div>
+            ) : null}
+
+            {testimonialSubmitError ? (
+              <div className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+                {testimonialSubmitError}
+              </div>
+            ) : null}
+
+            <form className="space-y-5" onSubmit={handleSubmitTestimonial}>
+              <div className="grid gap-5 md:grid-cols-2">
+                <label className="block">
+                  <span className="mb-2 block text-sm font-bold text-slate-900">
+                    Nombre y apellido
+                  </span>
+                  <input
+                    className="w-full rounded-xl border border-slate-200 bg-background px-4 py-3 outline-none transition-colors focus:border-primary"
+                    type="text"
+                    value={testimonialForm.full_name}
+                    onChange={(event) =>
+                      setTestimonialForm((currentValue) => ({
+                        ...currentValue,
+                        full_name: event.target.value,
+                      }))
+                    }
+                    required
+                    minLength={2}
+                    placeholder="María González"
+                  />
+                </label>
+
+                <label className="block">
+                  <span className="mb-2 block text-sm font-bold text-slate-900">
+                    Tipo de vínculo
+                  </span>
+                  <select
+                    className="w-full rounded-xl border border-slate-200 bg-background px-4 py-3 outline-none transition-colors focus:border-primary"
+                    value={testimonialForm.role}
+                    onChange={(event) =>
+                      setTestimonialForm((currentValue) => ({
+                        ...currentValue,
+                        role: event.target.value as Testimonial["role"],
+                      }))
+                    }
+                  >
+                    {testimonialRoleOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+
+              <label className="block">
+                <span className="mb-2 block text-sm font-bold text-slate-900">
+                  Taller o actividad
+                </span>
+                <input
+                  className="w-full rounded-xl border border-slate-200 bg-background px-4 py-3 outline-none transition-colors focus:border-primary"
+                  type="text"
+                  value={testimonialForm.workshop_name}
+                  onChange={(event) =>
+                    setTestimonialForm((currentValue) => ({
+                      ...currentValue,
+                      workshop_name: event.target.value,
+                    }))
+                  }
+                  placeholder="Taller de bienestar emocional"
+                />
+              </label>
+
+              <label className="block">
+                <span className="mb-2 block text-sm font-bold text-slate-900">
+                  Comentario
+                </span>
+                <textarea
+                  className="min-h-36 w-full resize-y rounded-xl border border-slate-200 bg-background px-4 py-3 leading-relaxed outline-none transition-colors focus:border-primary"
+                  value={testimonialForm.comment}
+                  onChange={(event) =>
+                    setTestimonialForm((currentValue) => ({
+                      ...currentValue,
+                      comment: event.target.value,
+                    }))
+                  }
+                  required
+                  minLength={10}
+                  placeholder="Contanos cómo fue tu experiencia..."
+                />
+              </label>
+
+              <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+                <button
+                  type="button"
+                  className="rounded-xl border border-slate-200 px-6 py-3 font-bold text-slate-700 transition-colors hover:border-primary hover:text-primary"
+                  onClick={() => setIsTestimonialModalOpen(false)}
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={isSubmittingTestimonial}
+                  className="rounded-xl bg-primary px-6 py-3 font-bold text-background-dark shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isSubmittingTestimonial
+                    ? "Enviando..."
+                    : "Enviar testimonio"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : null}
 
       <div className="fixed bottom-4 right-4 z-[9999] flex flex-col items-end gap-3 sm:bottom-7 sm:right-7">
         {isHelpOpen ? (
