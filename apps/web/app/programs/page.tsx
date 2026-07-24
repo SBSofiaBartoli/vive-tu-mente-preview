@@ -63,6 +63,7 @@ export default function ProgramsPage() {
   const [programFaqs, setProgramFaqs] = useState<Faq[]>([]);
   const [isLoadingFaqs, setIsLoadingFaqs] = useState(true);
   const [faqsError, setFaqsError] = useState<string | null>(null);
+  const [openFaqId, setOpenFaqId] = useState<string | null>(null);
   const [isTestimonialModalOpen, setIsTestimonialModalOpen] = useState(false);
   const [testimonialForm, setTestimonialForm] = useState<TestimonialForm>(
     initialTestimonialForm,
@@ -474,13 +475,42 @@ export default function ProgramsPage() {
               ) : (
                 programFaqs.map((faq) => (
                   <article
-                    className="rounded-xl border border-slate-100 bg-white p-6"
+                    className="overflow-hidden rounded-xl border border-slate-100 bg-white"
                     key={faq.id}
                   >
-                    <h3 className="mb-2 text-lg font-bold">{faq.question}</h3>
-                    <p className="leading-relaxed text-slate-600">
-                      {faq.answer}
-                    </p>
+                    <button
+                      type="button"
+                      className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
+                      onClick={() =>
+                        setOpenFaqId((currentFaqId) =>
+                          currentFaqId === faq.id ? null : faq.id,
+                        )
+                      }
+                    >
+                      <span className="text-lg font-bold text-slate-900">
+                        {faq.question}
+                      </span>
+                      <span
+                        className="material-symbols-outlined shrink-0 text-primary transition-transform"
+                        style={{
+                          fontSize: "24px",
+                          transform:
+                            openFaqId === faq.id
+                              ? "rotate(180deg)"
+                              : "rotate(0deg)",
+                        }}
+                      >
+                        expand_more
+                      </span>
+                    </button>
+
+                    {openFaqId === faq.id ? (
+                      <div className="border-t border-slate-100 px-6 pb-6 pt-4">
+                        <p className="leading-relaxed text-slate-600">
+                          {faq.answer}
+                        </p>
+                      </div>
+                    ) : null}
                   </article>
                 ))
               )}
