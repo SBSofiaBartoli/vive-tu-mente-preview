@@ -2,8 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { apiGetClient } from "@/lib/api-client";
+import { useEffect, useState, type FormEvent } from "react";
+import {
+  apiFormDataPostClient,
+  apiGetClient,
+  apiPostClient,
+} from "@/lib/api-client";
 import type { Article } from "@/types/article";
 
 const getArticleDescription = (article: Article) => {
@@ -16,11 +20,59 @@ const getArticleDescription = (article: Article) => {
     : article.content;
 };
 
+type ArticleProposalForm = {
+  title: string;
+  excerpt: string;
+  content: string;
+  author_name: string;
+  category: string;
+  submitted_by_name: string;
+  submitted_by_email: string;
+};
+
+type UploadFileResponse = {
+  original_name: string;
+  storage_path: string;
+  public_url: string;
+  mime_type: string;
+  file_size: number;
+};
+
+type CreateMediaFilePayload = UploadFileResponse & {
+  section: string;
+  uploaded_by_name: string;
+  uploaded_by_email: string;
+};
+
+type MediaFile = {
+  id: string;
+};
+
+const initialArticleProposalForm: ArticleProposalForm = {
+  title: "",
+  excerpt: "",
+  content: "",
+  author_name: "",
+  category: "",
+  submitted_by_name: "",
+  submitted_by_email: "",
+};
+
 export default function BlogPage() {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [publishedArticles, setPublishedArticles] = useState<Article[]>([]);
   const [isLoadingArticles, setIsLoadingArticles] = useState(true);
   const [articlesError, setArticlesError] = useState<string | null>(null);
+  const [isProposalModalOpen, setIsProposalModalOpen] = useState(false);
+  const [proposalForm, setProposalForm] = useState<ArticleProposalForm>(
+    initialArticleProposalForm,
+  );
+  const [isSubmittingProposal, setIsSubmittingProposal] = useState(false);
+  const [proposalSuccess, setProposalSuccess] = useState<string | null>(null);
+  const [proposalSubmitError, setProposalSubmitError] = useState<string | null>(
+    null,
+  );
+  const [proposalImage, setProposalImage] = useState<File | null>(null);
 
   useEffect(() => {
     const loadArticles = async () => {
@@ -38,6 +90,71 @@ export default function BlogPage() {
 
     void loadArticles();
   }, []);
+
+  const handleSubmitArticleProposal = async (
+    event: FormEvent<HTMLFormElement>,
+  ) => {
+    event.preventDefault();
+    setIsSubmittingProposal(true);
+
+    const allowedImageTypes = ["image/jpeg", "image/png", "image/webp"];
+    const maxImageSize = 2 * 1024 * 1024;
+
+    if (proposalImage && !allowedImageTypes.includes(proposalImage.type)) {
+      setProposalSuccess(null);
+      setProposalSubmitError("La imagen debe ser JPG, PNG o WebP.");
+      setIsSubmittingProposal(false);
+      return;
+    }
+
+    if (proposalImage && proposalImage.size > maxImageSize) {
+      setProposalSuccess(null);
+      setProposalSubmitError("La imagen no puede superar los 2 MB.");
+      setIsSubmittingProposal(false);
+      return;
+    }
+
+    try {
+      await apiPostClient<Article, ArticleProposalForm>(
+        "/api/articles/proposals",
+        proposalForm,
+      );
+
+      if (proposalImage) {
+        const imageFormData = new FormData();
+        imageFormData.append("file", proposalImage);
+
+        const uploadedImage = await apiFormDataPostClient<UploadFileResponse>(
+          "/api/storage/upload?section=article-proposals",
+          imageFormData,
+        );
+
+        await apiPostClient<MediaFile, CreateMediaFilePayload>(
+          "/api/media-files",
+          {
+            ...uploadedImage,
+            section: "article-proposals",
+            uploaded_by_name: proposalForm.submitted_by_name,
+            uploaded_by_email: proposalForm.submitted_by_email,
+          },
+        );
+      }
+
+      setProposalForm(initialArticleProposalForm);
+      setProposalImage(null);
+      setProposalSubmitError(null);
+      setProposalSuccess(
+        "Gracias por enviar tu propuesta. El artículo quedó pendiente de revisión.",
+      );
+    } catch {
+      setProposalSuccess(null);
+      setProposalSubmitError(
+        "No se pudo enviar la propuesta. Revisá los datos e intentá nuevamente.",
+      );
+    } finally {
+      setIsSubmittingProposal(false);
+    }
+  };
 
   return (
     <div className="relative flex min-h-screen flex-col bg-background text-slate-900">
@@ -154,21 +271,42 @@ export default function BlogPage() {
       <main className="flex-grow">
         <section className="bg-gradient-to-b from-primary/5 to-transparent px-6 py-16 lg:px-20 lg:py-24">
           <div className="mx-auto max-w-7xl">
-            <div className="max-w-3xl">
-              <span className="inline-block rounded-full bg-primary/20 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-primary">
-                Blog de bienestar
-              </span>
+            <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-3xl">
+                <span className="inline-block rounded-full bg-primary/20 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-primary">
+                  Blog de bienestar
+                </span>
 
-              <h1 className="mt-6 text-4xl font-bold tracking-[-0.07em] text-slate-900 lg:text-6xl">
-                Ideas prácticas para cuidar tu{" "}
-                <span className="text-primary">mente</span> y construir
-                oportunidades
-              </h1>
+                <h1 className="mt-6 text-4xl font-bold tracking-[-0.07em] text-slate-900 lg:text-6xl">
+                  Ideas prácticas para cuidar tu{" "}
+                  <span className="text-primary">mente</span> y construir
+                  oportunidades
+                </h1>
 
-              <p className="mt-6 text-lg leading-relaxed text-slate-600">
-                Artículos breves para acompañar procesos de bienestar emocional,
-                aprendizaje, productividad, propósito y desarrollo personal.
-              </p>
+                <p className="mt-6 text-lg leading-relaxed text-slate-600">
+                  Artículos breves para acompañar procesos de bienestar
+                  emocional, aprendizaje, productividad, propósito y desarrollo
+                  personal.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className="inline-flex w-fit items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-bold text-background-dark shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 hover:shadow-xl"
+                onClick={() => {
+                  setProposalSuccess(null);
+                  setProposalSubmitError(null);
+                  setIsProposalModalOpen(true);
+                }}
+              >
+                Proponer artículo
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: "18px" }}
+                >
+                  edit_note
+                </span>
+              </button>
             </div>
           </div>
         </section>
@@ -239,15 +377,32 @@ export default function BlogPage() {
                 </p>
               </div>
 
-              <Link
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-background-dark px-6 py-3 font-bold text-white transition-opacity hover:opacity-90"
-                href="/participate#formulario"
-              >
-                Contactar
-                <span className="material-symbols-outlined text-lg">
-                  arrow_forward
-                </span>
-              </Link>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-background-dark px-6 py-3 font-bold text-white transition-opacity hover:opacity-90"
+                  onClick={() => {
+                    setProposalSuccess(null);
+                    setProposalSubmitError(null);
+                    setIsProposalModalOpen(true);
+                  }}
+                >
+                  Proponer artículo
+                  <span className="material-symbols-outlined text-lg">
+                    edit_note
+                  </span>
+                </button>
+
+                <Link
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3 font-bold text-background-dark transition-opacity hover:opacity-90"
+                  href="/participate#formulario"
+                >
+                  Contactar
+                  <span className="material-symbols-outlined text-lg">
+                    arrow_forward
+                  </span>
+                </Link>
+              </div>
             </div>
           </div>
         </section>
@@ -368,6 +523,219 @@ export default function BlogPage() {
           </div>
         </div>
       </footer>
+
+      {isProposalModalOpen ? (
+        <div className="fixed inset-0 z-[10000] overflow-y-auto bg-slate-950/50 px-4 py-24 sm:py-8">
+          <div className="mx-auto w-full max-w-3xl rounded-2xl border-t-4 border-primary bg-white p-6 shadow-2xl md:p-8">
+            <div className="mb-6 flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-2xl font-extrabold tracking-[-0.03em] text-slate-900">
+                  Proponer artículo
+                </h2>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                  Compartí una propuesta para el blog. El equipo la revisará
+                  antes de publicarla.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                aria-label="Cerrar formulario"
+                className="text-2xl leading-none text-slate-400 transition-colors hover:text-primary"
+                onClick={() => setIsProposalModalOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            {proposalSuccess ? (
+              <div className="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+                {proposalSuccess}
+              </div>
+            ) : null}
+
+            {proposalSubmitError ? (
+              <div className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+                {proposalSubmitError}
+              </div>
+            ) : null}
+
+            <form className="space-y-6" onSubmit={handleSubmitArticleProposal}>
+              <div>
+                <label className="mb-2 block text-sm font-bold text-slate-700">
+                  Título del artículo
+                </label>
+                <input
+                  required
+                  minLength={4}
+                  className="w-full rounded-xl border border-slate-200 bg-background px-4 py-3 outline-none transition-colors focus:border-primary"
+                  value={proposalForm.title}
+                  onChange={(event) =>
+                    setProposalForm((currentForm) => ({
+                      ...currentForm,
+                      title: event.target.value,
+                    }))
+                  }
+                  placeholder="Ej. Cómo acompañar la ansiedad académica"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-bold text-slate-700">
+                  Bajada o resumen breve
+                </label>
+                <textarea
+                  className="min-h-24 w-full rounded-xl border border-slate-200 bg-background px-4 py-3 outline-none transition-colors focus:border-primary"
+                  value={proposalForm.excerpt}
+                  onChange={(event) =>
+                    setProposalForm((currentForm) => ({
+                      ...currentForm,
+                      excerpt: event.target.value,
+                    }))
+                  }
+                  placeholder="Contá en pocas líneas de qué trata la propuesta."
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-bold text-slate-700">
+                  Contenido o desarrollo
+                </label>
+                <textarea
+                  required
+                  minLength={50}
+                  className="min-h-40 w-full rounded-xl border border-slate-200 bg-background px-4 py-3 outline-none transition-colors focus:border-primary"
+                  value={proposalForm.content}
+                  onChange={(event) =>
+                    setProposalForm((currentForm) => ({
+                      ...currentForm,
+                      content: event.target.value,
+                    }))
+                  }
+                  placeholder="Escribí el contenido completo o una propuesta desarrollada."
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-bold text-slate-700">
+                  Imagen sugerida
+                </label>
+
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="w-full rounded-xl border border-dashed border-primary/30 bg-primary/5 px-4 py-4 text-sm text-slate-600 outline-none transition-colors file:mr-4 file:rounded-lg file:border-0 file:bg-primary file:px-4 file:py-2 file:font-bold file:text-background-dark hover:border-primary"
+                  onChange={(event) =>
+                    setProposalImage(event.target.files?.[0] ?? null)
+                  }
+                />
+
+                <p className="mt-2 text-xs leading-relaxed text-slate-500">
+                  Opcional. Solo JPG, PNG o WebP. Máximo 2 MB. La imagen será
+                  revisada antes de usarse en el blog.
+                </p>
+              </div>
+
+              <div className="grid gap-6 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm font-bold text-slate-700">
+                    Autor visible
+                  </label>
+                  <input
+                    className="w-full rounded-xl border border-slate-200 bg-background px-4 py-3 outline-none transition-colors focus:border-primary"
+                    value={proposalForm.author_name}
+                    onChange={(event) =>
+                      setProposalForm((currentForm) => ({
+                        ...currentForm,
+                        author_name: event.target.value,
+                      }))
+                    }
+                    placeholder="Nombre que podría mostrarse en el blog"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-bold text-slate-700">
+                    Categoría
+                  </label>
+                  <input
+                    className="w-full rounded-xl border border-slate-200 bg-background px-4 py-3 outline-none transition-colors focus:border-primary"
+                    value={proposalForm.category}
+                    onChange={(event) =>
+                      setProposalForm((currentForm) => ({
+                        ...currentForm,
+                        category: event.target.value,
+                      }))
+                    }
+                    placeholder="bienestar, educación, propósito..."
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-6 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm font-bold text-slate-700">
+                    Tu nombre
+                  </label>
+                  <input
+                    required
+                    minLength={2}
+                    className="w-full rounded-xl border border-slate-200 bg-background px-4 py-3 outline-none transition-colors focus:border-primary"
+                    value={proposalForm.submitted_by_name}
+                    onChange={(event) =>
+                      setProposalForm((currentForm) => ({
+                        ...currentForm,
+                        submitted_by_name: event.target.value,
+                      }))
+                    }
+                    placeholder="Nombre y apellido"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-bold text-slate-700">
+                    Email de contacto
+                  </label>
+                  <input
+                    required
+                    type="email"
+                    className="w-full rounded-xl border border-slate-200 bg-background px-4 py-3 outline-none transition-colors focus:border-primary"
+                    value={proposalForm.submitted_by_email}
+                    onChange={(event) =>
+                      setProposalForm((currentForm) => ({
+                        ...currentForm,
+                        submitted_by_email: event.target.value,
+                      }))
+                    }
+                    placeholder="nombre@correo.com"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end">
+                <button
+                  type="button"
+                  className="rounded-xl border border-slate-200 px-5 py-3 font-bold text-slate-700 transition-colors hover:border-primary hover:text-primary"
+                  onClick={() => {
+                    setProposalImage(null);
+                    setIsProposalModalOpen(false);
+                  }}
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={isSubmittingProposal}
+                  className="rounded-xl bg-primary px-5 py-3 font-bold text-background-dark shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isSubmittingProposal ? "Enviando..." : "Enviar propuesta"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : null}
 
       <div className="fixed bottom-4 right-4 z-[9999] flex flex-col items-end gap-3 sm:bottom-7 sm:right-7">
         {isHelpOpen ? (
