@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { apiGetClient } from "@/lib/api-client";
+import type { Testimonial } from "@/types/testimonial";
 
 const challengeCards = [
   {
@@ -22,24 +24,6 @@ const challengeCards = [
     title: "Validación de Start-Up",
     text: "Validación empresarial y apoyo a la recolocación laboral para aspirantes a emprendedores.",
     detail: "Apoyar la creación de empresas y la reinserción laboral",
-  },
-];
-
-const testimonials = [
-  {
-    text: "Antes no sabía por dónde empezar. La Escuela de Oficios me dio herramientas concretas y la confianza para animarme a emprender. Hoy tengo mi propio taller de carpintería.",
-    name: "Martín Soto",
-    role: "Participante · Escuela de Oficios",
-  },
-  {
-    text: "El programa me ayudó a entender lo que sentía y a pedir ayuda sin vergüenza. Aprendí que cuidar mi salud mental es tan importante como cualquier otra cosa.",
-    name: "Valentina Reyes",
-    role: "Participante · Desafíate a Ti Mismo",
-  },
-  {
-    text: "Línea Invisible me mostró cómo conectar mi mundo emocional con mi desarrollo profesional. Salí del programa con claridad y con herramientas que uso todos los días.",
-    name: "Camila Fuentes",
-    role: "Participante · Línea Invisible",
   },
 ];
 
@@ -68,6 +52,33 @@ const faqs = [
 
 export default function ProgramsPage() {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [featuredTestimonials, setFeaturedTestimonials] = useState<
+    Testimonial[]
+  >([]);
+  const [isLoadingTestimonials, setIsLoadingTestimonials] = useState(true);
+  const [testimonialsError, setTestimonialsError] = useState<string | null>(
+    null,
+  );
+
+  useEffect(() => {
+    const loadTestimonials = async () => {
+      try {
+        const testimonialsResponse = await apiGetClient<Testimonial[]>(
+          "/api/testimonials/featured",
+        );
+
+        setFeaturedTestimonials(testimonialsResponse);
+        setTestimonialsError(null);
+      } catch {
+        setTestimonialsError("No se pudieron cargar los testimonios.");
+      } finally {
+        setIsLoadingTestimonials(false);
+      }
+    };
+
+    void loadTestimonials();
+  }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-50 border-b border-primary/10 bg-background/80 backdrop-blur-md">
@@ -313,33 +324,48 @@ export default function ProgramsPage() {
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {testimonials.map((testimonial) => (
-                <article
-                  className="rounded-2xl border border-slate-100 bg-white p-8 shadow-sm"
-                  key={testimonial.name}
-                >
-                  <div className="flex h-full flex-col gap-6">
-                    <p className="leading-relaxed text-slate-600 italic">
-                      “{testimonial.text}”
-                    </p>
-                    <div className="mt-auto flex items-center gap-4">
-                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary/20">
-                        <span className="material-symbols-outlined text-primary">
-                          person
-                        </span>
-                      </div>
-                      <div>
-                        <p className="font-bold text-slate-900">
-                          {testimonial.name}
-                        </p>
-                        <p className="text-sm text-slate-500">
-                          {testimonial.role}
-                        </p>
+              {isLoadingTestimonials ? (
+                <div className="rounded-2xl border border-slate-100 bg-white p-8 text-slate-600 shadow-sm md:col-span-2 lg:col-span-3">
+                  Cargando testimonios...
+                </div>
+              ) : testimonialsError ? (
+                <div className="rounded-2xl border border-red-200 bg-red-50 p-8 font-semibold text-red-700 md:col-span-2 lg:col-span-3">
+                  {testimonialsError}
+                </div>
+              ) : featuredTestimonials.length === 0 ? (
+                <div className="rounded-2xl border border-slate-100 bg-white p-8 text-slate-600 shadow-sm md:col-span-2 lg:col-span-3">
+                  Todavía no hay testimonios destacados.
+                </div>
+              ) : (
+                featuredTestimonials.map((testimonial) => (
+                  <article
+                    className="rounded-2xl border border-slate-100 bg-white p-8 shadow-sm"
+                    key={testimonial.id}
+                  >
+                    <div className="flex h-full flex-col gap-6">
+                      <p className="leading-relaxed text-slate-600 italic">
+                        “{testimonial.comment}”
+                      </p>
+                      <div className="mt-auto flex items-center gap-4">
+                        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary/20">
+                          <span className="material-symbols-outlined text-primary">
+                            person
+                          </span>
+                        </div>
+                        <div>
+                          <p className="font-bold text-slate-900">
+                            {testimonial.full_name}
+                          </p>
+                          <p className="text-sm text-slate-500">
+                            {testimonial.workshop_name ??
+                              "Participante Vive Tu Mente"}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </article>
-              ))}
+                  </article>
+                ))
+              )}
             </div>
           </div>
         </section>
