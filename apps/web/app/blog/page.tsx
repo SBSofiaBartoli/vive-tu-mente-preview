@@ -2,37 +2,43 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { apiGetClient } from "@/lib/api-client";
+import type { Article } from "@/types/article";
 
-const articles = [
-  {
-    category: "Bienestar",
-    title: "Cómo reconocer señales de estrés académico",
-    description:
-      "Algunas señales pueden aparecer en el cuerpo, el ánimo o la forma en que organizamos nuestras tareas. Reconocerlas es el primer paso para pedir apoyo y recuperar equilibrio.",
-    image: "/images/students-studying.jpg",
-    alt: "Estudiantes revisando apuntes durante una jornada de estudio",
-  },
-  {
-    category: "Productividad",
-    title: "Herramientas simples para organizar tu semana",
-    description:
-      "Planificar no significa llenar cada minuto. Una buena organización combina prioridades, descanso y espacios reales para avanzar sin saturarte.",
-    image: "/images/weekly-planning.jpg",
-    alt: "Cuaderno de planificación semanal sobre un escritorio",
-  },
-  {
-    category: "Impacto social",
-    title: "Hablar de salud mental también es construir oportunidades",
-    description:
-      "El bienestar emocional influye en cómo aprendemos, trabajamos y nos relacionamos. Por eso acompañar la salud mental también abre caminos de desarrollo.",
-    image: "/images/people-support-group.jpg",
-    alt: "Grupo de personas conversando en un espacio de apoyo comunitario",
-  },
-];
+const getArticleDescription = (article: Article) => {
+  if (article.excerpt) {
+    return article.excerpt;
+  }
+
+  return article.content.length > 160
+    ? `${article.content.slice(0, 160)}...`
+    : article.content;
+};
 
 export default function BlogPage() {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [publishedArticles, setPublishedArticles] = useState<Article[]>([]);
+  const [isLoadingArticles, setIsLoadingArticles] = useState(true);
+  const [articlesError, setArticlesError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadArticles = async () => {
+      try {
+        const articlesResponse = await apiGetClient<Article[]>("/api/articles");
+
+        setPublishedArticles(articlesResponse);
+        setArticlesError(null);
+      } catch {
+        setArticlesError("No se pudieron cargar los artículos publicados.");
+      } finally {
+        setIsLoadingArticles(false);
+      }
+    };
+
+    void loadArticles();
+  }, []);
+
   return (
     <div className="relative flex min-h-screen flex-col bg-background text-slate-900">
       <header className="sticky top-0 z-50 border-b border-primary/10 bg-background/80 backdrop-blur-md">
@@ -170,34 +176,51 @@ export default function BlogPage() {
         <section className="px-6 pb-24 lg:px-20">
           <div className="mx-auto max-w-7xl">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-              {articles.map((article) => (
-                <article
-                  key={article.title}
-                  className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5"
-                >
-                  <Image
-                    className="h-48 w-full object-cover"
-                    src={article.image}
-                    alt={article.alt}
-                    width={640}
-                    height={360}
-                  />
+              {isLoadingArticles ? (
+                <div className="rounded-xl border border-slate-200 bg-white p-6 text-slate-600 shadow-sm md:col-span-3">
+                  Cargando artículos...
+                </div>
+              ) : articlesError ? (
+                <div className="rounded-xl border border-red-200 bg-red-50 p-6 font-semibold text-red-700 md:col-span-3">
+                  {articlesError}
+                </div>
+              ) : publishedArticles.length === 0 ? (
+                <div className="rounded-xl border border-slate-200 bg-white p-6 text-slate-600 shadow-sm md:col-span-3">
+                  Todavía no hay artículos publicados.
+                </div>
+              ) : (
+                publishedArticles.map((article) => (
+                  <article
+                    key={article.id}
+                    className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5"
+                  >
+                    <Image
+                      className="h-48 w-full object-cover"
+                      src={
+                        article.cover_image_url ??
+                        "/images/students-studying.jpg"
+                      }
+                      alt={article.cover_image_alt ?? article.title}
+                      width={640}
+                      height={360}
+                    />
 
-                  <div className="p-6">
-                    <span className="text-xs font-bold uppercase tracking-wider text-primary">
-                      {article.category}
-                    </span>
+                    <div className="p-6">
+                      <span className="text-xs font-bold uppercase tracking-wider text-primary">
+                        {article.category ?? "Bienestar"}
+                      </span>
 
-                    <h2 className="mt-4 text-2xl font-bold text-slate-900">
-                      {article.title}
-                    </h2>
+                      <h2 className="mt-4 text-2xl font-bold text-slate-900">
+                        {article.title}
+                      </h2>
 
-                    <p className="mt-4 leading-relaxed text-slate-600">
-                      {article.description}
-                    </p>
-                  </div>
-                </article>
-              ))}
+                      <p className="mt-4 leading-relaxed text-slate-600">
+                        {getArticleDescription(article)}
+                      </p>
+                    </div>
+                  </article>
+                ))
+              )}
             </div>
           </div>
         </section>
