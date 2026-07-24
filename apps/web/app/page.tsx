@@ -327,12 +327,12 @@ export default function Home() {
                   descubrir nuevas herramientas.
                 </p>
               </div>
-              <a
+              <Link
                 className="font-bold text-primary hover:text-primary/80"
                 href="/blog"
               >
                 Ver todos los artículos →
-              </a>
+              </Link>
             </div>
 
             <div className="grid gap-6 md:grid-cols-3">
@@ -440,9 +440,9 @@ export default function Home() {
                   </a>
                 </li>
                 <li>
-                  <a className="hover:text-primary" href="/blog">
+                  <Link className="hover:text-primary" href="/blog">
                     Blog
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <a className="hover:text-primary" href="/about_us">

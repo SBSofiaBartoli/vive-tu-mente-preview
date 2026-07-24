@@ -2,42 +2,53 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { apiGetClient } from "@/lib/api-client";
 import type { Article } from "@/types/article";
 
-const getArticleDescription = (article: Article) => {
-  if (article.excerpt) {
-    return article.excerpt;
-  }
-
-  return article.content.length > 160
-    ? `${article.content.slice(0, 160)}...`
-    : article.content;
+type BlogArticlePageProps = {
+  params: Promise<{
+    slug: string;
+  }>;
 };
 
-export default function BlogPage() {
+const formatDate = (date: string | null) => {
+  if (!date) {
+    return "Sin fecha de publicación";
+  }
+
+  return new Intl.DateTimeFormat("es-CL", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  }).format(new Date(date));
+};
+
+export default function BlogArticlePage({ params }: BlogArticlePageProps) {
+  const { slug } = use(params);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
-  const [publishedArticles, setPublishedArticles] = useState<Article[]>([]);
-  const [isLoadingArticles, setIsLoadingArticles] = useState(true);
-  const [articlesError, setArticlesError] = useState<string | null>(null);
+  const [article, setArticle] = useState<Article | null>(null);
+  const [isLoadingArticle, setIsLoadingArticle] = useState(true);
+  const [articleError, setArticleError] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadArticles = async () => {
+    const loadArticle = async () => {
       try {
-        const articlesResponse = await apiGetClient<Article[]>("/api/articles");
+        const articleResponse = await apiGetClient<Article>(
+          `/api/articles/${slug}`,
+        );
 
-        setPublishedArticles(articlesResponse);
-        setArticlesError(null);
+        setArticle(articleResponse);
+        setArticleError(null);
       } catch {
-        setArticlesError("No se pudieron cargar los artículos publicados.");
+        setArticleError("No se pudo cargar el artículo publicado.");
       } finally {
-        setIsLoadingArticles(false);
+        setIsLoadingArticle(false);
       }
     };
 
-    void loadArticles();
-  }, []);
+    void loadArticle();
+  }, [slug]);
 
   return (
     <div className="relative flex min-h-screen flex-col bg-background text-slate-900">
@@ -71,11 +82,7 @@ export default function BlogPage() {
               >
                 Programas
               </Link>
-              <Link
-                className="text-sm font-bold text-primary"
-                href="/training"
-                aria-current="page"
-              >
+              <Link className="text-sm font-bold text-primary" href="/training">
                 Educación
               </Link>
               <Link
@@ -152,104 +159,75 @@ export default function BlogPage() {
       </header>
 
       <main className="flex-grow">
-        <section className="bg-gradient-to-b from-primary/5 to-transparent px-6 py-16 lg:px-20 lg:py-24">
-          <div className="mx-auto max-w-7xl">
-            <div className="max-w-3xl">
-              <span className="inline-block rounded-full bg-primary/20 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-primary">
-                Blog de bienestar
+        <section className="px-6 py-16 lg:px-20 lg:py-24">
+          <article className="mx-auto max-w-4xl">
+            <Link
+              href="/blog"
+              className="mb-8 inline-flex items-center gap-2 text-sm font-bold text-primary transition-opacity hover:opacity-80"
+            >
+              <span className="material-symbols-outlined text-lg">
+                arrow_back
               </span>
+              Volver al Blog
+            </Link>
 
-              <h1 className="mt-6 text-4xl font-bold tracking-[-0.07em] text-slate-900 lg:text-6xl">
-                Ideas prácticas para cuidar tu{" "}
-                <span className="text-primary">mente</span> y construir
-                oportunidades
-              </h1>
-
-              <p className="mt-6 text-lg leading-relaxed text-slate-600">
-                Artículos breves para acompañar procesos de bienestar emocional,
-                aprendizaje, productividad, propósito y desarrollo personal.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section className="px-6 pb-24 lg:px-20">
-          <div className="mx-auto max-w-7xl">
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-              {isLoadingArticles ? (
-                <div className="rounded-xl border border-slate-200 bg-white p-6 text-slate-600 shadow-sm md:col-span-3">
-                  Cargando artículos...
-                </div>
-              ) : articlesError ? (
-                <div className="rounded-xl border border-red-200 bg-red-50 p-6 font-semibold text-red-700 md:col-span-3">
-                  {articlesError}
-                </div>
-              ) : publishedArticles.length === 0 ? (
-                <div className="rounded-xl border border-slate-200 bg-white p-6 text-slate-600 shadow-sm md:col-span-3">
-                  Todavía no hay artículos publicados.
-                </div>
-              ) : (
-                publishedArticles.map((article) => (
-                  <Link
-                    key={article.id}
-                    href={`/blog/${article.slug}`}
-                    className="block overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5"
-                  >
-                    <Image
-                      className="h-48 w-full object-cover"
-                      src={
-                        article.cover_image_url ??
-                        "/images/students-studying.jpg"
-                      }
-                      alt={article.cover_image_alt ?? article.title}
-                      width={640}
-                      height={360}
-                    />
-
-                    <div className="p-6">
-                      <span className="text-xs font-bold uppercase tracking-wider text-primary">
-                        {article.category ?? "Bienestar"}
-                      </span>
-
-                      <h2 className="mt-4 text-2xl font-bold text-slate-900">
-                        {article.title}
-                      </h2>
-
-                      <p className="mt-4 leading-relaxed text-slate-600">
-                        {getArticleDescription(article)}
-                      </p>
-                    </div>
-                  </Link>
-                ))
-              )}
-            </div>
-          </div>
-        </section>
-
-        <section className="px-6 pb-24 lg:px-20">
-          <div className="mx-auto max-w-7xl rounded-2xl bg-primary p-8 text-background-dark md:p-12">
-            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-              <div className="max-w-2xl">
-                <h2 className="mb-3 text-3xl font-extrabold tracking-[-0.03em]">
-                  ¿Querés participar o proponer un tema?
-                </h2>
-                <p className="text-background-dark/80">
-                  Si tenés una idea, querés colaborar o necesitás orientación
-                  sobre un programa, podés escribirnos desde el formulario.
-                </p>
+            {isLoadingArticle ? (
+              <div className="rounded-xl border border-slate-200 bg-white p-8 text-slate-600 shadow-sm">
+                Cargando artículo...
               </div>
+            ) : articleError ? (
+              <div className="rounded-xl border border-red-200 bg-red-50 p-8 font-semibold text-red-700">
+                {articleError}
+              </div>
+            ) : article ? (
+              <>
+                <div className="mb-8">
+                  <span className="inline-block rounded-full bg-primary/15 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-primary">
+                    {article.category ?? "Bienestar"}
+                  </span>
 
-              <Link
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-background-dark px-6 py-3 font-bold text-white transition-opacity hover:opacity-90"
-                href="/participate#formulario"
-              >
-                Contactar
-                <span className="material-symbols-outlined text-lg">
-                  arrow_forward
-                </span>
-              </Link>
-            </div>
-          </div>
+                  <h1 className="mt-6 text-4xl font-bold tracking-[-0.05em] text-slate-900 lg:text-6xl">
+                    {article.title}
+                  </h1>
+
+                  <div className="mt-5 flex flex-wrap gap-3 text-sm text-slate-500">
+                    <span>
+                      {article.author_name ?? "Fundación Vive Tu Mente"}
+                    </span>
+                    <span>·</span>
+                    <span>{formatDate(article.published_at)}</span>
+                  </div>
+
+                  {article.excerpt ? (
+                    <p className="mt-6 text-xl leading-relaxed text-slate-600">
+                      {article.excerpt}
+                    </p>
+                  ) : null}
+                </div>
+
+                <Image
+                  src={
+                    article.cover_image_url ?? "/images/students-studying.jpg"
+                  }
+                  alt={article.cover_image_alt ?? article.title}
+                  width={1200}
+                  height={675}
+                  className="mb-10 h-auto w-full rounded-2xl object-cover shadow-xl shadow-primary/5"
+                  priority
+                />
+
+                <div className="space-y-5 text-lg leading-relaxed text-slate-600">
+                  {article.content
+                    .split("\n")
+                    .map((paragraph) =>
+                      paragraph.trim() ? (
+                        <p key={paragraph}>{paragraph}</p>
+                      ) : null,
+                    )}
+                </div>
+              </>
+            ) : null}
+          </article>
         </section>
       </main>
 
