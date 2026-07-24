@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { apiGetClient } from "@/lib/api-client";
+import type { Article } from "@/types/article";
 
 const programs = [
   {
@@ -25,26 +27,30 @@ const programs = [
   },
 ];
 
-const blogArticles = [
-  {
-    category: "Bienestar",
-    title: "Cómo reconocer señales de estrés académico",
-    image: "/images/students-studying.jpg",
-  },
-  {
-    category: "Productividad",
-    title: "Herramientas simples para organizar tu semana",
-    image: "/images/weekly-planning.jpg",
-  },
-  {
-    category: "Impacto social",
-    title: "Hablar de salud mental también es construir oportunidades",
-    image: "/images/people-support-group.jpg",
-  },
-];
-
 export default function Home() {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [featuredArticles, setFeaturedArticles] = useState<Article[]>([]);
+  const [isLoadingArticles, setIsLoadingArticles] = useState(true);
+  const [articlesError, setArticlesError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadFeaturedArticles = async () => {
+      try {
+        const articlesResponse = await apiGetClient<Article[]>(
+          "/api/articles/featured",
+        );
+
+        setFeaturedArticles(articlesResponse.slice(0, 3));
+        setArticlesError(null);
+      } catch {
+        setArticlesError("No se pudieron cargar los artículos destacados.");
+      } finally {
+        setIsLoadingArticles(false);
+      }
+    };
+
+    void loadFeaturedArticles();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background text-slate-900">
@@ -336,28 +342,48 @@ export default function Home() {
             </div>
 
             <div className="grid gap-6 md:grid-cols-3">
-              {blogArticles.map((article) => (
-                <article
-                  key={article.title}
-                  className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
-                >
-                  <div className="relative h-44 w-full">
-                    <Image
-                      src={article.image}
-                      alt={article.title}
-                      fill
-                      sizes="(min-width: 768px) 33vw, 100vw"
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="p-6">
-                    <span className="text-xs font-bold uppercase tracking-wider text-primary">
-                      {article.category}
-                    </span>
-                    <h3 className="mt-3 text-xl font-bold">{article.title}</h3>
-                  </div>
-                </article>
-              ))}
+              {isLoadingArticles ? (
+                <div className="rounded-xl border border-slate-200 bg-white p-6 text-slate-600 shadow-sm md:col-span-3">
+                  Cargando artículos destacados...
+                </div>
+              ) : articlesError ? (
+                <div className="rounded-xl border border-red-200 bg-red-50 p-6 font-semibold text-red-700 md:col-span-3">
+                  {articlesError}
+                </div>
+              ) : featuredArticles.length === 0 ? (
+                <div className="rounded-xl border border-slate-200 bg-white p-6 text-slate-600 shadow-sm md:col-span-3">
+                  Todavía no hay artículos destacados publicados.
+                </div>
+              ) : (
+                featuredArticles.map((article) => (
+                  <Link
+                    key={article.id}
+                    href={`/blog/${article.slug}`}
+                    className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all hover:border-primary/50 hover:shadow-lg"
+                  >
+                    <div className="relative h-44 w-full">
+                      <Image
+                        src={
+                          article.cover_image_url ??
+                          "/images/people-support-group.jpg"
+                        }
+                        alt={article.cover_image_alt ?? article.title}
+                        fill
+                        sizes="(min-width: 768px) 33vw, 100vw"
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="p-6">
+                      <span className="text-xs font-bold uppercase tracking-wider text-primary">
+                        {article.category ?? "Blog"}
+                      </span>
+                      <h3 className="mt-3 text-xl font-bold">
+                        {article.title}
+                      </h3>
+                    </div>
+                  </Link>
+                ))
+              )}
             </div>
           </div>
         </section>
