@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { apiGetClient } from "@/lib/api-client";
+import type { Faq } from "@/types/faq";
 import type { Testimonial } from "@/types/testimonial";
 
 const challengeCards = [
@@ -27,29 +28,6 @@ const challengeCards = [
   },
 ];
 
-const faqs = [
-  {
-    question: "¿Necesito experiencia previa para participar?",
-    answer:
-      "No. Los programas están pensados para acompañar distintos puntos de partida. Lo importante es tener interés en aprender, crecer o desarrollar nuevas herramientas.",
-  },
-  {
-    question: "¿Cómo sé qué programa es para mí?",
-    answer:
-      "Podés revisar la descripción de cada programa y escribirnos desde el formulario de participación. El equipo podrá orientarte según tus intereses y necesidades.",
-  },
-  {
-    question: "¿Los programas son presenciales o virtuales?",
-    answer:
-      "La modalidad puede variar según el programa, el taller y la disponibilidad de la fundación. Se recomienda consultar por las próximas fechas y formatos disponibles.",
-  },
-  {
-    question: "¿Puedo participar como organización o empresa?",
-    answer:
-      "Sí. Las organizaciones pueden colaborar, generar alianzas o contratar talleres para apoyar el trabajo de la fundación y ampliar su impacto social.",
-  },
-];
-
 export default function ProgramsPage() {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [featuredTestimonials, setFeaturedTestimonials] = useState<
@@ -59,6 +37,9 @@ export default function ProgramsPage() {
   const [testimonialsError, setTestimonialsError] = useState<string | null>(
     null,
   );
+  const [programFaqs, setProgramFaqs] = useState<Faq[]>([]);
+  const [isLoadingFaqs, setIsLoadingFaqs] = useState(true);
+  const [faqsError, setFaqsError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadTestimonials = async () => {
@@ -77,6 +58,25 @@ export default function ProgramsPage() {
     };
 
     void loadTestimonials();
+  }, []);
+
+  useEffect(() => {
+    const loadFaqs = async () => {
+      try {
+        const faqsResponse = await apiGetClient<Faq[]>(
+          "/api/faqs?category=programas",
+        );
+
+        setProgramFaqs(faqsResponse);
+        setFaqsError(null);
+      } catch {
+        setFaqsError("No se pudieron cargar las preguntas frecuentes.");
+      } finally {
+        setIsLoadingFaqs(false);
+      }
+    };
+
+    void loadFaqs();
   }, []);
 
   return (
@@ -383,15 +383,31 @@ export default function ProgramsPage() {
             </div>
 
             <div className="space-y-4">
-              {faqs.map((faq) => (
-                <article
-                  className="rounded-xl border border-slate-100 bg-white p-6"
-                  key={faq.question}
-                >
-                  <h3 className="mb-2 text-lg font-bold">{faq.question}</h3>
-                  <p className="leading-relaxed text-slate-600">{faq.answer}</p>
+              {isLoadingFaqs ? (
+                <article className="rounded-xl border border-slate-100 bg-white p-6 text-slate-600">
+                  Cargando preguntas frecuentes...
                 </article>
-              ))}
+              ) : faqsError ? (
+                <article className="rounded-xl border border-red-200 bg-red-50 p-6 font-semibold text-red-700">
+                  {faqsError}
+                </article>
+              ) : programFaqs.length === 0 ? (
+                <article className="rounded-xl border border-slate-100 bg-white p-6 text-slate-600">
+                  Todavía no hay preguntas frecuentes publicadas.
+                </article>
+              ) : (
+                programFaqs.map((faq) => (
+                  <article
+                    className="rounded-xl border border-slate-100 bg-white p-6"
+                    key={faq.id}
+                  >
+                    <h3 className="mb-2 text-lg font-bold">{faq.question}</h3>
+                    <p className="leading-relaxed text-slate-600">
+                      {faq.answer}
+                    </p>
+                  </article>
+                ))
+              )}
             </div>
           </div>
         </section>
