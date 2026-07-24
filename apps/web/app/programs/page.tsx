@@ -51,11 +51,24 @@ const initialTestimonialForm: TestimonialForm = {
   comment: "",
 };
 
+const getTestimonialsVisibleCount = () => {
+  if (typeof window === "undefined") return 3;
+
+  if (window.innerWidth >= 1024) return 3;
+  if (window.innerWidth >= 768) return 2;
+
+  return 1;
+};
+
 export default function ProgramsPage() {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [featuredTestimonials, setFeaturedTestimonials] = useState<
     Testimonial[]
   >([]);
+  const [testimonialSlideIndex, setTestimonialSlideIndex] = useState(0);
+  const [testimonialVisibleCount, setTestimonialVisibleCount] = useState(3);
+  const [isTestimonialCarouselPaused, setIsTestimonialCarouselPaused] =
+    useState(false);
   const [isLoadingTestimonials, setIsLoadingTestimonials] = useState(true);
   const [testimonialsError, setTestimonialsError] = useState<string | null>(
     null,
@@ -94,6 +107,61 @@ export default function ProgramsPage() {
 
     void loadTestimonials();
   }, []);
+
+  useEffect(() => {
+    const updateVisibleTestimonials = () => {
+      window.requestAnimationFrame(() => {
+        setTestimonialVisibleCount(getTestimonialsVisibleCount());
+      });
+    };
+
+    updateVisibleTestimonials();
+    window.addEventListener("resize", updateVisibleTestimonials);
+
+    return () => {
+      window.removeEventListener("resize", updateVisibleTestimonials);
+    };
+  }, []);
+
+  useEffect(() => {
+    const frameId = window.requestAnimationFrame(() => {
+      const maxSlideIndex = Math.max(
+        featuredTestimonials.length - testimonialVisibleCount,
+        0,
+      );
+
+      setTestimonialSlideIndex((currentIndex) =>
+        currentIndex > maxSlideIndex ? maxSlideIndex : currentIndex,
+      );
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+    };
+  }, [featuredTestimonials.length, testimonialVisibleCount]);
+
+  useEffect(() => {
+    const maxSlideIndex = Math.max(
+      featuredTestimonials.length - testimonialVisibleCount,
+      0,
+    );
+
+    if (maxSlideIndex === 0 || isTestimonialCarouselPaused) return;
+
+    const intervalId = window.setInterval(() => {
+      setTestimonialSlideIndex((currentIndex) =>
+        currentIndex >= maxSlideIndex ? 0 : currentIndex + 1,
+      );
+    }, 3000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [
+    featuredTestimonials.length,
+    isTestimonialCarouselPaused,
+    testimonialVisibleCount,
+  ]);
 
   useEffect(() => {
     const loadFaqs = async () => {
@@ -400,48 +468,120 @@ export default function ProgramsPage() {
               </button>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div
+              className="relative"
+              onMouseEnter={() => setIsTestimonialCarouselPaused(true)}
+              onMouseLeave={() => setIsTestimonialCarouselPaused(false)}
+              onFocus={() => setIsTestimonialCarouselPaused(true)}
+              onBlur={() => setIsTestimonialCarouselPaused(false)}
+            >
               {isLoadingTestimonials ? (
-                <div className="rounded-2xl border border-slate-100 bg-white p-8 text-slate-600 shadow-sm md:col-span-2 lg:col-span-3">
+                <div className="rounded-2xl border border-slate-100 bg-white p-8 text-slate-600 shadow-sm">
                   Cargando testimonios...
                 </div>
               ) : testimonialsError ? (
-                <div className="rounded-2xl border border-red-200 bg-red-50 p-8 font-semibold text-red-700 md:col-span-2 lg:col-span-3">
+                <div className="rounded-2xl border border-red-200 bg-red-50 p-8 font-semibold text-red-700">
                   {testimonialsError}
                 </div>
               ) : featuredTestimonials.length === 0 ? (
-                <div className="rounded-2xl border border-slate-100 bg-white p-8 text-slate-600 shadow-sm md:col-span-2 lg:col-span-3">
+                <div className="rounded-2xl border border-slate-100 bg-white p-8 text-slate-600 shadow-sm">
                   Todavía no hay testimonios destacados.
                 </div>
               ) : (
-                featuredTestimonials.map((testimonial) => (
-                  <article
-                    className="rounded-2xl border border-slate-100 bg-white p-8 shadow-sm"
-                    key={testimonial.id}
-                  >
-                    <div className="flex h-full flex-col gap-6">
-                      <p className="leading-relaxed text-slate-600 italic">
-                        “{testimonial.comment}”
-                      </p>
-                      <div className="mt-auto flex items-center gap-4">
-                        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary/20">
-                          <span className="material-symbols-outlined text-primary">
-                            person
-                          </span>
-                        </div>
-                        <div>
-                          <p className="font-bold text-slate-900">
-                            {testimonial.full_name}
-                          </p>
-                          <p className="text-sm text-slate-500">
-                            {testimonial.workshop_name ??
-                              "Participante Vive Tu Mente"}
-                          </p>
-                        </div>
-                      </div>
+                <>
+                  <div className="overflow-hidden">
+                    <div
+                      className="flex transition-transform duration-700 ease-out"
+                      style={{
+                        transform: `translateX(-${
+                          testimonialSlideIndex *
+                          (100 / testimonialVisibleCount)
+                        }%)`,
+                      }}
+                    >
+                      {featuredTestimonials.map((testimonial) => (
+                        <article
+                          className="w-full shrink-0 px-3 md:w-1/2 lg:w-1/3"
+                          key={testimonial.id}
+                        >
+                          <div className="flex h-full flex-col gap-6 rounded-2xl border border-slate-100 bg-white p-8 shadow-sm">
+                            <p className="leading-relaxed text-slate-600 italic">
+                              “{testimonial.comment}”
+                            </p>
+
+                            <div className="mt-auto flex items-center gap-4">
+                              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/20">
+                                <span className="material-symbols-outlined text-primary">
+                                  person
+                                </span>
+                              </div>
+
+                              <div>
+                                <p className="font-bold text-slate-900">
+                                  {testimonial.full_name}
+                                </p>
+                                <p className="text-sm text-slate-500">
+                                  {testimonial.workshop_name ??
+                                    "Participante Vive Tu Mente"}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </article>
+                      ))}
                     </div>
-                  </article>
-                ))
+                  </div>
+
+                  {featuredTestimonials.length > testimonialVisibleCount ? (
+                    <div className="mt-8 flex items-center justify-center gap-4">
+                      <button
+                        type="button"
+                        aria-label="Ver testimonio anterior"
+                        className="flex h-11 w-11 items-center justify-center rounded-full border border-primary/30 text-primary transition-colors hover:bg-primary hover:text-background-dark"
+                        onClick={() => {
+                          const maxSlideIndex = Math.max(
+                            featuredTestimonials.length -
+                              testimonialVisibleCount,
+                            0,
+                          );
+
+                          setTestimonialSlideIndex((currentIndex) =>
+                            currentIndex === 0
+                              ? maxSlideIndex
+                              : currentIndex - 1,
+                          );
+                        }}
+                      >
+                        <span className="material-symbols-outlined">
+                          arrow_back
+                        </span>
+                      </button>
+
+                      <button
+                        type="button"
+                        aria-label="Ver testimonio siguiente"
+                        className="flex h-11 w-11 items-center justify-center rounded-full border border-primary/30 text-primary transition-colors hover:bg-primary hover:text-background-dark"
+                        onClick={() => {
+                          const maxSlideIndex = Math.max(
+                            featuredTestimonials.length -
+                              testimonialVisibleCount,
+                            0,
+                          );
+
+                          setTestimonialSlideIndex((currentIndex) =>
+                            currentIndex >= maxSlideIndex
+                              ? 0
+                              : currentIndex + 1,
+                          );
+                        }}
+                      >
+                        <span className="material-symbols-outlined">
+                          arrow_forward
+                        </span>
+                      </button>
+                    </div>
+                  ) : null}
+                </>
               )}
             </div>
           </div>
