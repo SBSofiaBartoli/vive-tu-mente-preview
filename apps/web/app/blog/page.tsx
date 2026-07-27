@@ -30,6 +30,11 @@ type ArticleProposalForm = {
   submitted_by_email: string;
 };
 
+type CreateArticleProposalPayload = ArticleProposalForm & {
+  cover_image_url?: string | null;
+  cover_image_alt?: string | null;
+};
+
 type UploadFileResponse = {
   original_name: string;
   storage_path: string;
@@ -115,16 +120,13 @@ export default function BlogPage() {
     }
 
     try {
-      await apiPostClient<Article, ArticleProposalForm>(
-        "/api/articles/proposals",
-        proposalForm,
-      );
+      let uploadedImage: UploadFileResponse | null = null;
 
       if (proposalImage) {
         const imageFormData = new FormData();
         imageFormData.append("file", proposalImage);
 
-        const uploadedImage = await apiFormDataPostClient<UploadFileResponse>(
+        uploadedImage = await apiFormDataPostClient<UploadFileResponse>(
           "/api/storage/upload?section=article-proposals",
           imageFormData,
         );
@@ -139,6 +141,17 @@ export default function BlogPage() {
           },
         );
       }
+
+      await apiPostClient<Article, CreateArticleProposalPayload>(
+        "/api/articles/proposals",
+        {
+          ...proposalForm,
+          cover_image_url: uploadedImage?.public_url ?? null,
+          cover_image_alt: uploadedImage
+            ? `Imagen sugerida para ${proposalForm.title}`
+            : null,
+        },
+      );
 
       setProposalForm(initialArticleProposalForm);
       setProposalImage(null);

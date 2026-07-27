@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsString,
   MinLength,
+  IsUrl,
 } from 'class-validator';
 
 const trimString = (value: unknown): unknown =>
@@ -62,6 +63,25 @@ export class CreateArticleProposalDto {
   @IsOptional()
   @IsString()
   category?: string;
+
+  @ApiPropertyOptional({
+    example:
+      'https://example.supabase.co/storage/v1/object/public/media/article-proposals/imagen.jpg',
+    description: 'URL pública de la imagen sugerida para el artículo.',
+  })
+  @Transform(({ value }: { value: unknown }) => trimString(value))
+  @IsOptional()
+  @IsUrl()
+  cover_image_url?: string;
+
+  @ApiPropertyOptional({
+    example: 'Imagen sugerida para el artículo.',
+    description: 'Texto alternativo sugerido para la imagen.',
+  })
+  @Transform(({ value }: { value: unknown }) => trimString(value))
+  @IsOptional()
+  @IsString()
+  cover_image_alt?: string;
 
   @ApiProperty({
     example: 'Camila Rojas',

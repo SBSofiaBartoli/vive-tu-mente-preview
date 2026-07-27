@@ -69,6 +69,8 @@ export class ArticlesService {
         category: createArticleProposalDto.category ?? null,
         submitted_by_name: createArticleProposalDto.submitted_by_name,
         submitted_by_email: createArticleProposalDto.submitted_by_email,
+        cover_image_url: createArticleProposalDto.cover_image_url ?? null,
+        cover_image_alt: createArticleProposalDto.cover_image_alt ?? null,
         status: 'pending_review',
         is_featured: false,
       })
@@ -225,6 +227,7 @@ export class ArticlesService {
       .update({
         status: 'rejected',
         rejection_reason: rejectArticleDto.rejection_reason,
+        is_featured: false,
       })
       .eq('id', id)
       .select('*')
@@ -264,6 +267,55 @@ export class ArticlesService {
       throw new InternalServerErrorException(
         'Could not request article changes',
       );
+    }
+
+    if (!data) {
+      throw new NotFoundException('Article not found');
+    }
+
+    return data;
+  }
+
+  async updateFeatured(id: string, isFeatured: boolean): Promise<Article> {
+    const supabase = this.supabaseService.getAdminClient();
+
+    const { data, error } = await supabase
+      .from('articles')
+      .update({ is_featured: isFeatured })
+      .eq('id', id)
+      .select('*')
+      .returns<Article>()
+      .maybeSingle();
+
+    if (error) {
+      throw new InternalServerErrorException(
+        'Could not update featured article',
+      );
+    }
+
+    if (!data) {
+      throw new NotFoundException('Article not found');
+    }
+
+    return data;
+  }
+
+  async archiveArticle(id: string): Promise<Article> {
+    const supabase = this.supabaseService.getAdminClient();
+
+    const { data, error } = await supabase
+      .from('articles')
+      .update({
+        status: 'archived',
+        is_featured: false,
+      })
+      .eq('id', id)
+      .select('*')
+      .returns<Article>()
+      .maybeSingle();
+
+    if (error) {
+      throw new InternalServerErrorException('Could not archive article');
     }
 
     if (!data) {
