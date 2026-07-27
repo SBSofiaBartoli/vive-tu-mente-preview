@@ -30,6 +30,16 @@ export class ListMediaFilesAdminQueryDto {
   section?: string;
 
   @ApiPropertyOptional({
+    example: 'library',
+    enum: ['library', 'all'],
+    description:
+      'Al usar library, se excluyen archivos contextuales como comprobantes de donación e imágenes sugeridas de artículos.',
+  })
+  @IsOptional()
+  @IsIn(['library', 'all'])
+  scope?: 'library' | 'all';
+
+  @ApiPropertyOptional({
     example: 'informe',
     description: 'Texto para buscar por nombre de archivo o persona que subió.',
   })

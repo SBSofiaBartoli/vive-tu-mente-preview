@@ -43,6 +43,13 @@ export class MediaFilesController {
     example: 'donation',
     description: 'Sección opcional del sitio asociada al archivo.',
   })
+  @ApiQuery({
+    name: 'scope',
+    required: false,
+    example: 'library',
+    description:
+      'Usar library para listar solo archivos generales. Usar all para incluir archivos contextuales.',
+  })
   @ApiResponse({
     status: 200,
     description: 'Listado de archivos aprobados.',
