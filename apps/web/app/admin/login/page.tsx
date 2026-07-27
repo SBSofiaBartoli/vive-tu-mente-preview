@@ -11,6 +11,7 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -90,14 +91,36 @@ export default function AdminLoginPage() {
               </span>
               Contraseña
             </span>
-            <input
-              type="password"
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              className="mt-2 w-full rounded-lg border border-[#cfe3e2] bg-[#fbfdfd] px-4 py-3 outline-none transition focus:border-[#39b8bb] focus:ring-4 focus:ring-[#39b8bb]/15"
-            />
+            <div className="relative mt-2">
+              <input
+                type={isPasswordVisible ? "text" : "password"}
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                className="w-full rounded-lg border border-[#cfe3e2] bg-[#fbfdfd] px-4 py-3 pr-12 outline-none transition focus:border-[#39b8bb] focus:ring-4 focus:ring-[#39b8bb]/15"
+              />
+
+              <button
+                type="button"
+                aria-label={
+                  isPasswordVisible
+                    ? "Ocultar contraseña"
+                    : "Mostrar contraseña"
+                }
+                onClick={() =>
+                  setIsPasswordVisible((currentValue) => !currentValue)
+                }
+                className="absolute right-3 top-1/2 inline-flex -translate-y-1/2 items-center justify-center rounded-full p-1 text-[#52708a] transition hover:bg-[#eefafa] hover:text-[#39b8bb]"
+              >
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: "21px" }}
+                >
+                  {isPasswordVisible ? "visibility_off" : "visibility"}
+                </span>
+              </button>
+            </div>
           </label>
 
           {errorMessage ? (
