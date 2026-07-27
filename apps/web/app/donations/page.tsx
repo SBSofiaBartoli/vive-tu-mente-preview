@@ -2,10 +2,134 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
+import { apiFormDataPostClient, apiPostClient } from "@/lib/api-client";
+import type {
+  CreateMediaFilePayload,
+  MediaFile,
+  UploadedStorageFile,
+} from "@/types/media-file";
+
+type DonationReportForm = {
+  donor_name: string;
+  donor_email: string;
+  amount: string;
+};
+
+type CreateDonationReportPayload = {
+  donor_name: string;
+  donor_email: string;
+  amount: number;
+  receipt_media_file_id: string;
+};
+
+type DonationReport = {
+  id: string;
+};
+
+const initialDonationReportForm: DonationReportForm = {
+  donor_name: "",
+  donor_email: "",
+  amount: "",
+};
 
 export default function DonationsPage() {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [donationReportForm, setDonationReportForm] =
+    useState<DonationReportForm>(initialDonationReportForm);
+  const [donationReceipt, setDonationReceipt] = useState<File | null>(null);
+  const [isSubmittingDonationReport, setIsSubmittingDonationReport] =
+    useState(false);
+  const [donationReportSuccess, setDonationReportSuccess] = useState<
+    string | null
+  >(null);
+  const [donationReportError, setDonationReportError] = useState<string | null>(
+    null,
+  );
+
+  const handleSubmitDonationReport = async (
+    event: FormEvent<HTMLFormElement>,
+  ) => {
+    event.preventDefault();
+    setIsSubmittingDonationReport(true);
+
+    const allowedReceiptTypes = ["application/pdf", "image/jpeg", "image/png"];
+    const maxReceiptSize = 2 * 1024 * 1024;
+    const amount = Number(donationReportForm.amount);
+
+    if (!donationReceipt) {
+      setDonationReportSuccess(null);
+      setDonationReportError("Debés subir el comprobante de transferencia.");
+      setIsSubmittingDonationReport(false);
+      return;
+    }
+
+    if (!allowedReceiptTypes.includes(donationReceipt.type)) {
+      setDonationReportSuccess(null);
+      setDonationReportError("El comprobante debe ser PDF, JPG o PNG.");
+      setIsSubmittingDonationReport(false);
+      return;
+    }
+
+    if (donationReceipt.size > maxReceiptSize) {
+      setDonationReportSuccess(null);
+      setDonationReportError("El comprobante no puede superar los 2 MB.");
+      setIsSubmittingDonationReport(false);
+      return;
+    }
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+      setDonationReportSuccess(null);
+      setDonationReportError("Ingresá un monto válido mayor a cero.");
+      setIsSubmittingDonationReport(false);
+      return;
+    }
+
+    try {
+      const receiptFormData = new FormData();
+      receiptFormData.append("file", donationReceipt);
+
+      const uploadedReceipt = await apiFormDataPostClient<UploadedStorageFile>(
+        "/api/storage/upload?section=donations",
+        receiptFormData,
+      );
+
+      const registeredReceipt = await apiPostClient<
+        MediaFile,
+        CreateMediaFilePayload
+      >("/api/media-files", {
+        ...uploadedReceipt,
+        section: "donations",
+        uploaded_by_name: donationReportForm.donor_name,
+        uploaded_by_email: donationReportForm.donor_email,
+      });
+
+      await apiPostClient<DonationReport, CreateDonationReportPayload>(
+        "/api/donation-reports",
+        {
+          donor_name: donationReportForm.donor_name,
+          donor_email: donationReportForm.donor_email,
+          amount,
+          receipt_media_file_id: registeredReceipt.id,
+        },
+      );
+
+      setDonationReportForm(initialDonationReportForm);
+      setDonationReceipt(null);
+      setDonationReportError(null);
+      setDonationReportSuccess(
+        "Gracias. Recibimos tu informe de donación y el comprobante quedó pendiente de revisión.",
+      );
+    } catch {
+      setDonationReportSuccess(null);
+      setDonationReportError(
+        "No se pudo enviar el informe de donación. Revisá los datos e intentá nuevamente.",
+      );
+    } finally {
+      setIsSubmittingDonationReport(false);
+    }
+  };
+
   return (
     <div className="relative flex min-h-screen flex-col bg-background text-slate-900">
       <header className="sticky top-0 z-50 border-b border-primary/10 bg-background/80 backdrop-blur-md">
@@ -253,7 +377,10 @@ export default function DonationsPage() {
                   donación y enviarle su recibo.
                 </p>
 
-                <form className="flex flex-1 flex-col justify-between">
+                <form
+                  className="flex flex-1 flex-col justify-between"
+                  onSubmit={handleSubmitDonationReport}
+                >
                   <div className="space-y-6">
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                       <div className="space-y-3">
@@ -266,6 +393,13 @@ export default function DonationsPage() {
                         <input
                           id="donor-name"
                           name="donor_name"
+                          value={donationReportForm.donor_name}
+                          onChange={(event) =>
+                            setDonationReportForm((currentForm) => ({
+                              ...currentForm,
+                              donor_name: event.target.value,
+                            }))
+                          }
                           type="text"
                           required
                           placeholder="María González"
@@ -284,6 +418,13 @@ export default function DonationsPage() {
                           id="donor-email"
                           name="donor_email"
                           type="email"
+                          value={donationReportForm.donor_email}
+                          onChange={(event) =>
+                            setDonationReportForm((currentForm) => ({
+                              ...currentForm,
+                              donor_email: event.target.value,
+                            }))
+                          }
                           required
                           placeholder="nombre@correo.com"
                           className="mt-3 w-full rounded-lg border border-primary/10 bg-background px-4 py-3 outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary/20"
@@ -302,7 +443,15 @@ export default function DonationsPage() {
                         id="donation-amount"
                         name="donation_amount"
                         type="number"
-                        min="0"
+                        min="1"
+                        required
+                        value={donationReportForm.amount}
+                        onChange={(event) =>
+                          setDonationReportForm((currentForm) => ({
+                            ...currentForm,
+                            amount: event.target.value,
+                          }))
+                        }
                         placeholder="0.000"
                         className="mt-3 w-full rounded-lg border border-primary/10 bg-background px-4 py-3 outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary/20"
                       />
@@ -320,6 +469,11 @@ export default function DonationsPage() {
                         <input
                           id="donation-receipt"
                           name="donation_receipt"
+                          required
+                          accept=".pdf,image/jpeg,image/png"
+                          onChange={(event) => {
+                            setDonationReceipt(event.target.files?.[0] ?? null);
+                          }}
                           type="file"
                           aria-describedby="donation-receipt-help"
                           className="mt-3 absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
@@ -343,14 +497,34 @@ export default function DonationsPage() {
                           </p>
                         </div>
                       </div>
+                      {donationReceipt ? (
+                        <p className="text-xs font-semibold text-slate-500">
+                          Archivo seleccionado: {donationReceipt.name}
+                        </p>
+                      ) : null}
                     </div>
                   </div>
 
+                  {donationReportError ? (
+                    <div className="mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+                      {donationReportError}
+                    </div>
+                  ) : null}
+
+                  {donationReportSuccess ? (
+                    <div className="mt-6 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+                      {donationReportSuccess}
+                    </div>
+                  ) : null}
+
                   <button
                     type="submit"
-                    className="w-full rounded-lg bg-primary py-4 text-sm font-black uppercase tracking-widest text-background-dark shadow-xl shadow-primary/20 transition-all hover:scale-[1.01] active:scale-[0.98]"
+                    disabled={isSubmittingDonationReport}
+                    className="w-full rounded-lg bg-primary py-4 text-sm font-black uppercase tracking-widest text-background-dark shadow-xl shadow-primary/20 transition-all hover:scale-[1.01] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    Enviar Informe de Donación
+                    {isSubmittingDonationReport
+                      ? "Enviando informe..."
+                      : "Enviar Informe de Donación"}
                   </button>
                 </form>
               </div>
