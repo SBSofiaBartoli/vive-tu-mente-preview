@@ -1,3 +1,5 @@
+import type { MediaFile } from '../media-files/media-file.types';
+
 export type DonationReportStatus =
   | 'pending'
   | 'confirmed'
@@ -10,6 +12,7 @@ export type DonationReport = {
   donor_email: string;
   amount: number;
   receipt_media_file_id: string | null;
+  receipt_media_file?: MediaFile | null;
   status: DonationReportStatus;
   review_notes: string | null;
   rejection_reason: string | null;

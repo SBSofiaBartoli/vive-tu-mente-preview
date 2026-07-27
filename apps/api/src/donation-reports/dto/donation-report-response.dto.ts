@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { MediaFileResponseDto } from '../../media-files/dto/media-file-response.dto';
 
 export class DonationReportResponseDto {
   @ApiProperty({ example: '9f4b8d7a-1234-4567-8901-abcdef123456' })
@@ -17,6 +18,9 @@ export class DonationReportResponseDto {
     example: '9f4b8d7a-1234-4567-8901-abcdef123456',
   })
   receipt_media_file_id!: string | null;
+
+  @ApiPropertyOptional({ type: MediaFileResponseDto })
+  receipt_media_file?: MediaFileResponseDto | null;
 
   @ApiProperty({ example: 'pending' })
   status!: string;

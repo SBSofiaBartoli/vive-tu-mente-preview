@@ -53,7 +53,7 @@ export class DonationReportsService {
 
     let query = supabase
       .from('donation_reports')
-      .select('*', { count: 'exact' })
+      .select('*, receipt_media_file:media_files(*)', { count: 'exact' })
       .order('created_at', { ascending: false })
       .range(from, to);
 
