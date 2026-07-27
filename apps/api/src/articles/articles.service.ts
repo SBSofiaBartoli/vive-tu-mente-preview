@@ -69,6 +69,8 @@ export class ArticlesService {
         category: createArticleProposalDto.category ?? null,
         submitted_by_name: createArticleProposalDto.submitted_by_name,
         submitted_by_email: createArticleProposalDto.submitted_by_email,
+        cover_image_url: createArticleProposalDto.cover_image_url ?? null,
+        cover_image_alt: createArticleProposalDto.cover_image_alt ?? null,
         status: 'pending_review',
         is_featured: false,
       })
