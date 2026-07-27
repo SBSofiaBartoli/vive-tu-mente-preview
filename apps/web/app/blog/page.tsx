@@ -159,6 +159,10 @@ export default function BlogPage() {
       setProposalSuccess(
         "Gracias por enviar tu propuesta. El artículo quedó pendiente de revisión.",
       );
+      window.setTimeout(() => {
+        setIsProposalModalOpen(false);
+        setProposalSuccess(null);
+      }, 1600);
     } catch {
       setProposalSuccess(null);
       setProposalSubmitError(
@@ -538,8 +542,8 @@ export default function BlogPage() {
       </footer>
 
       {isProposalModalOpen ? (
-        <div className="fixed inset-0 z-[10000] overflow-y-auto bg-slate-950/50 px-4 py-24 sm:py-8">
-          <div className="mx-auto w-full max-w-3xl rounded-2xl border-t-4 border-primary bg-white p-6 shadow-2xl md:p-8">
+        <div className="fixed inset-0 z-[10000] flex items-start justify-center overflow-y-auto bg-slate-950/50 px-4 py-6 sm:py-8">
+          <div className="w-full max-w-3xl rounded-2xl border-t-4 border-primary bg-white p-6 shadow-2xl md:p-8">
             <div className="mb-6 flex items-start justify-between gap-4">
               <div>
                 <h2 className="text-2xl font-extrabold tracking-[-0.03em] text-slate-900">
@@ -562,13 +566,20 @@ export default function BlogPage() {
             </div>
 
             {proposalSuccess ? (
-              <div className="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+              <div
+                className="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-bold text-emerald-700 shadow-sm"
+                role="status"
+                aria-live="polite"
+              >
                 {proposalSuccess}
               </div>
             ) : null}
 
             {proposalSubmitError ? (
-              <div className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+              <div
+                className="mb-5 rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-bold text-red-700 shadow-sm"
+                role="alert"
+              >
                 {proposalSubmitError}
               </div>
             ) : null}

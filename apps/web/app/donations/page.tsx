@@ -52,6 +52,8 @@ export default function DonationsPage() {
   ) => {
     event.preventDefault();
     setIsSubmittingDonationReport(true);
+    setDonationReportSuccess(null);
+    setDonationReportError(null);
 
     const allowedReceiptTypes = ["application/pdf", "image/jpeg", "image/png"];
     const maxReceiptSize = 2 * 1024 * 1024;
@@ -493,7 +495,7 @@ export default function DonationsPage() {
                             className="mt-1 text-xs text-slate-400"
                             id="donation-receipt-help"
                           >
-                            PDF, JPG, o PNG (Máx 5MB)
+                            PDF, JPG, o PNG (Máx 2MB)
                           </p>
                         </div>
                       </div>
@@ -506,13 +508,20 @@ export default function DonationsPage() {
                   </div>
 
                   {donationReportError ? (
-                    <div className="mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+                    <div
+                      className="mt-6 rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-bold text-red-700 shadow-sm"
+                      role="alert"
+                    >
                       {donationReportError}
                     </div>
                   ) : null}
 
                   {donationReportSuccess ? (
-                    <div className="mt-6 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+                    <div
+                      className="mt-6 rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-bold text-emerald-700 shadow-sm"
+                      role="status"
+                      aria-live="polite"
+                    >
                       {donationReportSuccess}
                     </div>
                   ) : null}
