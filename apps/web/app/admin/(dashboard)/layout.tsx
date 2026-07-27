@@ -10,6 +10,7 @@ const adminNavItems = [
   { href: "/admin/education", label: "Educación" },
   { href: "/admin/content", label: "Contenido" },
   { href: "/admin/files", label: "Archivos" },
+  { href: "/admin/donations", label: "Donaciones" },
 ];
 
 export default function AdminLayout({
