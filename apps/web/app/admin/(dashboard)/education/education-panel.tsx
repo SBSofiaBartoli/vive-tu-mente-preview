@@ -436,42 +436,6 @@ export function EducationPanel() {
         </div>
       ) : null}
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="flex flex-col gap-2 rounded-lg border border-[#dcebea] bg-white p-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-baseline gap-3">
-            <p className="text-sm font-semibold text-[#52708a]">
-              Cards educativas
-            </p>
-            <p className="text-2xl font-bold text-[#071a2f]">
-              {cardsMeta.total}
-            </p>
-          </div>
-
-          <p className="text-sm text-[#52708a]">
-            {isLoadingCards
-              ? "Actualizando resultados..."
-              : `Mostrando ${cards.length} resultados en esta página.`}
-          </p>
-        </div>
-
-        <div className="flex flex-col gap-2 rounded-lg border border-[#dcebea] bg-white p-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-baseline gap-3">
-            <p className="text-sm font-semibold text-[#52708a]">
-              Tips educativos
-            </p>
-            <p className="text-2xl font-bold text-[#071a2f]">
-              {tipsMeta.total}
-            </p>
-          </div>
-
-          <p className="text-sm text-[#52708a]">
-            {isLoadingTips
-              ? "Actualizando resultados..."
-              : `Mostrando ${tips.length} resultados en esta página.`}
-          </p>
-        </div>
-      </div>
-
       <div className="flex flex-wrap gap-2 rounded-lg border border-[#dcebea] bg-white p-2">
         <button
           type="button"
@@ -483,6 +447,9 @@ export function EducationPanel() {
           }
         >
           Cards educativas
+          <span className="ml-2 rounded-full bg-white/60 px-2 py-0.5 text-xs">
+            {cardsMeta.total}
+          </span>
         </button>
 
         <button
@@ -495,12 +462,14 @@ export function EducationPanel() {
           }
         >
           Tips educativos
+          <span className="ml-2 rounded-full bg-white/60 px-2 py-0.5 text-xs">
+            {tipsMeta.total}
+          </span>
         </button>
       </div>
 
       {activeEducationTab === "cards" ? (
         <section className="space-y-4">
-          <h3 className="text-xl font-bold text-[#071a2f]">Cards educativas</h3>
           <div className="rounded-lg border border-[#dcebea] bg-white p-5">
             <div className="grid gap-4 md:grid-cols-3">
               <label className="block">
@@ -550,6 +519,12 @@ export function EducationPanel() {
               </label>
             </div>
           </div>
+
+          <p className="text-sm font-semibold text-[#52708a]">
+            {isLoadingCards
+              ? "Actualizando resultados..."
+              : `Mostrando ${cards.length} de ${cardsMeta.total} cards.`}
+          </p>
 
           {!isLoadingCards && cards.length === 0 ? (
             <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
@@ -647,7 +622,6 @@ export function EducationPanel() {
 
       {activeEducationTab === "tips" ? (
         <section className="space-y-4">
-          <h3 className="text-xl font-bold text-[#071a2f]">Tips educativos</h3>
           <div className="rounded-lg border border-[#dcebea] bg-white p-5">
             <div className="grid gap-4 md:grid-cols-3">
               <label className="block">
@@ -697,6 +671,12 @@ export function EducationPanel() {
               </label>
             </div>
           </div>
+
+          <p className="text-sm font-semibold text-[#52708a]">
+            {isLoadingTips
+              ? "Actualizando resultados..."
+              : `Mostrando ${tips.length} de ${tipsMeta.total} tips.`}
+          </p>
 
           {!isLoadingTips && tips.length === 0 ? (
             <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
