@@ -495,7 +495,7 @@ export default function DonationsPage() {
                             className="mt-1 text-xs text-slate-400"
                             id="donation-receipt-help"
                           >
-                            PDF, JPG, o PNG (Máx 5MB)
+                            PDF, JPG, o PNG (Máx 2MB)
                           </p>
                         </div>
                       </div>
