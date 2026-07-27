@@ -347,15 +347,17 @@ export default function ParticipatePage() {
                 </div>
 
                 {formMessage ? (
-                  <p
-                    className={`rounded-lg border px-4 py-3 text-sm font-semibold ${
+                  <div
+                    className={`rounded-xl border px-5 py-4 text-sm font-bold shadow-sm ${
                       formStatus === "success"
-                        ? "border-primary/30 bg-primary/10 text-slate-800"
+                        ? "border-emerald-200 bg-emerald-50 text-emerald-700"
                         : "border-red-200 bg-red-50 text-red-700"
                     }`}
+                    role={formStatus === "success" ? "status" : "alert"}
+                    aria-live={formStatus === "success" ? "polite" : undefined}
                   >
                     {formMessage}
-                  </p>
+                  </div>
                 ) : null}
 
                 <button
