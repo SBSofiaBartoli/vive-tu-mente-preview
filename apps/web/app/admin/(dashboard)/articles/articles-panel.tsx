@@ -208,6 +208,42 @@ export function ArticlesPanel() {
     }
   };
 
+  const updateArticleFeatured = async (article: Article) => {
+    try {
+      setUpdatingArticleId(article.id);
+      setErrorMessage("");
+      setSuccessMessage("");
+
+      const supabaseClient = createSupabaseBrowserClient();
+      const { data } = await supabaseClient.auth.getSession();
+
+      if (!data.session) {
+        setErrorMessage("No se encontró una sesión activa.");
+        return;
+      }
+
+      await adminApiPatchClient<Article, { is_featured: boolean }>(
+        `/api/articles/admin/${article.id}/featured`,
+        {
+          accessToken: data.session.access_token,
+          body: { is_featured: !article.is_featured },
+        },
+      );
+
+      setSuccessMessage(
+        article.is_featured
+          ? "El artículo dejó de estar destacado."
+          : "El artículo fue marcado como destacado.",
+      );
+
+      void loadArticles();
+    } catch {
+      setErrorMessage("No se pudo actualizar el destacado del artículo.");
+    } finally {
+      setUpdatingArticleId(null);
+    }
+  };
+
   const createAdminArticle = async () => {
     try {
       setIsCreatingArticle(true);
@@ -387,6 +423,12 @@ export function ArticlesPanel() {
                         {article.category}
                       </span>
                     ) : null}
+
+                    {article.is_featured ? (
+                      <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-700">
+                        Destacado
+                      </span>
+                    ) : null}
                   </div>
 
                   <h3 className="mt-2 truncate text-base font-bold text-[#071a2f]">
@@ -495,6 +537,19 @@ export function ArticlesPanel() {
                       placeholder="Indicá qué cambios debería realizar la persona autora."
                     />
                   </label>
+
+                  {article.status === "published" ? (
+                    <button
+                      type="button"
+                      disabled={updatingArticleId === article.id}
+                      onClick={() => updateArticleFeatured(article)}
+                      className="mt-4 rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] hover:text-[#168c91] disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {article.is_featured
+                        ? "Quitar destacado"
+                        : "Marcar como destacado"}
+                    </button>
+                  ) : null}
 
                   {article.status === "pending_review" ||
                   article.status === "changes_requested" ? (
