@@ -405,6 +405,31 @@ export function ArticlesPanel() {
               </summary>
 
               <div className="grid gap-4 border-t border-[#dcebea] p-4">
+                {article.cover_image_url ? (
+                  <div className="rounded-lg border border-[#dcebea] bg-[#f7fbfb] p-4">
+                    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold uppercase text-[#39b8bb]">
+                          Imagen sugerida
+                        </p>
+                        <p className="mt-1 text-sm leading-6 text-[#52708a]">
+                          La propuesta incluye una imagen para revisar junto al
+                          contenido antes de publicar.
+                        </p>
+                      </div>
+
+                      <a
+                        href={article.cover_image_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex w-fit rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] hover:text-[#168c91]"
+                      >
+                        Ver imagen sugerida
+                      </a>
+                    </div>
+                  </div>
+                ) : null}
+
                 {article.excerpt ? (
                   <div className="rounded-lg border border-[#dcebea] bg-[#f7fbfb] p-4">
                     <p className="text-xs font-bold uppercase text-[#39b8bb]">
