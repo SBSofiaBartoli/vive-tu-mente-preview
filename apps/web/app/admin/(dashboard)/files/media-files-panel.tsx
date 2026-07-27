@@ -238,9 +238,13 @@ export function MediaFilesPanel() {
     <div className="space-y-5">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
-          <h2 className="text-3xl font-bold text-[#071a2f]">Archivos</h2>
-          <p className="mt-2 max-w-2xl text-[#52708a]">
-            Revisión y administración de archivos cargados para el sitio.
+          <h2 className="text-3xl font-bold text-[#071a2f]">
+            Biblioteca de archivos
+          </h2>
+          <p className="mt-2 max-w-3xl text-[#52708a]">
+            Consulta general de archivos subidos al sitio. Los comprobantes de
+            donación y las imágenes de artículos se revisan desde sus paneles
+            correspondientes.
           </p>
         </div>
 
@@ -249,7 +253,7 @@ export function MediaFilesPanel() {
           onClick={() => setIsUploadFormOpen(true)}
           className="w-fit rounded-full bg-[#39b8bb] px-5 py-2.5 text-sm font-bold text-[#071a2f] transition hover:bg-[#5fd0d2] md:ml-auto"
         >
-          Subir nuevo archivo
+          Subir archivo general
         </button>
       </div>
 
@@ -314,10 +318,17 @@ export function MediaFilesPanel() {
         </div>
       </section>
 
+      <div className="rounded-lg border border-[#dcebea] bg-[#f7fbfb] p-4 text-sm leading-6 text-[#52708a]">
+        <span className="font-bold text-[#071a2f]">Nota:</span> este panel
+        funciona como biblioteca y auditoría general. Para revisar una propuesta
+        de artículo, usá el panel de Artículos. Para revisar un comprobante, usá
+        el panel de Donaciones.
+      </div>
+
       <div className="flex flex-col gap-2 rounded-lg border border-[#dcebea] bg-white p-4 md:flex-row md:items-center md:justify-between">
         <div className="flex items-baseline gap-3">
           <p className="text-sm font-semibold text-[#52708a]">
-            Archivos cargados
+            Archivos registrados
           </p>
           <p className="text-2xl font-bold text-[#071a2f]">
             {paginationMeta.total}
@@ -335,7 +346,7 @@ export function MediaFilesPanel() {
         <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
           {hasActiveFilters
             ? "No hay archivos para los filtros seleccionados."
-            : "Todavía no hay archivos cargados."}
+            : "Todavía no hay archivos registrados."}
         </div>
       ) : null}
 
