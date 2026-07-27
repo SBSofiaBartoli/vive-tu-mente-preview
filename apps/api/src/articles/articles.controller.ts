@@ -26,6 +26,7 @@ import { RequestArticleChangesDto } from './dto/request-article-changes.dto';
 import { ListArticlesAdminQueryDto } from './dto/list-articles-admin-query.dto';
 import { PaginatedArticlesResponseDto } from './dto/paginated-articles-response.dto';
 import { CreateAdminArticleDto } from './dto/create-admin-article.dto';
+import { UpdateArticleFeaturedDto } from './dto/update-article-featured.dto';
 
 @ApiTags('Articles')
 @Controller('articles')
@@ -244,6 +245,58 @@ export class ArticlesController {
     @Body() requestArticleChangesDto: RequestArticleChangesDto,
   ) {
     return this.articlesService.requestChanges(id, requestArticleChangesDto);
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Actualizar destacado de artículo',
+    description:
+      'Permite marcar o quitar un artículo como destacado para priorizarlo en el blog y en secciones públicas.',
+  })
+  @ApiParam({ name: 'id', description: 'ID del artículo.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Estado destacado actualizado correctamente.',
+    type: ArticleResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Artículo no encontrado.',
+  })
+  @UseGuards(AdminAuthGuard, AdminRolesGuard)
+  @Roles('admin', 'reviewer')
+  @Patch('admin/:id/featured')
+  updateFeatured(
+    @Param('id') id: string,
+    @Body() updateArticleFeaturedDto: UpdateArticleFeaturedDto,
+  ) {
+    return this.articlesService.updateFeatured(
+      id,
+      updateArticleFeaturedDto.is_featured,
+    );
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Archivar artículo',
+    description:
+      'Permite desactivar un artículo para que deje de mostrarse públicamente sin eliminarlo definitivamente.',
+  })
+  @ApiParam({ name: 'id', description: 'ID del artículo.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Artículo archivado correctamente.',
+    type: ArticleResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Artículo no encontrado.',
+  })
+  @UseGuards(AdminAuthGuard, AdminRolesGuard)
+  @Roles('admin', 'reviewer')
+  @Patch('admin/:id/archive')
+  archiveArticle(@Param('id') id: string) {
+    return this.articlesService.archiveArticle(id);
   }
 
   @ApiOperation({
