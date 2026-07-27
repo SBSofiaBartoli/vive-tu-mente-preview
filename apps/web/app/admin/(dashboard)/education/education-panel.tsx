@@ -39,6 +39,7 @@ const emptyTipForm: CreateEducationTipPayload = {
 
 const educationPageSize = 10;
 type EducationStatusFilter = "all" | "active" | "inactive";
+type EducationTab = "cards" | "tips";
 
 export function EducationPanel() {
   const [cards, setCards] = useState<EducationCard[]>([]);
@@ -78,6 +79,8 @@ export function EducationPanel() {
   const [successMessage, setSuccessMessage] = useState("");
   const [isCardFormOpen, setIsCardFormOpen] = useState(false);
   const [isTipFormOpen, setIsTipFormOpen] = useState(false);
+  const [activeEducationTab, setActiveEducationTab] =
+    useState<EducationTab>("cards");
   const hasActiveCardFilters =
     cardsSearchTerm.trim() !== "" ||
     cardsSegmentFilter.trim() !== "" ||
@@ -469,289 +472,323 @@ export function EducationPanel() {
         </div>
       </div>
 
-      <section className="space-y-4">
-        <h3 className="text-xl font-bold text-[#071a2f]">Cards educativas</h3>
-        <div className="rounded-lg border border-[#dcebea] bg-white p-5">
-          <div className="grid gap-4 md:grid-cols-3">
-            <label className="block">
-              <span className="text-sm font-bold text-[#52708a]">Buscar</span>
-              <input
-                value={cardsSearchTerm}
-                onChange={(event) => {
-                  setCardsSearchTerm(event.target.value);
-                  setCardsPage(1);
-                }}
-                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
-                placeholder="Título o descripción"
-              />
-            </label>
+      <div className="flex flex-wrap gap-2 rounded-lg border border-[#dcebea] bg-white p-2">
+        <button
+          type="button"
+          onClick={() => setActiveEducationTab("cards")}
+          className={
+            activeEducationTab === "cards"
+              ? "rounded-full bg-[#39b8bb] px-5 py-2 text-sm font-bold text-[#071a2f] transition"
+              : "rounded-full px-5 py-2 text-sm font-bold text-[#52708a] transition hover:bg-[#eefafa] hover:text-[#168c91]"
+          }
+        >
+          Cards educativas
+        </button>
 
-            <label className="block">
-              <span className="text-sm font-bold text-[#52708a]">Segmento</span>
-              <input
-                value={cardsSegmentFilter}
-                onChange={(event) => {
-                  setCardsSegmentFilter(event.target.value);
-                  setCardsPage(1);
-                }}
-                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
-                placeholder="ia-aplicada"
-              />
-            </label>
+        <button
+          type="button"
+          onClick={() => setActiveEducationTab("tips")}
+          className={
+            activeEducationTab === "tips"
+              ? "rounded-full bg-[#39b8bb] px-5 py-2 text-sm font-bold text-[#071a2f] transition"
+              : "rounded-full px-5 py-2 text-sm font-bold text-[#52708a] transition hover:bg-[#eefafa] hover:text-[#168c91]"
+          }
+        >
+          Tips educativos
+        </button>
+      </div>
 
-            <label className="block">
-              <span className="text-sm font-bold text-[#52708a]">Estado</span>
-              <select
-                value={cardsStatusFilter}
-                onChange={(event) => {
-                  setCardsStatusFilter(
-                    event.target.value as EducationStatusFilter,
-                  );
-                  setCardsPage(1);
-                }}
-                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
-              >
-                <option value="all">Todas</option>
-                <option value="active">Activas</option>
-                <option value="inactive">Inactivas</option>
-              </select>
-            </label>
+      {activeEducationTab === "cards" ? (
+        <section className="space-y-4">
+          <h3 className="text-xl font-bold text-[#071a2f]">Cards educativas</h3>
+          <div className="rounded-lg border border-[#dcebea] bg-white p-5">
+            <div className="grid gap-4 md:grid-cols-3">
+              <label className="block">
+                <span className="text-sm font-bold text-[#52708a]">Buscar</span>
+                <input
+                  value={cardsSearchTerm}
+                  onChange={(event) => {
+                    setCardsSearchTerm(event.target.value);
+                    setCardsPage(1);
+                  }}
+                  className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                  placeholder="Título o descripción"
+                />
+              </label>
+
+              <label className="block">
+                <span className="text-sm font-bold text-[#52708a]">
+                  Segmento
+                </span>
+                <input
+                  value={cardsSegmentFilter}
+                  onChange={(event) => {
+                    setCardsSegmentFilter(event.target.value);
+                    setCardsPage(1);
+                  }}
+                  className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                  placeholder="ia-aplicada"
+                />
+              </label>
+
+              <label className="block">
+                <span className="text-sm font-bold text-[#52708a]">Estado</span>
+                <select
+                  value={cardsStatusFilter}
+                  onChange={(event) => {
+                    setCardsStatusFilter(
+                      event.target.value as EducationStatusFilter,
+                    );
+                    setCardsPage(1);
+                  }}
+                  className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                >
+                  <option value="all">Todas</option>
+                  <option value="active">Activas</option>
+                  <option value="inactive">Inactivas</option>
+                </select>
+              </label>
+            </div>
           </div>
-        </div>
 
-        {!isLoadingCards && cards.length === 0 ? (
-          <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
-            {hasActiveCardFilters
-              ? "No hay cards educativas para los filtros seleccionados."
-              : "Todavía no hay cards educativas cargadas."}
-          </div>
-        ) : null}
+          {!isLoadingCards && cards.length === 0 ? (
+            <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
+              {hasActiveCardFilters
+                ? "No hay cards educativas para los filtros seleccionados."
+                : "Todavía no hay cards educativas cargadas."}
+            </div>
+          ) : null}
 
-        {cards.map((card) => (
-          <details
-            key={card.id}
-            className="rounded-lg border border-[#dcebea] bg-white shadow-sm"
-          >
-            <summary className="flex cursor-pointer list-none flex-col gap-3 p-4 md:flex-row md:items-center md:justify-between">
-              <div>
-                <p className="text-xs font-bold uppercase text-[#39b8bb]">
-                  {card.segment_key}
+          {cards.map((card) => (
+            <details
+              key={card.id}
+              className="rounded-lg border border-[#dcebea] bg-white shadow-sm"
+            >
+              <summary className="flex cursor-pointer list-none flex-col gap-3 p-4 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <p className="text-xs font-bold uppercase text-[#39b8bb]">
+                    {card.segment_key}
+                  </p>
+                  <h4 className="mt-1 text-base font-bold text-[#071a2f]">
+                    {card.title}
+                  </h4>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs font-semibold text-[#52708a]">
+                    Ícono: {card.icon_name}
+                  </span>
+                  <span className="text-xs font-semibold text-[#52708a]">
+                    Orden: {card.sort_order}
+                  </span>
+                  <span
+                    className={
+                      card.is_active
+                        ? "rounded-full bg-[#e8f7f7] px-3 py-1 text-xs font-bold text-[#168c91]"
+                        : "rounded-full bg-[#f1f5f9] px-3 py-1 text-xs font-bold text-[#52708a]"
+                    }
+                  >
+                    {card.is_active ? "Activa" : "Inactiva"}
+                  </span>
+                </div>
+              </summary>
+
+              <div className="border-t border-[#dcebea] p-4">
+                <p className="whitespace-pre-line text-sm leading-6 text-[#52708a]">
+                  {card.description}
                 </p>
-                <h4 className="mt-1 text-base font-bold text-[#071a2f]">
-                  {card.title}
-                </h4>
-              </div>
 
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs font-semibold text-[#52708a]">
-                  Ícono: {card.icon_name}
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    disabled={updatingId === card.id}
+                    onClick={() => toggleCardStatus(card)}
+                    className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] hover:text-[#168c91] disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {card.is_active ? "Desactivar" : "Activar"}
+                  </button>
+                </div>
+              </div>
+            </details>
+          ))}
+          {cardsMeta.total_pages > 1 ? (
+            <div className="flex items-center justify-between rounded-lg border border-[#dcebea] bg-white p-4">
+              <button
+                type="button"
+                disabled={cardsPage <= 1}
+                onClick={() =>
+                  setCardsPage((currentPage) => Math.max(1, currentPage - 1))
+                }
+                className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Anterior
+              </button>
+
+              <p className="text-sm font-semibold text-[#52708a]">
+                Página {cardsMeta.page} de {cardsMeta.total_pages}
+              </p>
+
+              <button
+                type="button"
+                disabled={cardsPage >= cardsMeta.total_pages}
+                onClick={() =>
+                  setCardsPage((currentPage) =>
+                    Math.min(cardsMeta.total_pages, currentPage + 1),
+                  )
+                }
+                className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Siguiente
+              </button>
+            </div>
+          ) : null}
+        </section>
+      ) : null}
+
+      {activeEducationTab === "tips" ? (
+        <section className="space-y-4">
+          <h3 className="text-xl font-bold text-[#071a2f]">Tips educativos</h3>
+          <div className="rounded-lg border border-[#dcebea] bg-white p-5">
+            <div className="grid gap-4 md:grid-cols-3">
+              <label className="block">
+                <span className="text-sm font-bold text-[#52708a]">Buscar</span>
+                <input
+                  value={tipsSearchTerm}
+                  onChange={(event) => {
+                    setTipsSearchTerm(event.target.value);
+                    setTipsPage(1);
+                  }}
+                  className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                  placeholder="Título o contenido"
+                />
+              </label>
+
+              <label className="block">
+                <span className="text-sm font-bold text-[#52708a]">
+                  Segmento
                 </span>
-                <span className="text-xs font-semibold text-[#52708a]">
-                  Orden: {card.sort_order}
-                </span>
+                <input
+                  value={tipsSegmentFilter}
+                  onChange={(event) => {
+                    setTipsSegmentFilter(event.target.value);
+                    setTipsPage(1);
+                  }}
+                  className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                  placeholder="ia-aplicada"
+                />
+              </label>
+
+              <label className="block">
+                <span className="text-sm font-bold text-[#52708a]">Estado</span>
+                <select
+                  value={tipsStatusFilter}
+                  onChange={(event) => {
+                    setTipsStatusFilter(
+                      event.target.value as EducationStatusFilter,
+                    );
+                    setTipsPage(1);
+                  }}
+                  className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
+                >
+                  <option value="all">Todos</option>
+                  <option value="active">Activos</option>
+                  <option value="inactive">Inactivos</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          {!isLoadingTips && tips.length === 0 ? (
+            <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
+              {hasActiveTipFilters
+                ? "No hay tips educativos para los filtros seleccionados."
+                : "Todavía no hay tips educativos cargados."}
+            </div>
+          ) : null}
+
+          {tips.map((tip) => (
+            <details
+              key={tip.id}
+              className="rounded-lg border border-[#dcebea] bg-white shadow-sm"
+            >
+              <summary className="flex cursor-pointer list-none flex-col gap-3 p-4 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <p className="text-xs font-bold uppercase text-[#39b8bb]">
+                    {tip.segment_key}
+                  </p>
+                  <h4 className="mt-1 text-base font-bold text-[#071a2f]">
+                    {tip.title}
+                  </h4>
+                </div>
+
                 <span
                   className={
-                    card.is_active
+                    tip.is_active
                       ? "rounded-full bg-[#e8f7f7] px-3 py-1 text-xs font-bold text-[#168c91]"
                       : "rounded-full bg-[#f1f5f9] px-3 py-1 text-xs font-bold text-[#52708a]"
                   }
                 >
-                  {card.is_active ? "Activa" : "Inactiva"}
+                  {tip.is_active ? "Activo" : "Inactivo"}
                 </span>
-              </div>
-            </summary>
+              </summary>
 
-            <div className="border-t border-[#dcebea] p-4">
-              <p className="whitespace-pre-line text-sm leading-6 text-[#52708a]">
-                {card.description}
-              </p>
-
-              <div className="mt-4 flex flex-wrap items-center gap-2">
-                <button
-                  type="button"
-                  disabled={updatingId === card.id}
-                  onClick={() => toggleCardStatus(card)}
-                  className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] hover:text-[#168c91] disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {card.is_active ? "Desactivar" : "Activar"}
-                </button>
-              </div>
-            </div>
-          </details>
-        ))}
-        {cardsMeta.total_pages > 1 ? (
-          <div className="flex items-center justify-between rounded-lg border border-[#dcebea] bg-white p-4">
-            <button
-              type="button"
-              disabled={cardsPage <= 1}
-              onClick={() =>
-                setCardsPage((currentPage) => Math.max(1, currentPage - 1))
-              }
-              className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Anterior
-            </button>
-
-            <p className="text-sm font-semibold text-[#52708a]">
-              Página {cardsMeta.page} de {cardsMeta.total_pages}
-            </p>
-
-            <button
-              type="button"
-              disabled={cardsPage >= cardsMeta.total_pages}
-              onClick={() =>
-                setCardsPage((currentPage) =>
-                  Math.min(cardsMeta.total_pages, currentPage + 1),
-                )
-              }
-              className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Siguiente
-            </button>
-          </div>
-        ) : null}
-      </section>
-
-      <section className="space-y-4">
-        <h3 className="text-xl font-bold text-[#071a2f]">Tips educativos</h3>
-        <div className="rounded-lg border border-[#dcebea] bg-white p-5">
-          <div className="grid gap-4 md:grid-cols-3">
-            <label className="block">
-              <span className="text-sm font-bold text-[#52708a]">Buscar</span>
-              <input
-                value={tipsSearchTerm}
-                onChange={(event) => {
-                  setTipsSearchTerm(event.target.value);
-                  setTipsPage(1);
-                }}
-                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
-                placeholder="Título o contenido"
-              />
-            </label>
-
-            <label className="block">
-              <span className="text-sm font-bold text-[#52708a]">Segmento</span>
-              <input
-                value={tipsSegmentFilter}
-                onChange={(event) => {
-                  setTipsSegmentFilter(event.target.value);
-                  setTipsPage(1);
-                }}
-                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
-                placeholder="ia-aplicada"
-              />
-            </label>
-
-            <label className="block">
-              <span className="text-sm font-bold text-[#52708a]">Estado</span>
-              <select
-                value={tipsStatusFilter}
-                onChange={(event) => {
-                  setTipsStatusFilter(
-                    event.target.value as EducationStatusFilter,
-                  );
-                  setTipsPage(1);
-                }}
-                className="mt-2 w-full rounded-lg border border-[#dcebea] px-3 py-2 text-sm outline-none transition focus:border-[#39b8bb]"
-              >
-                <option value="all">Todos</option>
-                <option value="active">Activos</option>
-                <option value="inactive">Inactivos</option>
-              </select>
-            </label>
-          </div>
-        </div>
-
-        {!isLoadingTips && tips.length === 0 ? (
-          <div className="rounded-lg border border-[#dcebea] bg-white p-6 text-sm font-semibold text-[#52708a]">
-            {hasActiveTipFilters
-              ? "No hay tips educativos para los filtros seleccionados."
-              : "Todavía no hay tips educativos cargados."}
-          </div>
-        ) : null}
-
-        {tips.map((tip) => (
-          <details
-            key={tip.id}
-            className="rounded-lg border border-[#dcebea] bg-white shadow-sm"
-          >
-            <summary className="flex cursor-pointer list-none flex-col gap-3 p-4 md:flex-row md:items-center md:justify-between">
-              <div>
-                <p className="text-xs font-bold uppercase text-[#39b8bb]">
-                  {tip.segment_key}
+              <div className="border-t border-[#dcebea] p-4">
+                <p className="whitespace-pre-line text-sm leading-6 text-[#52708a]">
+                  {tip.content}
                 </p>
-                <h4 className="mt-1 text-base font-bold text-[#071a2f]">
-                  {tip.title}
-                </h4>
-              </div>
 
-              <span
-                className={
-                  tip.is_active
-                    ? "rounded-full bg-[#e8f7f7] px-3 py-1 text-xs font-bold text-[#168c91]"
-                    : "rounded-full bg-[#f1f5f9] px-3 py-1 text-xs font-bold text-[#52708a]"
+                {tip.resource_url ? (
+                  <p className="mt-3 text-xs font-semibold text-[#52708a]">
+                    Recurso: {tip.resource_url}
+                  </p>
+                ) : null}
+
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    disabled={updatingId === tip.id}
+                    onClick={() => toggleTipStatus(tip)}
+                    className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] hover:text-[#168c91] disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {tip.is_active ? "Desactivar" : "Activar"}
+                  </button>
+                </div>
+              </div>
+            </details>
+          ))}
+          {tipsMeta.total_pages > 1 ? (
+            <div className="flex items-center justify-between rounded-lg border border-[#dcebea] bg-white p-4">
+              <button
+                type="button"
+                disabled={tipsPage <= 1}
+                onClick={() =>
+                  setTipsPage((currentPage) => Math.max(1, currentPage - 1))
                 }
+                className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {tip.is_active ? "Activo" : "Inactivo"}
-              </span>
-            </summary>
+                Anterior
+              </button>
 
-            <div className="border-t border-[#dcebea] p-4">
-              <p className="whitespace-pre-line text-sm leading-6 text-[#52708a]">
-                {tip.content}
+              <p className="text-sm font-semibold text-[#52708a]">
+                Página {tipsMeta.page} de {tipsMeta.total_pages}
               </p>
 
-              {tip.resource_url ? (
-                <p className="mt-3 text-xs font-semibold text-[#52708a]">
-                  Recurso: {tip.resource_url}
-                </p>
-              ) : null}
-
-              <div className="mt-4 flex flex-wrap items-center gap-2">
-                <button
-                  type="button"
-                  disabled={updatingId === tip.id}
-                  onClick={() => toggleTipStatus(tip)}
-                  className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] hover:text-[#168c91] disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {tip.is_active ? "Desactivar" : "Activar"}
-                </button>
-              </div>
+              <button
+                type="button"
+                disabled={tipsPage >= tipsMeta.total_pages}
+                onClick={() =>
+                  setTipsPage((currentPage) =>
+                    Math.min(tipsMeta.total_pages, currentPage + 1),
+                  )
+                }
+                className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Siguiente
+              </button>
             </div>
-          </details>
-        ))}
-        {tipsMeta.total_pages > 1 ? (
-          <div className="flex items-center justify-between rounded-lg border border-[#dcebea] bg-white p-4">
-            <button
-              type="button"
-              disabled={tipsPage <= 1}
-              onClick={() =>
-                setTipsPage((currentPage) => Math.max(1, currentPage - 1))
-              }
-              className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Anterior
-            </button>
-
-            <p className="text-sm font-semibold text-[#52708a]">
-              Página {tipsMeta.page} de {tipsMeta.total_pages}
-            </p>
-
-            <button
-              type="button"
-              disabled={tipsPage >= tipsMeta.total_pages}
-              onClick={() =>
-                setTipsPage((currentPage) =>
-                  Math.min(tipsMeta.total_pages, currentPage + 1),
-                )
-              }
-              className="rounded-full border border-[#dcebea] px-4 py-2 text-xs font-bold text-[#071a2f] transition hover:border-[#39b8bb] disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Siguiente
-            </button>
-          </div>
-        ) : null}
-      </section>
+          ) : null}
+        </section>
+      ) : null}
 
       {isCardFormOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#071a2f]/40 p-4">
