@@ -197,6 +197,10 @@ export default function ProgramsPage() {
       setTestimonialSuccess(
         "Gracias por compartir tu experiencia. El testimonio quedó pendiente de revisión.",
       );
+      window.setTimeout(() => {
+        setIsTestimonialModalOpen(false);
+        setTestimonialSuccess(null);
+      }, 1600);
     } catch {
       setTestimonialSuccess(null);
       setTestimonialSubmitError(
@@ -824,13 +828,20 @@ export default function ProgramsPage() {
             </div>
 
             {testimonialSuccess ? (
-              <div className="mb-5 rounded-xl border border-primary/20 bg-primary/10 px-4 py-3 text-sm font-semibold text-primary">
+              <div
+                className="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-bold text-emerald-700 shadow-sm"
+                role="status"
+                aria-live="polite"
+              >
                 {testimonialSuccess}
               </div>
             ) : null}
 
             {testimonialSubmitError ? (
-              <div className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+              <div
+                className="mb-5 rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-bold text-red-700 shadow-sm"
+                role="alert"
+              >
                 {testimonialSubmitError}
               </div>
             ) : null}
