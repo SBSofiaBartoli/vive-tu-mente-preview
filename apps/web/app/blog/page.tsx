@@ -53,6 +53,11 @@ type MediaFile = {
   id: string;
 };
 
+type ProposalToast = {
+  type: "success" | "error";
+  message: string;
+} | null;
+
 const initialArticleProposalForm: ArticleProposalForm = {
   title: "",
   excerpt: "",
@@ -78,6 +83,7 @@ export default function BlogPage() {
     null,
   );
   const [proposalImage, setProposalImage] = useState<File | null>(null);
+  const [proposalToast, setProposalToast] = useState<ProposalToast>(null);
 
   useEffect(() => {
     const loadArticles = async () => {
@@ -108,6 +114,10 @@ export default function BlogPage() {
     if (proposalImage && !allowedImageTypes.includes(proposalImage.type)) {
       setProposalSuccess(null);
       setProposalSubmitError("La imagen debe ser JPG, PNG o WebP.");
+      setProposalToast({
+        type: "error",
+        message: "La imagen debe ser JPG, PNG o WebP.",
+      });
       setIsSubmittingProposal(false);
       return;
     }
@@ -115,6 +125,10 @@ export default function BlogPage() {
     if (proposalImage && proposalImage.size > maxImageSize) {
       setProposalSuccess(null);
       setProposalSubmitError("La imagen no puede superar los 2 MB.");
+      setProposalToast({
+        type: "error",
+        message: "La imagen no puede superar los 2 MB.",
+      });
       setIsSubmittingProposal(false);
       return;
     }
@@ -156,9 +170,14 @@ export default function BlogPage() {
       setProposalForm(initialArticleProposalForm);
       setProposalImage(null);
       setProposalSubmitError(null);
-      setProposalSuccess(
-        "Gracias por enviar tu propuesta. El artículo quedó pendiente de revisión.",
-      );
+      const successText =
+        "Gracias por enviar tu propuesta. El artículo quedó pendiente de revisión.";
+
+      setProposalSuccess(successText);
+      setProposalToast({
+        type: "success",
+        message: successText,
+      });
       window.setTimeout(() => {
         setIsProposalModalOpen(false);
         setProposalSuccess(null);
@@ -168,6 +187,11 @@ export default function BlogPage() {
       setProposalSubmitError(
         "No se pudo enviar la propuesta. Revisá los datos e intentá nuevamente.",
       );
+      setProposalToast({
+        type: "error",
+        message:
+          "No se pudo enviar la propuesta. Revisá los datos e intentá nuevamente.",
+      });
     } finally {
       setIsSubmittingProposal(false);
     }
@@ -758,6 +782,20 @@ export default function BlogPage() {
               </div>
             </form>
           </div>
+        </div>
+      ) : null}
+
+      {proposalToast ? (
+        <div
+          className={`fixed right-4 top-24 z-[10001] max-w-sm rounded-xl border px-5 py-4 text-sm font-bold shadow-xl ${
+            proposalToast.type === "success"
+              ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+              : "border-red-200 bg-red-50 text-red-700"
+          }`}
+          role={proposalToast.type === "success" ? "status" : "alert"}
+          aria-live={proposalToast.type === "success" ? "polite" : "assertive"}
+        >
+          {proposalToast.message}
         </div>
       ) : null}
 
