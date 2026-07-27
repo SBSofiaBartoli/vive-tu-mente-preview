@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsIn, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 import { Type } from 'class-transformer';
-import type { DonationReportStatus } from './donation-report.types';
+import type { DonationReportStatus } from '../donation-report.types';
 
 const donationReportStatuses: DonationReportStatus[] = [
   'pending',

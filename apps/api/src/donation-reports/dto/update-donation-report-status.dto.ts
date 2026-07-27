@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsIn, IsOptional, IsString, MinLength } from 'class-validator';
-import type { DonationReportStatus } from './donation-report.types';
+import type { DonationReportStatus } from '../donation-report.types';
 
 const trimString = (value: unknown): unknown =>
   typeof value === 'string' ? value.trim() : value;

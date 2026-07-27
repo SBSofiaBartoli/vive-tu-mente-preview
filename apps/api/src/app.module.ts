@@ -14,6 +14,7 @@ import { VisitCounterModule } from './visit-counter/visit-counter.module';
 import { MediaFilesModule } from './media-files/media-files.module';
 import { StorageModule } from './storage/storage.module';
 import { EducationCardsModule } from './education-cards/education-cards.module';
+import { DonationReportsModule } from './donation-reports/donation-reports.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { EducationCardsModule } from './education-cards/education-cards.module';
     MediaFilesModule,
     StorageModule,
     EducationCardsModule,
+    DonationReportsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
