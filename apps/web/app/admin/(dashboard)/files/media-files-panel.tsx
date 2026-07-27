@@ -33,6 +33,18 @@ const formatFileSize = (size: number) => {
   return `${(size / 1024 / 1024).toFixed(1)} MB`;
 };
 
+const getContextualReviewMessage = (section: string) => {
+  if (section === "donations") {
+    return "Este archivo corresponde a un comprobante de donación. Revisalo desde el panel de Donaciones, junto con los datos del informe.";
+  }
+
+  if (section === "article-proposals") {
+    return "Este archivo corresponde a una imagen sugerida para un artículo. Revisalo desde el panel de Artículos, junto con el contenido enviado.";
+  }
+
+  return null;
+};
+
 const emptyUploadForm = {
   section: "general",
   uploaded_by_name: "",
@@ -401,6 +413,15 @@ export function MediaFilesPanel() {
             <summary className="cursor-pointer text-sm font-bold text-[#071a2f]">
               Revisión administrativa
             </summary>
+
+            {getContextualReviewMessage(file.section) ? (
+              <div className="mt-4 rounded-lg border border-[#dcebea] bg-white px-4 py-3 text-sm leading-6 text-[#52708a]">
+                <span className="font-bold text-[#071a2f]">
+                  Revisión contextual:
+                </span>{" "}
+                {getContextualReviewMessage(file.section)}
+              </div>
+            ) : null}
 
             <label className="mt-4 block">
               <span className="text-xs font-bold text-[#52708a]">
