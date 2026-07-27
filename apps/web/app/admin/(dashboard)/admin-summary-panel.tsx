@@ -87,11 +87,11 @@ export function AdminSummaryPanel() {
             { accessToken },
           ),
           adminApiClient<PaginatedMediaFilesResponse>(
-            "/api/media-files/admin?page=1&limit=1",
+            "/api/media-files/admin?page=1&limit=1&scope=library",
             { accessToken },
           ),
           adminApiClient<PaginatedMediaFilesResponse>(
-            "/api/media-files/admin?page=1&limit=1&status=pending",
+            "/api/media-files/admin?page=1&limit=1&status=pending&scope=library",
             { accessToken },
           ),
           adminApiClient<PaginatedDonationReportsResponse>(

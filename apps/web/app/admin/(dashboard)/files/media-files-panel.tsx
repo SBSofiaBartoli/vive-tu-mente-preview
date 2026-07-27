@@ -98,6 +98,7 @@ export function MediaFilesPanel() {
       const params = new URLSearchParams({
         page: String(page),
         limit: String(mediaFilesPageSize),
+        scope: "library",
       });
 
       if (statusFilter !== "all") {

@@ -18,6 +18,8 @@ const ensureData = <T>(data: unknown): T => {
   return data as T;
 };
 
+const contextualSections = ['donations', 'article-proposals'];
+
 @Injectable()
 export class MediaFilesService {
   constructor(private readonly supabaseService: SupabaseService) {}
@@ -64,6 +66,14 @@ export class MediaFilesService {
 
     if (filters.section) {
       query = query.eq('section', filters.section);
+    }
+
+    if (filters.scope === 'library' && !filters.section) {
+      query = query.not(
+        'section',
+        'in',
+        `(${contextualSections.map((section) => `"${section}"`).join(',')})`,
+      );
     }
 
     if (filters.search) {
