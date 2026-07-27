@@ -12,6 +12,7 @@ import type { PaginatedFaqsResponse } from "@/types/faq";
 import type { PaginatedMediaFilesResponse } from "@/types/media-file";
 import type { PaginatedParticipationMessagesResponse } from "@/types/participation-message";
 import type { PaginatedTestimonialsResponse } from "@/types/testimonial";
+import type { PaginatedDonationReportsResponse } from "@/types/donation-report";
 
 type SummaryCard = {
   label: string;
@@ -48,6 +49,8 @@ export function AdminSummaryPanel() {
           educationTips,
           mediaFiles,
           pendingMediaFiles,
+          donationReports,
+          pendingDonationReports,
         ] = await Promise.all([
           adminApiClient<PaginatedParticipationMessagesResponse>(
             "/api/participation/messages/admin?page=1&limit=1",
@@ -91,6 +94,14 @@ export function AdminSummaryPanel() {
             "/api/media-files/admin?page=1&limit=1&status=pending",
             { accessToken },
           ),
+          adminApiClient<PaginatedDonationReportsResponse>(
+            "/api/donation-reports/admin?page=1&limit=1",
+            { accessToken },
+          ),
+          adminApiClient<PaginatedDonationReportsResponse>(
+            "/api/donation-reports/admin?page=1&limit=1&status=pending",
+            { accessToken },
+          ),
         ]);
 
         setSummaryCards([
@@ -123,6 +134,11 @@ export function AdminSummaryPanel() {
             label: "Archivos",
             value: mediaFiles.meta.total,
             detail: `${pendingMediaFiles.meta.total} pendientes`,
+          },
+          {
+            label: "Donaciones",
+            value: donationReports.meta.total,
+            detail: `${pendingDonationReports.meta.total} pendientes`,
           },
         ]);
       } catch {
