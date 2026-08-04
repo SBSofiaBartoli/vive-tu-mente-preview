@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { apiGetClient } from "@/lib/api-client";
+import { apiGetClient, apiPostClient } from "@/lib/api-client";
 import type { Article } from "@/types/article";
 
 const programs = [
@@ -27,11 +27,35 @@ const programs = [
   },
 ];
 
+type VisitCounterResponse = {
+  page_path: string;
+  total_visits: number;
+};
+
+const getOrCreateVisitorKey = () => {
+  const storageKey = "vtm_home_visitor_key";
+  const existingVisitorKey = window.localStorage.getItem(storageKey);
+
+  if (existingVisitorKey) {
+    return existingVisitorKey;
+  }
+
+  const newVisitorKey =
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID()
+      : `visitor_${Math.random().toString(36).slice(2)}_${Date.now()}`;
+
+  window.localStorage.setItem(storageKey, newVisitorKey);
+
+  return newVisitorKey;
+};
+
 export default function Home() {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [featuredArticles, setFeaturedArticles] = useState<Article[]>([]);
   const [isLoadingArticles, setIsLoadingArticles] = useState(true);
   const [articlesError, setArticlesError] = useState<string | null>(null);
+  const [visitCounter, setVisitCounter] = useState<number | null>(null);
 
   useEffect(() => {
     const loadFeaturedArticles = async () => {
@@ -50,6 +74,28 @@ export default function Home() {
     };
 
     void loadFeaturedArticles();
+  }, []);
+
+  useEffect(() => {
+    const trackHomeVisit = async () => {
+      try {
+        const visitorKey = getOrCreateVisitorKey();
+
+        const counterResponse = await apiPostClient<
+          VisitCounterResponse,
+          { visitor_key: string; page_path: string }
+        >("/api/visits/track", {
+          visitor_key: visitorKey,
+          page_path: "/",
+        });
+
+        setVisitCounter(counterResponse.total_visits);
+      } catch {
+        setVisitCounter(null);
+      }
+    };
+
+    void trackHomeVisit();
   }, []);
 
   return (
@@ -241,7 +287,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="py-24" id="programs">
+        <section className="py-24 pb-14" id="programs">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="mb-16 text-center">
               <h2 className="brand-title mb-4 text-4xl font-extrabold">
@@ -282,6 +328,39 @@ export default function Home() {
                   </div>
                 </article>
               ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-primary py-5" id="impact">
+          <div className="mx-auto flex max-w-7xl flex-col items-center justify-center gap-5 px-4 text-center text-background-dark sm:flex-row sm:px-6 lg:px-8">
+            <div className="inline-flex rounded-full bg-background-dark/10 p-3">
+              <span
+                className="material-symbols-outlined"
+                style={{ fontSize: "36px" }}
+              >
+                monitoring
+              </span>
+            </div>
+
+            <div>
+              <p className="text-lg font-black uppercase tracking-[0.14em]">
+                Comunidad en movimiento
+              </p>
+              <p className="mt-1 font-medium opacity-85">
+                Personas que ya visitaron nuestra página.
+              </p>
+            </div>
+
+            <div className="flex items-baseline gap-2 bg-white/90 px-5 py-2.5 shadow-sm shadow-background-dark/10">
+              <span className="text-4xl font-black leading-none text-background-dark">
+                {visitCounter !== null
+                  ? visitCounter.toLocaleString("es-CL")
+                  : "..."}
+              </span>
+              <span className="text-sm font-black uppercase tracking-[0.1em] text-background-dark/70">
+                visitas
+              </span>
             </div>
           </div>
         </section>
