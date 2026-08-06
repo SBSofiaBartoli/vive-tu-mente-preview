@@ -128,12 +128,21 @@ export default function ParticipatePage() {
               </Link>
             </nav>
 
-            <Link
-              href="/donations"
-              className="rounded-lg bg-primary px-6 py-2 text-sm font-bold text-background-dark transition-all hover:shadow-lg hover:shadow-primary/20"
-            >
-              Donación
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link
+                className="hidden rounded-lg border border-primary/30 px-4 py-2 text-sm font-bold text-primary transition-all hover:bg-primary/10 sm:inline-flex"
+                href="/admin/login"
+              >
+                Admin
+              </Link>
+
+              <Link
+                href="/donations"
+                className="rounded-lg bg-primary px-6 py-2 text-sm font-bold text-background-dark transition-all hover:shadow-lg hover:shadow-primary/20"
+              >
+                Donación
+              </Link>
+            </div>
           </div>
         </div>
       </header>

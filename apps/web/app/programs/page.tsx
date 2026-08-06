@@ -259,12 +259,21 @@ export default function ProgramsPage() {
             </Link>
           </nav>
 
-          <Link
-            className="rounded-lg bg-primary px-6 py-2 text-sm font-bold text-background-dark transition-transform hover:scale-105"
-            href="/donations"
-          >
-            Donación
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              className="hidden rounded-lg border border-primary/30 px-4 py-2 text-sm font-bold text-primary transition-all hover:bg-primary/10 sm:inline-flex"
+              href="/admin/login"
+            >
+              Admin
+            </Link>
+
+            <Link
+              className="rounded-lg bg-primary px-6 py-2 text-sm font-bold text-background-dark transition-transform hover:scale-105"
+              href="/donations"
+            >
+              Donación
+            </Link>
+          </div>
         </div>
       </header>
 
