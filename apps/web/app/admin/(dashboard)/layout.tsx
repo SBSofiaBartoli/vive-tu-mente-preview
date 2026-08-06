@@ -35,11 +35,11 @@ export default function AdminLayout({
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="group flex shrink-0 items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-[#1d3351] transition hover:bg-[#e7f8f8] hover:text-[#0b777b] lg:w-full"
+                  className="group flex shrink-0 items-center gap-3.5 rounded-xl px-4 py-3 text-base font-bold text-[#1d3351] transition hover:bg-[#e7f8f8] hover:text-[#0b777b] lg:w-full lg:text-[17px]"
                 >
                   <span
                     className="material-symbols-outlined text-[#39b8bb] transition group-hover:text-[#0b777b]"
-                    style={{ fontSize: "22px" }}
+                    style={{ fontSize: "30px" }}
                     aria-hidden="true"
                   >
                     {item.icon}
